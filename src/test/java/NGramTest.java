@@ -79,4 +79,9 @@ public class NGramTest {
         return result;
     }
 
+    @Test
+    public void testStdsAll(){
+
+    }
+
 }
