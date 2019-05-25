@@ -64,7 +64,7 @@ public class Main {
 
         LogProvider.info("Traces count", traces.size() + "");
 
-            for(int k = 1; k < size; k++){
+            for(int k = 100; k < size; k++){
 
                 ComparisonDto comparissonDto = new ComparisonDto(traces.size());
 
@@ -76,10 +76,8 @@ public class Main {
 
                         LogProvider.info("Generating ngran");
                         util.reset();
+
                         Set s1 = g.getNGramSet(k, traces.get(i).trace);
-
-                        util.time();
-
                         Set s2 = g.getNGramSet(k, traces.get(j).trace);
 
                         LogProvider.info("Sets info", "s1: " + s1.size(),  " s2: " + s2.size());

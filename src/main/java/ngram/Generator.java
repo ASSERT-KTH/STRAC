@@ -27,15 +27,9 @@ public abstract class Generator<T, R extends HashKey> {
 
         Set<R> result = new HashSet<>();
 
-        TimeUtils utls = new TimeUtils();
-
-        LogProvider.info("Get ngram set", "" + (traces.size() - n));
 
         for(int i = 0; i <= traces.size() - n; i++){ // O(n)
-            //LogProvider.info("Extracting trace in position", "" + i, "size " + n);
-
             result.add(this.getNGramAt(n, i, traces));
-            //utls.timeMicro();
         }
 
 
