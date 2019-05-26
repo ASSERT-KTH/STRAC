@@ -3,6 +3,8 @@ package ngram.hash_keys;
 import core.LogProvider;
 import ngram.models.HashKey;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,10 +12,14 @@ import static core.utils.HashingHelper.hashList1;
 
 public class ListHashKey extends HashKey {
 
-    List<Integer> items;
+    List items;
 
-    public ListHashKey(List<Integer> items){
+    public ListHashKey(List items){
         this.items = items;
+    }
+
+    public ListHashKey(int... items){
+        this.items = Arrays.asList(items);
     }
 
     @Override

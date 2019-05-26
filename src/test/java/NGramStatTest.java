@@ -157,7 +157,7 @@ public class NGramStatTest {
 
 
         TimeUtils util = new TimeUtils();
-        int size = 50;
+        int size = 20000;
         Generator g = new IdemGenerator();
 
 
@@ -210,45 +210,41 @@ public class NGramStatTest {
                 }
         );
 
-        for(ISetComparer comparer: comparers)
-            for(int k = size; k <= size; k++){
+            for(int k = size; k <= size; k++) {
 
-                ComparisonDto comparissonDto = new ComparisonDto(traces.size());
+                LogProvider.info("Calculating distance", "size", "" + k, "trace 1",
+                        traces.get(0).traceFile, "trace 2", traces.get(1).traceFile);
 
-                for(int i = 0; i < traces.size(); i++){
-                    for(int j = i + 1; j < traces.size(); j++){
+                LogProvider.info("Generating ngran");
+                util.reset();
 
+                Set s1 = g.getNGramSet(k, traces.get(0).trace);
+                Set s2 = g.getNGramSet(k, traces.get(1).trace);
 
-                        LogProvider.info("Calculating distance", "size", "" + k, "trace 1", traces.get(i).traceFile, "trace 2", traces.get(j).traceFile);
+                LogProvider.info("Sets info", "s1: " + s1.size(), " s2: " + s2.size());
 
-                        LogProvider.info("Generating ngran");
-                        util.reset();
-
-                        Set s1 = g.getNGramSet(k, traces.get(i).trace);
-                        Set s2 = g.getNGramSet(k, traces.get(j).trace);
-
-                        LogProvider.info("Sets info", "s1: " + s1.size(),  " s2: " + s2.size());
-
-                        util.time();
-
-
-
-                        // min comparison
-                        LogProvider.info("Comparing ngram sets");
-                        util.time();
-
-                        double distance = comparer.getDistance(s1, s2);
-
-                        comparissonDto.set(i, j, distance);
-                        comparissonDto.set(j, i, distance);
-
-
-                        LogProvider.info(comparer.getName(), " " + distance);
-
-                    }
-                }// Saving
-                LogProvider.info("Saving");
                 util.time();
+
+                for (ISetComparer comparer : comparers) {
+
+                    ComparisonDto comparissonDto = new ComparisonDto(traces.size());
+
+
+                    // min comparison
+                    LogProvider.info("Comparing ngram sets");
+                    util.reset();
+
+                    double distance = comparer.getDistance(s1, s2);
+                    util.time();
+
+                    comparissonDto.set(0, 1, distance);
+                    comparissonDto.set(1, 0, distance);
+
+
+                    LogProvider.info(comparer.getName(), " " + distance);
+
+                }
+
             }
     }
 
