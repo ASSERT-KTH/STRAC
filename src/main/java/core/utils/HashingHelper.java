@@ -1,11 +1,12 @@
 package core.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HashingHelper {
 
 
-    public static int[] hashList(List<Integer> items){
+    public static List<Integer> hashList(List<Integer> items){
         int prime1 = 1000000000 + 7;
         int prime2 = 100002593;
 
@@ -22,11 +23,15 @@ public class HashingHelper {
             hash2 = (hash2 * prime2 + val) % module2;
         }
 
-        return new int[] {hash1, hash2};
+        List<Integer> result = new ArrayList<>();
+        result.add(hash1);
+        result.add(hash2);
+
+        return result;
 
     }
 
     public static int hashList1(List<Integer> items){
-        return hashList(items)[0];
+        return hashList(items).get(0);
     }
 }

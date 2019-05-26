@@ -12,14 +12,10 @@ import static core.utils.HashingHelper.hashList1;
 
 public class ListHashKey extends HashKey {
 
-    List items;
+    List<Integer> items;
 
-    public ListHashKey(List items){
+    public ListHashKey(List<Integer> items){
         this.items = items;
-    }
-
-    public ListHashKey(int... items){
-        this.items = Arrays.asList(items);
     }
 
     @Override

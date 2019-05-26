@@ -16,7 +16,8 @@ public abstract class Generator<T, R extends HashKey> {
 
     public R getNGramAt(int n, int index, List<T> traces){
 
-        return this.getCompressor().compress(traces.subList(index, n + index));
+        return this.getCompressor()
+                .compress(traces.subList(index, n + index));
 
     }
 

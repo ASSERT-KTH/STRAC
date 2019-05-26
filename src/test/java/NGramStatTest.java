@@ -6,6 +6,7 @@ import core.utils.JsonHelper;
 import core.utils.SetHelper;
 import core.utils.TimeUtils;
 import ngram.Generator;
+import ngram.generators.HashCompressinGenerator;
 import ngram.generators.IdemGenerator;
 import ngram.interfaces.ISetComparer;
 import org.junit.Before;
@@ -158,7 +159,7 @@ public class NGramStatTest {
 
         TimeUtils util = new TimeUtils();
         int size = 20000;
-        Generator g = new IdemGenerator();
+        Generator g = new HashCompressinGenerator();
 
 
         LogProvider.info("Traces count", traces.size() + "");
