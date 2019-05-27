@@ -5,6 +5,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public class LogProvider {
 
 
@@ -26,7 +29,7 @@ public class LogProvider {
         return _logger;
     }
 
-    public static void info(String ... msgs){
-        LOGGER().log(Level.INFO, String.join(" ", msgs));
+    public static void info(Object ... msgs){
+        LOGGER().log(Level.INFO, String.join(" ", Arrays.stream(msgs).map(i -> String.valueOf(i)).collect(Collectors.toList())));
     }
 }

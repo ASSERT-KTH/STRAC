@@ -14,7 +14,7 @@ public abstract class Generator<T, R extends HashKey> {
 
     protected abstract ICompressor<T, R> getCompressor();
 
-    public R getNGramAt(int n, int index, List<T> traces){
+    private R getNGramAt(int n, int index, @org.jetbrains.annotations.NotNull List<T> traces){
 
         return this.getCompressor()
                 .compress(traces.subList(index, n + index));

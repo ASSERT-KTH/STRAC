@@ -14,4 +14,9 @@ public class ArrayHelper {
         return result;
     }
 
+    public int[] reduce(int[] target, int newSize){
+
+        return target;
+    }
+
 }
