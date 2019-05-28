@@ -2,21 +2,13 @@ package core.utils;
 
 import align.RepresentationFunction;
 import core.LogProvider;
+import core.data_structures.IArray;
+import core.data_structures.IReadArray;
 
 import java.lang.reflect.Array;
 import java.util.*;
 
 public class ArrayHelper {
-
-    public static int[] subArray(int index, int size, int[] target){
-
-        int[] result = new int[size];
-
-        for(int i = 0; i < size; i++)
-            result[i] = target[i + index];
-
-        return result;
-    }
 
     public static int getMostFequentRepresentation(List<Integer> target){
 
@@ -44,44 +36,14 @@ public class ArrayHelper {
         return index;
     }
 
-    public static List<Integer> reduceByHalf(List<Integer> target, RepresentationFunction<Integer, Integer> representativeExtractor){
-
-        List<Integer> result = new ArrayList<>();
+    public static void reduceByHalf(IReadArray<Integer> target, IArray<Integer> result, RepresentationFunction<Integer, Integer> representativeExtractor){
 
         for(int i = 0; i < target.size() - target.size()%2; i += 2){
 
-            result.add(representativeExtractor.getRepresentativeElement(Arrays.asList(target.get(i), target.get(i + 1))));
+            result.add(representativeExtractor.getRepresentativeElement(Arrays.asList(target.read(i), target.read(i + 1))));
         }
 
-        return result;
     }
 
-    public static List<Integer> reduceSize(List<Integer> target, int size, RepresentationFunction<Integer, Integer> representativeExtractor){
-
-        int newSize = target.size()/size;
-
-
-        List<Integer> result = new ArrayList<>();
-
-        int i= 0;
-        for(i = 0; i < size - 1; i++){
-
-            List<Integer> chunk = target.subList(i*newSize, (i + 1)*newSize);
-
-            int leader = representativeExtractor.getRepresentativeElement(chunk);
-
-
-            result.add(leader);
-        }
-
-        List<Integer> chunk = target.subList(i*newSize, target.size());
-
-        int leader = representativeExtractor.getRepresentativeElement(chunk);
-
-        result.add(leader);
-
-
-        return result;
-    }
 
 }

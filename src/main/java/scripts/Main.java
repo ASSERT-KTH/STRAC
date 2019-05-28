@@ -4,7 +4,6 @@ import core.LogProvider;
 import core.TraceHelper;
 import core.models.ComparisonDto;
 import core.models.TraceMap;
-import core.utils.JsonHelper;
 import core.utils.SetHelper;
 import core.utils.TimeUtils;
 import ngram.Generator;

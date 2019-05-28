@@ -4,6 +4,8 @@ import align.AlignDistance;
 import align.Aligner;
 import align.ICellComparer;
 import align.InsertOperation;
+import core.data_structures.IArray;
+import core.data_structures.IReadArray;
 
 import java.util.*;
 
@@ -20,11 +22,11 @@ public class WindowedDWT extends Aligner {
     }
 
     @Override
-    public AlignDistance align(List<Integer> trace1, List<Integer> trace2) {
+    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2) {
         return this.align(trace1, trace2, null);
     }
 
-    public AlignDistance align(List<Integer> trace1, List<Integer> trace2, WindowMap<CellInfo> window) {
+    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2, WindowMap<CellInfo> window) {
 
 
         WindowMap<CellInfo> map = window;
@@ -42,7 +44,7 @@ public class WindowedDWT extends Aligner {
         for(int i : map.getColumns()){
             for(int j: map.getRow(i)){
 
-                int dt = comparer.compare(trace1.get(i - 1), trace2.get(j - 1));
+                int dt = comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
                 int diag = D.getOrDefault(i - 1, j - 1, 0);
                 int left = D.getOrDefault(i, j - 1, 0);
                 int up = D.getOrDefault(i  - 1, j, 0);
@@ -85,7 +87,7 @@ public class WindowedDWT extends Aligner {
             int up = -oo;
 
             if(j > 0 && i > 0){
-                diag = D.getOrDefault(i - 1, j - 1, -oo) + comparer.compare(trace1.get(i - 1), trace2.get(j - 1));
+                diag = D.getOrDefault(i - 1, j - 1, -oo) + comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
             }
 
             if( j > 0){

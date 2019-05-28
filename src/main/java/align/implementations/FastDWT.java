@@ -5,6 +5,9 @@ import align.Aligner;
 import align.ICellComparer;
 import align.InsertOperation;
 import core.LogProvider;
+import core.ServiceRegister;
+import core.data_structures.IArray;
+import core.data_structures.IReadArray;
 import core.utils.ArrayHelper;
 import core.utils.DWTHelper;
 import core.utils.TimeUtils;
@@ -35,7 +38,7 @@ public class FastDWT extends Aligner {
     }
 
     @Override
-    public AlignDistance align(List<Integer> trace1, List<Integer> trace2) {
+    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2) {
         int minTimeSize = 2 + this.radius;
 
         if(trace1.size() <= minTimeSize || trace2.size() <= minTimeSize){
@@ -45,9 +48,13 @@ public class FastDWT extends Aligner {
 
             TimeUtils utl = new TimeUtils();
 
-            List<Integer> reduced1 = ArrayHelper.reduceByHalf(trace1,  ArrayHelper::getMostFequentRepresentation); // O(n)
+            IArray<Integer> reduced1 = ServiceRegister.getProvider().allocateNewArray(trace1.size()/2);
+            ArrayHelper.reduceByHalf(trace1, reduced1,
+                    ArrayHelper::getMostFequentRepresentation); // O(n)
 
-            List<Integer> reduced2 = ArrayHelper.reduceByHalf(trace2, ArrayHelper::getMostFequentRepresentation); // O(n)
+            IArray<Integer> reduced2 = ServiceRegister.getProvider().allocateNewArray(trace1.size()/2);
+            ArrayHelper.reduceByHalf(trace2, reduced2,
+                    ArrayHelper::getMostFequentRepresentation); // O(n)
 
 
             AlignDistance distance = this.align(reduced1, reduced2); //O(n/2)

@@ -5,6 +5,8 @@ import align.Aligner;
 import align.ICellComparer;
 import align.InsertOperation;
 import core.LogProvider;
+import core.data_structures.IArray;
+import core.data_structures.IReadArray;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +27,7 @@ public class DWT extends Aligner {
     }
 
     @Override
-    public AlignDistance align(List<Integer> trace1, List<Integer> trace2) {
+    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2) {
 
         int maxI = trace1.size();
         int maxJ = trace2.size();
@@ -42,7 +44,7 @@ public class DWT extends Aligner {
         for(int i = 1; i < maxI + 1; i++){
             for(int j = 1; j < maxJ + 1; j++){
                 result[i][j] = Math.max(
-                    result[i - 1][j - 1] + this.comparer.compare(trace1.get(i - 1), trace2.get(j - 1)),
+                    result[i - 1][j - 1] + this.comparer.compare(trace1.read(i - 1), trace2.read(j - 1)),
                     Math.max(
                             result[i - 1][j] + this.getGapSymbol(),
                             result[i][j - 1] + this.getGapSymbol()
@@ -64,7 +66,7 @@ public class DWT extends Aligner {
             final double downCost;
 
             if ((i>0) && (j>0))
-                diagCost = result[i-1][j-1] + comparer.compare(trace1.get(i - 1), trace2.get(j - 1));
+                diagCost = result[i-1][j-1] + comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
             else
                 diagCost = Double.NEGATIVE_INFINITY;
 

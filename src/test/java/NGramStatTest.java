@@ -1,8 +1,13 @@
+import core.IServiceProvider;
 import core.LogProvider;
+import core.ServiceRegister;
 import core.TraceHelper;
+import core.data_structures.IArray;
+import core.data_structures.ISet;
+import core.data_structures.memory.InMemoryArray;
+import core.data_structures.memory.InMemorySet;
 import core.models.ComparisonDto;
 import core.models.TraceMap;
-import core.utils.JsonHelper;
 import core.utils.SetHelper;
 import core.utils.TimeUtils;
 import ngram.Generator;
@@ -20,6 +25,25 @@ public class NGramStatTest {
 
     public List<TraceMap> traces;
 
+    @Before
+    public void setProvider(){
+        ServiceRegister.registerProvider(new IServiceProvider() {
+            @Override
+            public IArray<Integer> allocateNewArray() {
+                return new InMemoryArray();
+            }
+
+            @Override
+            public IArray<Integer> allocateNewArray(int size) {
+                return new InMemoryArray(size);
+            }
+
+            @Override
+            public <T> ISet<T> allocateNewSet() {
+                return new InMemorySet<>(new HashSet<>());
+            }
+        });
+    }
 
     public void setup(){
 
@@ -70,7 +94,7 @@ public class NGramStatTest {
     public void testNGramStatAllVsAll() throws IOException {
 
 
-        setup();
+        /*setup();
 
         TimeUtils util = new TimeUtils();
         int size = 50;
@@ -92,8 +116,8 @@ public class NGramStatTest {
                     LogProvider.info("Generating ngran");
                     util.reset();
 
-                    Set s1 = g.getNGramSet(k, traces.get(i).trace);
-                    Set s2 = g.getNGramSet(k, traces.get(j).trace);
+                    //Set s1 = g.getNGramSet(k, traces.get(i).trace);
+                    //Set s2 = g.getNGramSet(k, traces.get(j).trace);
 
                     LogProvider.info("Sets info", "s1: " + s1.size(),  " s2: " + s2.size());
 
@@ -120,7 +144,7 @@ public class NGramStatTest {
             util.time();
 
             //JsonHelper.save(String.format("comparisson_%s_%s.json", "union", k + ""), comparissonDto);
-        }
+        }*/
     }
 
     @Test
@@ -167,8 +191,8 @@ public class NGramStatTest {
         List<ISetComparer> comparers = Arrays.asList(
                 new ISetComparer() {
                     @Override
-                    public <T> double getDistance(Set<T> s1, Set<T> s2) {
-                        return 1 - SetHelper.intersection(s1, s2).size()*1.0/SetHelper.union(s1, s2).size();
+                    public <T> double getDistance(ISet<T> s1, ISet<T> s2) {
+                        return 1 - s1.intersect(s2).size()*1.0/s1.union(s2).size();
                     }
 
                     @Override
@@ -178,8 +202,8 @@ public class NGramStatTest {
                 },
                 new ISetComparer() {
                     @Override
-                    public <T> double getDistance(Set<T> s1, Set<T> s2) {
-                        return 1 - SetHelper.intersection(s1, s2).size()*1.0/Math.min(s1.size(), s2.size());
+                    public <T> double getDistance(ISet<T> s1, ISet<T> s2) {
+                        return s1.intersect(s2).size()*1.0/Math.min(s1.size(), s2.size());
                     }
 
                     @Override
@@ -189,8 +213,8 @@ public class NGramStatTest {
                 },
                 new ISetComparer() {
                     @Override
-                    public <T> double getDistance(Set<T> s1, Set<T> s2) {
-                        return 1 - SetHelper.intersection(s1, s2).size()*1.0/Math.max(s1.size(), s2.size());
+                    public <T> double getDistance(ISet<T> s1, ISet<T> s2) {
+                        return 1 - s1.intersect(s2).size()*1.0/Math.max(s1.size(), s2.size());
                     }
 
                     @Override
@@ -200,8 +224,8 @@ public class NGramStatTest {
                 },
                 new ISetComparer() {
                     @Override
-                    public <T> double getDistance(Set<T> s1, Set<T> s2) {
-                        return 1 - SetHelper.intersection(s1, s2).size()*1.0/(s1.size() + s2.size());
+                    public <T> double getDistance(ISet<T> s1, ISet<T> s2) {
+                        return 1 - s1.intersect(s2).size()*1.0/(s1.size() + s2.size());
                     }
 
                     @Override
@@ -219,8 +243,8 @@ public class NGramStatTest {
             LogProvider.info("Generating ngran");
             util.reset();
 
-            Set s1 = g.getNGramSet(k, traces.get(0).trace);
-            Set s2 = g.getNGramSet(k, traces.get(1).trace);
+            ISet s1 = g.getNGramSet(k, traces.get(0).trace);
+            ISet s2 = g.getNGramSet(k, traces.get(1).trace);
 
             LogProvider.info("Sets info", "s1: " + s1.size(), " s2: " + s2.size());
 
@@ -285,7 +309,7 @@ public class NGramStatTest {
 
 
         TimeUtils util = new TimeUtils();
-        int size = 3;
+        int size = 1000;
         Generator g = new HashCompressinGenerator();
 
 
@@ -294,8 +318,8 @@ public class NGramStatTest {
         List<ISetComparer> comparers = Arrays.asList(
                 new ISetComparer() {
                     @Override
-                    public <T> double getDistance(Set<T> s1, Set<T> s2) {
-                        return 1 - SetHelper.intersection(s1, s2).size()*1.0/SetHelper.union(s1, s2).size();
+                    public <T> double getDistance(ISet<T> s1, ISet<T> s2) {
+                        return 1 - s1.intersect(s2).size()*1.0/s1.union(s2).size();
                     }
 
                     @Override
@@ -305,8 +329,8 @@ public class NGramStatTest {
                 },
                 new ISetComparer() {
                     @Override
-                    public <T> double getDistance(Set<T> s1, Set<T> s2) {
-                        return 1 - SetHelper.intersection(s1, s2).size()*1.0/Math.min(s1.size(), s2.size());
+                    public <T> double getDistance(ISet<T> s1, ISet<T> s2) {
+                        return 1 - s1.intersect(s2).size()*1.0/Math.min(s1.size(), s2.size());
                     }
 
                     @Override
@@ -316,8 +340,8 @@ public class NGramStatTest {
                 },
                 new ISetComparer() {
                     @Override
-                    public <T> double getDistance(Set<T> s1, Set<T> s2) {
-                        return 1 - SetHelper.intersection(s1, s2).size()*1.0/Math.max(s1.size(), s2.size());
+                    public <T> double getDistance(ISet<T> s1, ISet<T> s2) {
+                        return 1 - s1.intersect(s2).size()*1.0/Math.max(s1.size(), s2.size());
                     }
 
                     @Override
@@ -327,8 +351,8 @@ public class NGramStatTest {
                 },
                 new ISetComparer() {
                     @Override
-                    public <T> double getDistance(Set<T> s1, Set<T> s2) {
-                        return 1 - SetHelper.intersection(s1, s2).size()*1.0/(s1.size() + s2.size());
+                    public <T> double getDistance(ISet<T> s1, ISet<T> s2) {
+                        return 1 - s1.intersect(s2).size()*1.0/(s1.size() + s2.size());
                     }
 
                     @Override
@@ -346,8 +370,8 @@ public class NGramStatTest {
                 LogProvider.info("Generating ngran");
                 util.reset();
 
-                Set s1 = g.getNGramSet(k, traces.get(0).trace);
-                Set s2 = g.getNGramSet(k, traces.get(1).trace);
+                ISet s1 = g.getNGramSet(k, traces.get(0).trace);
+                ISet s2 = g.getNGramSet(k, traces.get(1).trace);
 
                 LogProvider.info("Sets info", "s1: " + s1.size(), " s2: " + s2.size());
 

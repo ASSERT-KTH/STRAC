@@ -2,6 +2,8 @@ package core;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import core.data_structures.IArray;
+import core.data_structures.memory.InMemoryArray;
 import core.models.TraceMap;
 
 import java.io.*;
@@ -41,9 +43,9 @@ public class TraceHelper {
         return this.bag.keySet().size();
     }
 
-    public List<Integer> updateBag(Stream<String> sentences){
+    public IArray<Integer> updateBag(Stream<String> sentences){
 
-        List<Integer> result = new ArrayList<>();
+        IArray<Integer> result = ServiceRegister.getProvider().allocateNewArray();
 
         for (Iterator<String> it = sentences.iterator(); it.hasNext(); ) {
             String sentence = it.next();
@@ -66,7 +68,7 @@ public class TraceHelper {
         LogProvider.LOGGER()
                 .info("Processing " + fileName);
 
-        List<Integer> trace ;
+        IArray<Integer> trace ;
 
         try {
             trace = updateBag(Files.lines(Paths.get(fileName)));
@@ -77,7 +79,7 @@ public class TraceHelper {
             return new TraceMap(trace, fileName);
         } catch (IOException e) {
             core.LogProvider.info("Error", e.getMessage());
-            return new TraceMap(new ArrayList<>(), fileName + ' ' + e.getMessage());
+            return new TraceMap(ServiceRegister.getProvider().allocateNewArray(), fileName + ' ' + e.getMessage());
         }
 
 

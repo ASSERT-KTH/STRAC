@@ -8,6 +8,8 @@ import ngram.interfaces.ICompressor;
 public class HashCompressinGenerator extends Generator<Integer, ListHashKey> {
     @Override
     protected ICompressor<Integer, ListHashKey> getCompressor() {
+
+
         return trace -> new ListHashKey(HashingHelper.hashList(trace));
     }
 }

@@ -1,21 +1,23 @@
 package ngram.hash_keys;
 
-import core.LogProvider;
+import core.data_structures.IArray;
+import core.data_structures.memory.InMemoryArray;
 import ngram.models.HashKey;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static core.utils.HashingHelper.hashList1;
 
 public class ListHashKey extends HashKey {
 
-    List<Integer> items;
+    IArray<Integer> items;
+
+    public ListHashKey(IArray<Integer> items){
+        this.items = items;
+    }
 
     public ListHashKey(List<Integer> items){
-        this.items = items;
+        this.items = new InMemoryArray(items);
     }
 
     @Override

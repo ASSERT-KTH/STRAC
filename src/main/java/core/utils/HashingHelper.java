@@ -1,12 +1,15 @@
 package core.utils;
 
+import core.data_structures.IArray;
+import core.data_structures.IReadArray;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class HashingHelper {
 
 
-    public static List<Integer> hashList(List<Integer> items){
+    public static List<Integer> hashList(IReadArray<Integer> items){
         int prime1 = 1000000000 + 7;
         int prime2 = 100002593;
 
@@ -31,7 +34,7 @@ public class HashingHelper {
 
     }
 
-    public static int hashList1(List<Integer> items){
+    public static int hashList1(IReadArray<Integer> items){
         return hashList(items).get(0);
     }
 }

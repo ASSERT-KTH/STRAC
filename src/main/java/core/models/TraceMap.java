@@ -1,14 +1,16 @@
 package core.models;
 
+import core.data_structures.IReadArray;
+
 import java.util.List;
 
 public class TraceMap {
 
-    public List<Integer> trace;
+    public IReadArray<Integer> trace;
 
     public String traceFile;
 
-    public TraceMap(List<Integer> trace, String traceFile){
+    public TraceMap(IReadArray<Integer> trace, String traceFile){
 
         this.trace = trace;
 

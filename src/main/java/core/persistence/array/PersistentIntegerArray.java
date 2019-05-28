@@ -2,6 +2,7 @@ package core.persistence.array;
 
 import core.data_structures.IArray;
 import core.persistence.PersistentDataStructure;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,8 +10,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.util.Iterator;
 
-public class PersistentIntegerArray extends PersistentDataStructure  implements IArray<Integer> {
+public class PersistentIntegerArray extends PersistentDataStructure implements IArray<Integer>, Iterator<Integer> {
 
     @Override
     public Integer read(int position) {
@@ -44,8 +46,8 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
     }
 
     @Override
-    public long size() {
-        return _size/4;
+    public int size() {
+        return (int)_size/4;
     }
 
     private boolean isInTail(int position){
@@ -115,15 +117,26 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
     }
 
     @Override
-    public void add(int index, Integer value) {
+    public IArray<Integer> subArray(int index, int size) {
+        return null;
+    }
 
+    private int iteratorPosition = 0;
 
-
+    @NotNull
+    @Override
+    public Iterator<Integer> iterator() {
+        return this;
     }
 
     @Override
-    public IArray<Integer> subArray() {
-        return null;
+    public boolean hasNext() {
+        return iteratorPosition < this.size();
+    }
+
+    @Override
+    public Integer next() {
+        return this.readFromTail(iteratorPosition++);
     }
 
     public enum CachePolicy{
