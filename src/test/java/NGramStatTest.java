@@ -66,7 +66,7 @@ public class NGramStatTest {
         traces = helper.mapTraceSetByFileLine(files);
     }
 
-    @Test
+    //@Test
     public void testNGramStatAllVsAll() throws IOException {
 
 
