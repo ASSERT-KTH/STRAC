@@ -1,6 +1,7 @@
 package core.utils;
 
 import align.InsertOperation;
+import align.implementations.WindowedDWT;
 import core.LogProvider;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class DWTHelper {
 
 
 
-    public static List<InsertOperation> scalePath(List<InsertOperation> ops, int factor, int maxI, int maxJ){
+    public static List<InsertOperation> scalePath(List<InsertOperation> ops){
 
         List<InsertOperation> result = new ArrayList<>();
 
@@ -94,6 +95,63 @@ public class DWTHelper {
 
 
         LogProvider.info(result);
+        return result;
+    }
+
+    public static WindowedDWT.WindowMap<WindowedDWT.CellInfo> expandWindow(List<InsertOperation> ops, int radius, int lenT1, int lenT2){
+
+        WindowedDWT.WindowMap<WindowedDWT.CellInfo> grown = new WindowedDWT.WindowMap<WindowedDWT.CellInfo>();
+
+        List<InsertOperation> expansion = new ArrayList<>();
+
+        for(InsertOperation op: ops){
+
+            expansion.add(op);
+
+            for(int i = -radius; i <= radius; i++){
+                for(int j = -radius; j <= radius; j++){
+
+                    int nI = op.getTrace1Index() + i;
+                    int nJ = op.getTrace2Index() + j;
+
+                    if(nI >= 0 && nJ >=0 && nI < lenT1 && nJ < lenT2 && !existsCell(nI, nJ, expansion))
+                        expansion.add(new InsertOperation(nI, nJ));
+                }
+            }
+
+        }
+
+        for(InsertOperation op: expansion){
+
+            int i = op.getTrace1Index();
+            int j = op.getTrace2Index();
+
+            grown.set(i*2, j*2, new WindowedDWT.CellInfo(0, i, j));
+            grown.set(i*2, j*2 + 1, new WindowedDWT.CellInfo(0, i, j));
+            grown.set(i*2 + 1, j*2 + 1, new WindowedDWT.CellInfo(0, i, j));
+            grown.set(i*2 + 1, j*2, new WindowedDWT.CellInfo(0, i, j));
+        }
+
+        WindowedDWT.WindowMap<WindowedDWT.CellInfo> result = new WindowedDWT.WindowMap<>();
+
+        int startJ = 0;
+
+        for(int i = 0; i < lenT1; i++){
+            int newStartJ = -1;
+            for(int j =startJ; j < lenT2; j++){
+                if(grown.existColumn(i) && grown.existRow(i, j)){
+                    result.set(i + 1, j + 1, new WindowedDWT.CellInfo(0, i + 1, j + 1));
+                    if(newStartJ == -1){
+                        newStartJ = j;
+                    }
+                }
+                else if (newStartJ != -1)
+                    break;
+            }
+
+            startJ = newStartJ;
+        }
+
         return result;
     }
 

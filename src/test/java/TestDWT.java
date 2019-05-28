@@ -150,7 +150,7 @@ public class TestDWT {
 
         Aligner al = new FastDWT( 0, (a, b) -> a == b? 2: -1);
 
-        AlignDistance distance =  al.align(trace2, trace1);
+        AlignDistance distance =  al.align(trace1, trace2);
 
         LogProvider.info(distance.getDistance());
         LogProvider.info(distance.getInsertions());
@@ -177,7 +177,7 @@ public class TestDWT {
         ops.add(new InsertOperation(5,4));
 
 
-        DWTHelper.scalePath(ops, 2, 6, 6);
+        //DWTHelper.scalePath(ops, 2, 6, 6);
     }
 
 
@@ -194,8 +194,8 @@ public class TestDWT {
         ops.add(new InsertOperation(5,4));
 
 
-        List<InsertOperation> grow = DWTHelper.scalePath(ops, 2, 6, 6);
+       // List<InsertOperation> grow = DWTHelper.scalePath(ops, 2, 6, 6);
 
-        DWTHelper.createWindow(grow, 2, 10, 10);
+        //DWTHelper.createWindow(grow, 2, 10, 10);
     }
 }

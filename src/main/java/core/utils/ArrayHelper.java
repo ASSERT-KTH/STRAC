@@ -4,10 +4,7 @@ import align.RepresentationFunction;
 import core.LogProvider;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ArrayHelper {
 
@@ -45,6 +42,18 @@ public class ArrayHelper {
         }
 
         return index;
+    }
+
+    public static List<Integer> reduceByHalf(List<Integer> target, RepresentationFunction<Integer, Integer> representativeExtractor){
+
+        List<Integer> result = new ArrayList<>();
+
+        for(int i = 0; i < target.size() - target.size()%2; i += 2){
+
+            result.add(representativeExtractor.getRepresentativeElement(Arrays.asList(target.get(i), target.get(i + 1))));
+        }
+
+        return result;
     }
 
     public static List<Integer> reduceSize(List<Integer> target, int size, RepresentationFunction<Integer, Integer> representativeExtractor){

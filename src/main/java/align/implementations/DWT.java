@@ -64,17 +64,17 @@ public class DWT extends Aligner {
             final double downCost;
 
             if ((i>0) && (j>0))
-                diagCost = result[i-1][j-1];
+                diagCost = result[i-1][j-1] + comparer.compare(trace1.get(i - 1), trace2.get(j - 1));
             else
                 diagCost = Double.NEGATIVE_INFINITY;
 
             if (i > 0)
-                leftCost = result[i-1][j];
+                leftCost = result[i-1][j] + getGapSymbol();
             else
                 leftCost = Double.NEGATIVE_INFINITY;
 
             if (j > 0)
-                downCost = result[i][j-1];
+                downCost = result[i][j-1] + getGapSymbol();
             else
                 downCost = Double.NEGATIVE_INFINITY;
 

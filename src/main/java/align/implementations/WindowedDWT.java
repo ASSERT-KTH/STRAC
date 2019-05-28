@@ -26,95 +26,51 @@ public class WindowedDWT extends Aligner {
         return this.align(trace1, trace2, null);
     }
 
-    public AlignDistance align(List<Integer> trace1, List<Integer> trace2, List<InsertOperation> window) {
+    public AlignDistance align(List<Integer> trace1, List<Integer> trace2, WindowMap<CellInfo> window) {
 
-        if(trace1.size() > trace2.size()){
-            List<Integer> tmp = trace2;
-            trace2 = trace1;
-            trace1 = tmp;
-        }
 
-        WindowMap map = new WindowMap();
+        WindowMap<CellInfo> map = window;
 
         if(window == null)
             map = createWindow(trace1.size() + 1, trace2.size() + 1);
-        else {
-            map.set(trace1.size(), trace2.size(), 0);
-            map.set(0, 0, 0);
-
-            for (InsertOperation op : window) {
-                map.set(op.getTrace1Index(), op.getTrace2Index(), 0);
-            }
-
-        }
 
 
-        for(int i: map.getColumns()){
-            if(map.existColumn(i - 1) && map.existRow(i - 1, 0))
-                map.set(i, 0, map.get(i - 1, 0) + this.getGapSymbol());
+        int oo = 1000000000;
 
-        }
+        WindowMap<Integer> D = new WindowMap<>();
 
-        if(map.existColumn(0))
-            map.set(0,0,0);
-            for(int j = 0; j < trace2.size(); j++){
-                if(map.existRow(0, j - 1)){
-                    map.set(0, j, map.get(0, j - 1) + this.getGapSymbol());
-                }
-            }
-
-
-
+        D.set(0, 0, 0);
 
         for(int i : map.getColumns()){
             for(int j: map.getRow(i)){
 
-                if(j == 0 || i == 0)
-                    continue;
+                int dt = comparer.compare(trace1.get(i - 1), trace2.get(j - 1));
+                int diag = D.getOrDefault(i - 1, j - 1, 0);
+                int left = D.getOrDefault(i, j - 1, 0);
+                int up = D.getOrDefault(i  - 1, j, 0);
 
-
-                boolean evaluateLeft = map.existRow(i, j - 1) && map.existRow(i, j - 1);
-                boolean evaluateUpper = map.existColumn(i - 1) && map.existRow(i - 1, j);
-                boolean evaluateDiag = map.existColumn(i - 1) && map.existRow(i - 1, j - 1) && (i -1 < trace1.size() && j - 1 < trace2.size());
-
-                int max = Integer.MIN_VALUE;
-
-                if(evaluateLeft)
-                    max = Math.max(max, map.get(i, j - 1) + getGapSymbol());
-
-                if(evaluateUpper)
-                    max = Math.max(max, map.get(i - 1, j ) + getGapSymbol());
-
-                if(evaluateDiag) {
-                    max = Math.max(max, map.get(i - 1, j - 1) + comparer.compare(trace1.get(i - 1),
-                            trace2.get(j - 1)));
-                }
-
-                if(max != Integer.MIN_VALUE && i >= 0 && j >= 0)
-                    map.set(i, j, max);
+                D.set(i, j, Math.max(diag + dt,
+                        Math.max(left + getGapSymbol(),
+                                up + getGapSymbol())) );
             }
         }
 
 
 
-        for(int i = 0; i < trace1.size(); i++){
+        /*for(int i = 0; i <= trace1.size(); i++){
 
             System.out.print(String.format("%04d ", i));
 
-            for(int j =0; j< trace2.size(); j++){
+            for(int j =0; j<= trace2.size(); j++){
 
-                if(map.existColumn(i) && map.existRow(i, j)){
 
-                    System.out.print(String.format("@", map.get(i, j)) + " ");
-                }
-                else{
-                    System.out.print("- ");
-                }
+                System.out.print(String.format("%01d", D.getOrDefault(i, j, 0)) + " ");
+
 
             }
 
             System.out.println();
-        }
+        }*/
 
 
         int i = trace1.size();
@@ -122,45 +78,40 @@ public class WindowedDWT extends Aligner {
 
         List<InsertOperation> ops = new ArrayList<>();
 
-        while ((i>0) || (j>0)) // 0,0 item
+
+        while ((i > 0) || (j > 0)) // 0,0 item
         {
-            final double diagCost;
-            final double leftCost;
-            final double downCost;
 
-            if (map.existColumn(i - 1) && map.existRow(i - 1, j - 1))
-                diagCost = map.get(i - 1, j - 1) + this.comparer.compare(trace1.get(i - 1), trace2.get(j - 1));
-            else
-                diagCost = Double.NEGATIVE_INFINITY;
+            int diag = -oo;
+            int left = -oo;
+            int up = -oo;
 
-            if (map.existColumn(i - 1) && map.existRow(i - 1, j))
-                leftCost = map.get(i - 1, j) + this.getGapSymbol();
-            else
-                leftCost = Double.NEGATIVE_INFINITY;
+            if(j > 0 && i > 0){
+                diag = D.getOrDefault(i - 1, j - 1, -oo) + comparer.compare(trace1.get(i - 1), trace2.get(j - 1));
+            }
 
-            if (map.existColumn(i) && map.existRow(i, j - 1))
-                downCost = map.get(i, j - 1) + this.getGapSymbol();
-            else
-                downCost = Double.NEGATIVE_INFINITY;
+            if( j > 0){
+                left = D.getOrDefault(i, j - 1, -oo) + getGapSymbol();
+            }
 
-            /*if(diagCost == Double.NEGATIVE_INFINITY && leftCost == Double.NEGATIVE_INFINITY && downCost == Double.NEGATIVE_INFINITY)
-                throw new RuntimeException("Impossible " + i + " " + j);*/
 
-            if ((diagCost >= leftCost) && (diagCost >= downCost))
-            {
+            if( i > 0){
+                up = D.getOrDefault(i - 1, j, -oo) + getGapSymbol();
+            }
+
+            if(diag >= left && diag >= up){
                 i--;
                 j--;
             }
-            else if ((leftCost > diagCost) && (leftCost > downCost))
-                i--;
-            else if ((downCost > diagCost) && (downCost > leftCost))
+            else if(left > diag && left > up){
                 j--;
-            else if (i <= j)
-                j--;
-            else
+            }
+            else if(up > left){
                 i--;
+            }
+            ops.add(0, new InsertOperation(i, j));
 
-            ops.add(0, new InsertOperation(Math.max(i, 0), Math.max(j, 0)));
+
         }
 
 
@@ -180,32 +131,46 @@ public class WindowedDWT extends Aligner {
         /*System.out.println(trace1.size() - 1);
         System.out.println(trace2.size() - 1);
         LogProvider.info(ops);*/
-        return new AlignDistance(map.get(trace1.size(), trace2.size()), ops);
+        return new AlignDistance(D.getOrDefault(trace1.size(), trace2.size(), 0), ops);
     }
 
 
-    public WindowMap createWindow(int maxI, int maxJ){
+    public WindowMap<CellInfo> createWindow(int maxI, int maxJ){
 
-        WindowMap map = new WindowMap();
+        WindowMap<CellInfo> map = new WindowMap<>();
 
         for(int i = 0; i < maxI; i ++){
             for(int j = 0; j < maxJ; j++){
-                map.set(i, j, 0);
+                map.set(i, j, new CellInfo(0, i, j));
             }
         }
 
         return map;
     }
 
-    public class WindowMap{
+    public static class CellInfo{
 
-        Map<Integer, Map<Integer, Integer>> map;
+        public int value;
 
-        Map<Integer, Integer> high;
+        public int j;
+        public int i;
+
+        public CellInfo(int value, int i, int j){
+            this.i = i;
+            this.j = j;
+
+            this.value = value;
+        }
+
+    }
+
+    public static class WindowMap<T>{
+
+        Map<Integer, Map<Integer, T>> map;
+
 
         public WindowMap(){
             this.map = new HashMap<>();
-            this.high = new HashMap<>();
         }
 
         public boolean existColumn(int i)
@@ -217,7 +182,7 @@ public class WindowedDWT extends Aligner {
             return this.map.get(i).containsKey(j);
         }
 
-        public void set(int i, int j, int value){
+        public void set(int i, int j, T value){
 
             if(i < 0 || j < 0)
                 throw new RuntimeException("Invalid indexes " + i + " " + j);
@@ -228,8 +193,17 @@ public class WindowedDWT extends Aligner {
             this.map.get(i).put(j, value);
         }
 
-        public int get(int i, int j){
+        public T get(int i, int j){
+
             return this.map.get(i).get(j);
+        }
+
+        public T getOrDefault(int i, int j, T def){
+
+            if(this.existColumn(i) && this.existRow(i, j))
+                return this.map.get(i).get(j);
+
+            return def;
         }
 
         public Iterable<Integer> getColumns(){
@@ -239,15 +213,6 @@ public class WindowedDWT extends Aligner {
         public Iterable<Integer> getRow(int column){
             return this.map.get(column).keySet();
         }
-
-        public int getHeight(){
-            return this.map.keySet().size();
-        }
-
-        public int getWidth(int i ){
-            return this.map.get(i).size();
-        }
-
 
     }
 

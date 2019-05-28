@@ -46,11 +46,9 @@ public class FastDWT extends Aligner {
 
             TimeUtils utl = new TimeUtils();
 
-            List<Integer> reduced1 = ArrayHelper.reduceSize(trace1, trace1.size()/2
-                    , ArrayHelper::getMostFequentRepresentation); // O(n)
+            List<Integer> reduced1 = ArrayHelper.reduceByHalf(trace1,  ArrayHelper::getMostFequentRepresentation); // O(n)
 
-            List<Integer> reduced2 = ArrayHelper.reduceSize(trace2
-                    , trace2.size()/2, ArrayHelper::getMostFequentRepresentation); // O(n)
+            List<Integer> reduced2 = ArrayHelper.reduceByHalf(trace2, ArrayHelper::getMostFequentRepresentation); // O(n)
 
 
 
@@ -59,18 +57,7 @@ public class FastDWT extends Aligner {
             LogProvider.info("Expanding");
             utl.reset();
 
-            List<InsertOperation> growUp = DWTHelper.scalePath(distance.getInsertions(), 2, trace1.size(), trace2.size()); // O(n)
-
-
-            utl.time();
-
-
-            List<InsertOperation> window = DWTHelper.createWindow(growUp,
-                    radius, trace1.size(), trace2.size()); // O(n)
-
-            LogProvider.info(trace1.size(), trace2.size());
-
-            utl.time();
+            WindowedDWT.WindowMap<WindowedDWT.CellInfo> window = DWTHelper.expandWindow(distance.getInsertions(), radius, trace1.size(),trace2.size()); // O(n)
 
 
             //LogProvider.info();
