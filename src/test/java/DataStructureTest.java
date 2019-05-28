@@ -9,6 +9,12 @@ import java.io.IOException;
 public class DataStructureTest {
 
     @Test
+    public void test0CreateFile() throws IOException {
+
+        new File("test1.array").delete();
+    }
+
+    @Test
     public void test1CreateFile() throws IOException {
 
         PersistentIntegerArray store = new PersistentIntegerArray("test1.array", PersistentIntegerArray.CachePolicy.SEQUENTIAL, 100);
@@ -81,13 +87,37 @@ public class DataStructureTest {
         PersistentIntegerArray store = new PersistentIntegerArray("test1.array", PersistentIntegerArray.CachePolicy.SEQUENTIAL, 100);
 
 
-        for(int i = 0; i < 1 << 26; i++)
+        for(int i = 0; i < 1 << 30; i++)
             store.add(i);
 
 
         store.close();
 
         utl.time("Generation took");
+    }
+
+
+
+    @Test
+    public void test7ReadHugeFile() throws IOException {
+
+        // Write 1GB file with adding operation
+
+
+
+
+        PersistentIntegerArray store = new PersistentIntegerArray("test1.array", PersistentIntegerArray.CachePolicy.SEQUENTIAL, 10);
+
+        Assert.assertEquals(store.size(), 1 << 26);
+
+        for(int i = 0; i < 1 << 26; i++){
+            int value = store.read(i);
+
+            Assert.assertEquals(value, i);
+        }
+
+        store.close();
+
     }
 
 

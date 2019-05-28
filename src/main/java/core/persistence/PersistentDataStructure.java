@@ -19,4 +19,5 @@ public abstract class PersistentDataStructure {
         _access = new RandomAccessFile(_storage, "rw");
     }
 
+    public abstract void validate();
 }

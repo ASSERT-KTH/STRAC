@@ -49,7 +49,7 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
         try {
 
             if (_policy == CachePolicy.SEQUENTIAL) {
-                if (cachedElements != null && position >= cacheStartIn && position < cacheStartIn + cacheSize) {
+                if (cachedElements != null && position >= cacheStartIn && position < cacheStartIn + cachedElements.length) {
                     cachedElements[position - cacheStartIn] = value;
                 } else {
 
@@ -75,24 +75,28 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
     @Override
     public void add(Integer value) {
 
-        try {
-            _access.seek(HEADER_SIZE + this._size);
-            _access.writeInt(value);
+        try{
 
-            this._size += 4;
+            if(tailPosition == tailCache.length){
+                this.saveTail();
 
-            this.saveHeader();
+                this.add(value);
+            }else{
+                tailCache[tailPosition] = value;
+                tailPosition++;
+                _size += 4;
+            }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-
+        }
+        catch (Exception e){
             throw new RuntimeException(e.getMessage());
         }
-
     }
 
     @Override
     public void add(int index, Integer value) {
+
+
 
     }
 
@@ -108,7 +112,14 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
 
     private CachePolicy _policy;
     private int cacheStartIn;
+
+    // double size for adding
     private int[] cachedElements;
+
+
+    private int[] tailCache;
+    private int tailPosition;
+
     private int cacheSize;
     private int HEADER_SIZE = 8;
 
@@ -128,14 +139,24 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
         cacheStartIn = -1;
         this.cacheSize = cachedElements;
 
+
+        this.tailCache = new int[cachedElements];
+        this.tailPosition = 0;
+
         this._policy = policy;
 
 
         this.loadHeader();
+
     }
 
     private PersistentIntegerArray(File storeIn) throws FileNotFoundException {
         super(storeIn);
+    }
+
+    @Override
+    public void validate() {
+
     }
 
     private void loadHeader() throws IOException {
@@ -161,7 +182,7 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
 
         if(cacheStartIn >= 0) {
 
-            ByteBuffer buff = ByteBuffer.allocate(4 * cacheSize);
+            ByteBuffer buff = ByteBuffer.allocate(4 * cachedElements.length);
 
             buff.asIntBuffer().put(this.cachedElements);
 
@@ -170,6 +191,30 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
         }
 
     }
+
+
+
+    private void saveTail() {
+
+        try {
+
+            _access.seek(HEADER_SIZE + this._size - (tailPosition) * 4);
+
+            ByteBuffer buff = ByteBuffer.allocate(4 * (tailPosition));
+
+            buff.asIntBuffer().put(this.tailCache, 0, tailPosition);
+
+            _access.write(buff.array());
+
+            this.tailCache = new int[cacheSize];
+            this.tailPosition = 0;
+        }
+        catch (IOException e){
+            throw new RuntimeException(e.getMessage());
+        }
+
+    }
+
 
     private void loadCache(int position, int size) throws IOException {
 
@@ -198,6 +243,8 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
         try {
             this.saveHeader();
             this.saveCache();
+            this.saveTail();
+
         } catch (IOException e) {
             e.printStackTrace();
 
