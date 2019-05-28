@@ -109,9 +109,12 @@ public class WindowedDWT extends Aligner {
             else if(up > left){
                 i--;
             }
+            else if (i <= j)
+                j--;
+            else
+                i--;
+
             ops.add(0, new InsertOperation(i, j));
-
-
         }
 
 

@@ -38,7 +38,6 @@ public class FastDWT extends Aligner {
     public AlignDistance align(List<Integer> trace1, List<Integer> trace2) {
         int minTimeSize = 2 + this.radius;
 
-
         if(trace1.size() <= minTimeSize || trace2.size() <= minTimeSize){
             return this.standard.align(trace1, trace2); // O(n)
         }
@@ -51,24 +50,28 @@ public class FastDWT extends Aligner {
             List<Integer> reduced2 = ArrayHelper.reduceByHalf(trace2, ArrayHelper::getMostFequentRepresentation); // O(n)
 
 
-
             AlignDistance distance = this.align(reduced1, reduced2); //O(n/2)
 
-            LogProvider.info("Expanding");
+            LogProvider.info("Growing to",  trace1.size(), trace2.size() , "from", reduced1.size(), reduced2.size());
+
             utl.reset();
 
             WindowedDWT.WindowMap<WindowedDWT.CellInfo> window = DWTHelper.expandWindow(distance.getInsertions(), radius, trace1.size(),trace2.size()); // O(n)
 
 
+            utl.time("Expanding total");
             //LogProvider.info();
             //LogProvider.info(trace1);
             //LogProvider.info(trace2);
             //LogProvider.info(growUp);
 
 
-            LogProvider.info(trace1.size(), trace2.size());
 
-            return this.windowed.align(trace1, trace2, window);
+            utl.reset();
+            AlignDistance result = this.windowed.align(trace1, trace2, window);
+            utl.time("Calculating");
+
+            return result;
         }
 
     }

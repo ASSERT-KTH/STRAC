@@ -104,6 +104,9 @@ public class DWTHelper {
 
         List<InsertOperation> expansion = new ArrayList<>();
 
+        TimeUtils utl = new TimeUtils();
+
+        utl.reset();
         for(InsertOperation op: ops){
 
             expansion.add(op);
@@ -114,13 +117,14 @@ public class DWTHelper {
                     int nI = op.getTrace1Index() + i;
                     int nJ = op.getTrace2Index() + j;
 
-                    if(nI >= 0 && nJ >=0 && nI < lenT1 && nJ < lenT2 && !existsCell(nI, nJ, expansion))
+                    if(nI >= 0 && nJ >=0 && nI < lenT1 && nJ < lenT2)
                         expansion.add(new InsertOperation(nI, nJ));
                 }
             }
 
         }
 
+        utl.time("Scaling");
         for(InsertOperation op: expansion){
 
             int i = op.getTrace1Index();
@@ -132,6 +136,8 @@ public class DWTHelper {
             grown.set(i*2 + 1, j*2, new WindowedDWT.CellInfo(0, i, j));
         }
 
+        utl.time("Growing");
+
         WindowedDWT.WindowMap<WindowedDWT.CellInfo> result = new WindowedDWT.WindowMap<>();
 
         int startJ = 0;
@@ -141,6 +147,7 @@ public class DWTHelper {
             for(int j =startJ; j < lenT2; j++){
                 if(grown.existColumn(i) && grown.existRow(i, j)){
                     result.set(i + 1, j + 1, new WindowedDWT.CellInfo(0, i + 1, j + 1));
+
                     if(newStartJ == -1){
                         newStartJ = j;
                     }
@@ -152,6 +159,8 @@ public class DWTHelper {
             startJ = newStartJ;
         }
 
+        utl.reset();
+        utl.time("Generating");
         return result;
     }
 

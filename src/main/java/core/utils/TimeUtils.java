@@ -16,10 +16,14 @@ public class TimeUtils {
     }
 
     public void time(){
+        this.time(null);
+    }
+
+    public void time(String msg){
         long now = System.nanoTime();
 
 
-        LogProvider.info("Took", "" + (now - this.time)/1000000, "ms");
+        LogProvider.info(msg,"Took", "" + (now - this.time)/1000000, "ms");
 
         this.time = now;
     }
