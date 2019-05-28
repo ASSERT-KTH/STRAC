@@ -4,8 +4,6 @@ import align.AlignDistance;
 import align.Aligner;
 import align.ICellComparer;
 import align.InsertOperation;
-import core.LogProvider;
-import core.utils.HashingHelper;
 
 import java.util.*;
 
@@ -142,8 +140,8 @@ public class WindowedDWT extends Aligner {
 
         WindowMap<CellInfo> map = new WindowMap<>();
 
-        for(int i = 0; i < maxI; i ++){
-            for(int j = 0; j < maxJ; j++){
+        for(int i = 1; i < maxI; i ++){
+            for(int j = 1; j < maxJ; j++){
                 map.set(i, j, new CellInfo(0, i, j));
             }
         }

@@ -86,8 +86,8 @@ public class TestDWT {
 
         // BREAK !!! due to java heap
 
-        List<Integer> trace1 = generateRandomIntegers(80000);
-        List<Integer> trace2 = generateRandomIntegers(80000);
+        List<Integer> trace1 = generateRandomIntegers(10000);
+        List<Integer> trace2 = generateRandomIntegers(10000);
 
 
         TimeUtils utl = new TimeUtils();
