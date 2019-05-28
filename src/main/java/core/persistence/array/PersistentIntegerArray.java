@@ -18,7 +18,11 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
             if(_policy == CachePolicy.SEQUENTIAL){
                 if(cachedElements != null && position >= cacheStartIn && position < cacheStartIn + cachedElements.length){
                     return cachedElements[position - cacheStartIn];
-                }else{
+                }
+                else if(this.isInTail(position)){ // If the value is in tail cache
+                    return readFromTail(position);
+                }
+                else{
 
                    this.saveCache();
                    // Unique load
@@ -44,6 +48,19 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
         return _size/4;
     }
 
+    private boolean isInTail(int position){
+        return this.size()  - tailPosition <= position && position < size();
+    }
+
+    private int readFromTail(int position){
+        return tailCache[(int)(position - (size() - tailPosition))];
+    }
+
+    private void writeToTail(int position, int value){
+
+        tailCache[(int)(position - (size() - tailPosition))] = value;
+    }
+
     @Override
     public void write(int position, Integer value) {
         try {
@@ -51,7 +68,11 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
             if (_policy == CachePolicy.SEQUENTIAL) {
                 if (cachedElements != null && position >= cacheStartIn && position < cacheStartIn + cachedElements.length) {
                     cachedElements[position - cacheStartIn] = value;
-                } else {
+                }
+                else if(this.isInTail(position)){ // If the value is in tail cache
+                   this.writeToTail(position, value);
+                }
+                else {
 
                     // Save cache and load again
                     this.saveCache();
@@ -180,7 +201,8 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
 
     private void saveCache() throws IOException {
 
-        if(cacheStartIn >= 0) {
+        if(cacheStartIn >= 0) // Check is there was a previous operation
+        {
 
             ByteBuffer buff = ByteBuffer.allocate(4 * cachedElements.length);
 
@@ -198,16 +220,18 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
 
         try {
 
-            _access.seek(HEADER_SIZE + this._size - (tailPosition) * 4);
+            if(tailPosition >= 0) {
+                _access.seek(HEADER_SIZE + this._size - (tailPosition) * 4);
 
-            ByteBuffer buff = ByteBuffer.allocate(4 * (tailPosition));
+                ByteBuffer buff = ByteBuffer.allocate(4 * (tailPosition));
 
-            buff.asIntBuffer().put(this.tailCache, 0, tailPosition);
+                buff.asIntBuffer().put(this.tailCache, 0, tailPosition);
 
-            _access.write(buff.array());
+                _access.write(buff.array());
 
-            this.tailCache = new int[cacheSize];
-            this.tailPosition = 0;
+                this.tailCache = new int[cacheSize];
+                this.tailPosition = 0;
+            }
         }
         catch (IOException e){
             throw new RuntimeException(e.getMessage());
@@ -225,7 +249,7 @@ public class PersistentIntegerArray extends PersistentDataStructure  implements 
 
         byte[] buffer = new byte[realSize];
 
-        _access.seek(position + HEADER_SIZE);
+        _access.seek(position*4 + HEADER_SIZE);
         _access.readFully(buffer);
 
         IntBuffer buff
