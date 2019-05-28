@@ -1,6 +1,13 @@
 package core.utils;
 
+import align.RepresentationFunction;
+import core.LogProvider;
+
 import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ArrayHelper {
 
@@ -14,9 +21,58 @@ public class ArrayHelper {
         return result;
     }
 
-    public int[] reduce(int[] target, int newSize){
+    public static int getMostFequentRepresentation(List<Integer> target){
 
-        return target;
+        Map<Integer, Integer> count = new HashMap<>();
+
+        for(int i: target)
+        {
+            if(!count.containsKey(i))
+                count.put(i, 0);
+
+            count.put(i, count.get(i) + 1);
+        }
+
+        int max = Integer.MIN_VALUE;
+        int index = 0;
+
+        for(int i: count.keySet()){
+            if(count.get(i) > max)
+            {
+                index = i;
+                max = count.get(i);
+            }
+        }
+
+        return index;
+    }
+
+    public static List<Integer> reduceSize(List<Integer> target, int size, RepresentationFunction<Integer, Integer> representativeExtractor){
+
+        int newSize = target.size()/size;
+
+
+        List<Integer> result = new ArrayList<>();
+
+        int i= 0;
+        for(i = 0; i < size - 1; i++){
+
+            List<Integer> chunk = target.subList(i*newSize, (i + 1)*newSize);
+
+            int leader = representativeExtractor.getRepresentativeElement(chunk);
+
+
+            result.add(leader);
+        }
+
+        List<Integer> chunk = target.subList(i*newSize, target.size());
+
+        int leader = representativeExtractor.getRepresentativeElement(chunk);
+
+        result.add(leader);
+
+
+        return result;
     }
 
 }
