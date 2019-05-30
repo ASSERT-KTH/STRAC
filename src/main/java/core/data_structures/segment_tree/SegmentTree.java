@@ -1,6 +1,7 @@
 package core.data_structures.segment_tree;
 
 import core.data_structures.IArray;
+import ngram.hash_keys.IHashCreator;
 
 public class SegmentTree<T, THash> {
 
@@ -44,22 +45,73 @@ public class SegmentTree<T, THash> {
         return st == nd;
     }
 
+    public THash query(int start, int end, IHashCreator<T, THash> hashCreator){
 
-    public static  <T, THash> SegmentTree<T, THash> build(IArray<T> stream, int start, int end){
+        if(start < this.st || end > this.nd)
+            return null;
+
+        if(this.st == start && this.nd == end)
+            return this.hash;
+
+        if(this.st <= start && end <= this.nd){
+
+            int nodeMid = (this.st + this.nd)/2;
+
+            if(start > nodeMid){
+                return this.right.query(start, end, hashCreator);
+            }
+            if(nodeMid >= end)
+            {
+                return this.left.query(start, end, hashCreator);
+            }
+            else{
+                THash h1 = left.query( start, nodeMid, hashCreator);
+                THash h2 = right.query(nodeMid + 1, end, hashCreator);
+
+                if(h1 == null)
+                    return h2;
+
+                if(h2 == null)
+                    return h1;
+
+                return hashCreator.getHash(h1, h2);
+            }
+        }
+
+
+        return null;
+    }
+
+
+    public static  <T, THash> SegmentTree<T, THash> build(IArray<T> stream, int start, int end, IHashCreator<T, THash> hashCreator){
 
         if(start == end){
             // is Leaf
-            return new SegmentTree<>(stream.read(start), start, end);
+
+            T value = stream.read(start);
+
+            SegmentTree<T, THash> result = new SegmentTree<>(value, start, end);
+
+            THash h = hashCreator.getHash(value);
+
+            result.hash = h;
+
+
+            return result;
         }
         else{
             int mid = (start + end)/2;
 
-            SegmentTree<T, THash> left = build(stream, start, mid);
-            SegmentTree<T, THash> right = build(stream, mid + 1, end);
+            SegmentTree<T, THash> left = build(stream, start, mid, hashCreator);
+            SegmentTree<T, THash> right = build(stream, mid + 1, end, hashCreator);
 
             // Calculate hash here
 
-            return new SegmentTree<T, THash>(start, end, left, right);
+            SegmentTree<T, THash> result =  new SegmentTree<T, THash>(start, end, left, right);
+            THash h = hashCreator.getHash(left.hash, right.hash);
+            result.hash = h;
+
+            return result;
         }
 
     }
