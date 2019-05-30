@@ -6,6 +6,8 @@ public interface IReadArray<T> extends Iterable<T>{
 
     void close();
 
+    void dispose();
+
     IArray<T> subArray(int index, int size);
 
     int size();

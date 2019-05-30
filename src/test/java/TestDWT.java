@@ -32,6 +32,11 @@ public class TestDWT {
             }
 
             @Override
+            public IArray<Integer> allocateNewArray(Integer[] items) {
+                return new InMemoryArray(items);
+            }
+
+            @Override
             public <T> ISet<T> allocateNewSet() {
                 return new InMemorySet<>(new HashSet<>());
             }

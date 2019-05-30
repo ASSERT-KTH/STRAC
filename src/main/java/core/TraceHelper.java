@@ -76,6 +76,8 @@ public class TraceHelper {
             core.LogProvider.LOGGER()
                     .info(String.format("Global bag info: total sentences %s different sentences %s", this.getSentecesCount(), this.getDifferentSentenceCount()));
 
+            trace.close(); // Save caching
+
             return new TraceMap(trace, fileName);
         } catch (IOException e) {
             core.LogProvider.info("Error", e.getMessage());

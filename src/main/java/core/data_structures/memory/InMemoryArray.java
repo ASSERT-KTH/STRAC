@@ -55,6 +55,11 @@ public class InMemoryArray implements IArray<Integer> {
     }
 
     @Override
+    public void dispose() {
+
+    }
+
+    @Override
     public IArray<Integer> subArray(int index, int size) {
         return new InMemoryArray(items.subList(index, size));
     }

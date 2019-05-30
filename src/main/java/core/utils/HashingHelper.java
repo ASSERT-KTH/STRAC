@@ -3,8 +3,11 @@ package core.utils;
 import core.data_structures.IArray;
 import core.data_structures.IReadArray;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 public class HashingHelper {
 
@@ -36,5 +39,9 @@ public class HashingHelper {
 
     public static int hashList1(IReadArray<Integer> items){
         return hashList(items).get(0);
+    }
+
+    public static String getRandomName(){
+        return UUID.randomUUID().toString();
     }
 }

@@ -1,5 +1,6 @@
 package core.persistence.array;
 
+import core.ServiceRegister;
 import core.data_structures.IArray;
 import core.persistence.PersistentDataStructure;
 import org.jetbrains.annotations.NotNull;
@@ -118,7 +119,19 @@ public class PersistentIntegerArray extends PersistentDataStructure implements I
 
     @Override
     public IArray<Integer> subArray(int index, int size) {
-        return null;
+
+        return this.moveTo(index, size);
+    }
+
+    private IArray<Integer> moveTo(int index, int size){
+
+        IArray<Integer> sub = ServiceRegister.getProvider().allocateNewArray();
+
+        for(int i  = index; i < size; i++){
+            sub.add(this.read(i));
+        }
+
+        return sub;
     }
 
     private int iteratorPosition = 0;
@@ -287,6 +300,11 @@ public class PersistentIntegerArray extends PersistentDataStructure implements I
 
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    @Override
+    public void dispose() {
+        super._storage.delete();
     }
 
 }

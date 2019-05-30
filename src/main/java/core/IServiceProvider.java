@@ -9,5 +9,7 @@ public interface IServiceProvider {
 
     IArray<Integer> allocateNewArray(int size);
 
+    IArray<Integer> allocateNewArray(Integer[] items);
+
     <T> ISet<T> allocateNewSet();
 }

@@ -39,6 +39,11 @@ public class NGramStatTest {
             }
 
             @Override
+            public IArray<Integer> allocateNewArray(Integer[] items) {
+                return new InMemoryArray(items);
+            }
+
+            @Override
             public <T> ISet<T> allocateNewSet() {
                 return new InMemorySet<>(new HashSet<>());
             }
@@ -88,63 +93,6 @@ public class NGramStatTest {
 
         LogProvider.info("Mapping and getting traces...");
         traces = helper.mapTraceSetByFileLine(files);
-    }
-
-    //@Test
-    public void testNGramStatAllVsAll() throws IOException {
-
-
-        /*setup();
-
-        TimeUtils util = new TimeUtils();
-        int size = 50;
-        Generator g = new IdemGenerator();
-
-
-        LogProvider.info("Traces count", traces.size() + "");
-
-        for(int k = 1; k < size; k++){
-
-            ComparisonDto comparissonDto = new ComparisonDto(traces.size());
-
-            for(int i = 0; i < traces.size(); i++){
-                for(int j = i + 1; j < traces.size(); j++){
-
-
-                    LogProvider.info("Calculating distance", "size", "" + k, "trace 1", traces.get(i).traceFile, "trace 2", traces.get(j).traceFile);
-
-                    LogProvider.info("Generating ngran");
-                    util.reset();
-
-                    //Set s1 = g.getNGramSet(k, traces.get(i).trace);
-                    //Set s2 = g.getNGramSet(k, traces.get(j).trace);
-
-                    LogProvider.info("Sets info", "s1: " + s1.size(),  " s2: " + s2.size());
-
-                    util.time();
-
-
-
-                    // min comparison
-                    LogProvider.info("Comparing ngram sets");
-                    util.time();
-
-                    double distance = SetHelper.intersection(s1, s2).size()*1.0/SetHelper.union(s1, s2).size();
-
-                    comparissonDto.set(i, j, distance);
-                    comparissonDto.set(j, i, distance);
-
-
-                }
-            }
-
-
-            // Saving
-            LogProvider.info("Saving");
-            util.time();
-
-            //JsonHelper.save(String.format("comparisson_%s_%s.json", "union", k + ""), comparissonDto);
-        }*/
     }
 
     @Test
@@ -401,4 +349,75 @@ public class NGramStatTest {
 
     }
 
+    @Test
+    public void testStressHasing(){
+
+        TraceMap trace1 =
+                new TraceMap(ServiceRegister.getProvider().allocateNewArray(generateRandomIntegers(180000)), "test.1");
+
+
+        TraceMap trace2 =
+                new TraceMap(ServiceRegister.getProvider().allocateNewArray(generateRandomIntegers(180000)), "test.2");
+
+
+
+        int size = 10000;
+
+        Generator g = new HashCompressinGenerator();
+
+        TimeUtils util = new TimeUtils();
+
+
+        LogProvider.info("Calculating distance", "size", "" + size, "trace 1",
+                trace1.traceFile, "trace 2", trace2.traceFile);
+
+        LogProvider.info("Generating ngran");
+        util.reset();
+
+        ISet s1 = g.getNGramSet(size, trace1.trace);
+        ISet s2 = g.getNGramSet(size, trace2.trace);
+
+        ISetComparer comparer = new ISetComparer() {
+            @Override
+            public <T> double getDistance(ISet<T> s1, ISet<T> s2) {
+                return 1 - s1.intersect(s2).size()*1.0/s1.union(s2).size();
+            }
+
+            @Override
+            public String getName() {
+                return "Union";
+            }
+        };
+
+        LogProvider.info("Sets info", "s1: " + s1.size(), " s2: " + s2.size());
+
+        util.time();
+
+
+
+
+        // min comparison
+        LogProvider.info("Comparing ngram sets");
+        util.reset();
+
+        double distance = comparer.getDistance(s1, s2);
+        util.time();
+
+        LogProvider.info(comparer.getName(), " " + distance);
+
+    }
+
+
+    Random r = new Random();
+
+
+    public Integer[] generateRandomIntegers(int size){
+
+        Integer[] result = new Integer[size];
+
+        for(int i = 0; i < size; i++)
+            result[i] = r.nextInt(30000);
+
+        return result;
+    }
 }
