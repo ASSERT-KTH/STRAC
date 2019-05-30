@@ -13,12 +13,15 @@ import core.utils.TimeUtils;
 import ngram.Generator;
 import ngram.generators.HashCompressinGenerator;
 import ngram.generators.IdemGenerator;
+import ngram.hash_keys.IHashCreator;
+import ngram.hash_keys.IIHashSetKeyCreator;
 import ngram.interfaces.ISetComparer;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.*;
 
 public class NGramStatTest {
@@ -41,6 +44,48 @@ public class NGramStatTest {
             @Override
             public IArray<Integer> allocateNewArray(Integer[] items) {
                 return new InMemoryArray(items);
+            }
+
+            @Override
+            public IHashCreator<Integer, BigInteger[]> getHashCreator() {
+                return new IHashCreator<Integer, BigInteger[]>() {
+                    @Override
+                    public BigInteger[] getHash(BigInteger[] left, BigInteger[] right) {
+
+
+                        BigInteger prime1 = new BigInteger(String.valueOf(1000000000 + 7));
+                        BigInteger prime2 = new BigInteger(String.valueOf(100002593));
+
+                        // These modules for example (also primes)
+                        BigInteger module1 = new BigInteger(String.valueOf(1011013823));
+                        BigInteger module2 = new BigInteger(String.valueOf(1011013823));
+
+                        BigInteger hash1 = new BigInteger("0");
+                        BigInteger hash2 = new BigInteger("0");
+
+
+                        for(BigInteger val: left){
+                            hash1 = hash1.multiply(prime1).add(val).mod(module1);
+                            hash2 = hash2.multiply(prime2).add(val).mod(module2);
+                        }
+
+                        for(BigInteger val: right){
+                            hash1 = hash1.multiply(prime1).add(val).mod(module1);
+                            hash2 = hash2.multiply(prime2).add(val).mod(module2);
+                        }
+
+
+                        return new BigInteger[]{hash1, hash2};
+                    }
+
+                    @Override
+                    public BigInteger[] getHash(Integer left) {
+                        return new BigInteger[] {
+                                new BigInteger(String.valueOf(left)),
+                                new BigInteger(String.valueOf(left))
+                        };
+                    }
+                };
             }
 
             @Override
@@ -98,7 +143,7 @@ public class NGramStatTest {
     @Test
     public void testOneMutationCurveIdemGenerator(){
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("sha256.old.js/mutated11").getFile());
+        File file = new File(classLoader.getResource("sha256.old.js/mutated0").getFile());
 
         String testFolder = file.getAbsolutePath(); //;
         LogProvider.info(testFolder);
@@ -130,8 +175,8 @@ public class NGramStatTest {
 
 
         TimeUtils util = new TimeUtils();
-        int size = 20000;
-        Generator g = new IdemGenerator();
+        int size = 2;
+        Generator g = new IdemGenerator(t -> t[0].intValue());
 
 
         LogProvider.info("Traces count", traces.size() + "");
@@ -190,6 +235,8 @@ public class NGramStatTest {
 
             LogProvider.info("Generating ngran");
             util.reset();
+
+            LogProvider.info("Traces info", "s1: " + traces.get(0).trace.getSize(), " s2: " + traces.get(1).trace.getSize());
 
             ISet s1 = g.getNGramSet(k, traces.get(0).trace);
             ISet s2 = g.getNGramSet(k, traces.get(1).trace);
@@ -258,7 +305,7 @@ public class NGramStatTest {
 
         TimeUtils util = new TimeUtils();
         int size = 1000;
-        Generator g = new HashCompressinGenerator();
+        Generator g = new HashCompressinGenerator(t -> t[0].longValue());
 
 
         LogProvider.info("Traces count", traces.size() + "");
@@ -363,7 +410,7 @@ public class NGramStatTest {
 
         int size = 10000;
 
-        Generator g = new HashCompressinGenerator();
+        Generator g = new HashCompressinGenerator(t -> t[0].longValue());
 
         TimeUtils util = new TimeUtils();
 

@@ -9,9 +9,11 @@ import core.data_structures.ISet;
 import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemorySet;
 import core.utils.TimeUtils;
+import ngram.hash_keys.IHashCreator;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.*;
 
 public class TestDWT {
@@ -34,6 +36,11 @@ public class TestDWT {
             @Override
             public IArray<Integer> allocateNewArray(Integer[] items) {
                 return new InMemoryArray(items);
+            }
+
+            @Override
+            public IHashCreator<Integer, BigInteger[]> getHashCreator() {
+                return null;
             }
 
             @Override

@@ -1,6 +1,7 @@
 package core.data_structures.segment_tree;
 
 import core.data_structures.IArray;
+import core.data_structures.IReadArray;
 import ngram.hash_keys.IHashCreator;
 
 public class SegmentTree<T, THash> {
@@ -45,6 +46,10 @@ public class SegmentTree<T, THash> {
         return st == nd;
     }
 
+    public int getSize(){
+        return nd - st + 1;
+    }
+
     public THash query(int start, int end, IHashCreator<T, THash> hashCreator){
 
         if(start < this.st || end > this.nd)
@@ -53,37 +58,32 @@ public class SegmentTree<T, THash> {
         if(this.st == start && this.nd == end)
             return this.hash;
 
-        if(this.st <= start && end <= this.nd){
 
-            int nodeMid = (this.st + this.nd)/2;
+        int nodeMid = (this.st + this.nd)/2;
 
-            if(start > nodeMid){
-                return this.right.query(start, end, hashCreator);
-            }
-            if(nodeMid >= end)
-            {
-                return this.left.query(start, end, hashCreator);
-            }
-            else{
-                THash h1 = left.query( start, nodeMid, hashCreator);
-                THash h2 = right.query(nodeMid + 1, end, hashCreator);
-
-                if(h1 == null)
-                    return h2;
-
-                if(h2 == null)
-                    return h1;
-
-                return hashCreator.getHash(h1, h2);
-            }
+        if(start > nodeMid){
+            return this.right.query(start, end, hashCreator);
         }
+        if(nodeMid >= end)
+        {
+            return this.left.query(start, end, hashCreator);
+        }
+        else{
+            THash h1 = left.query( start, nodeMid, hashCreator);
+            THash h2 = right.query(nodeMid + 1, end, hashCreator);
 
+            if(h1 == null)
+                return h2;
 
-        return null;
+            if(h2 == null)
+                return h1;
+
+            return hashCreator.getHash(h1, h2);
+        }
     }
 
 
-    public static  <T, THash> SegmentTree<T, THash> build(IArray<T> stream, int start, int end, IHashCreator<T, THash> hashCreator){
+    public static  <T, THash> SegmentTree<T, THash> build(IReadArray<T> stream, int start, int end, IHashCreator<T, THash> hashCreator){
 
         if(start == end){
             // is Leaf

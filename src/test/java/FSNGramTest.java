@@ -12,6 +12,7 @@ import core.persistence.array.PersistentIntegerArray;
 import core.utils.TimeUtils;
 import ngram.Generator;
 import ngram.generators.HashCompressinGenerator;
+import ngram.hash_keys.IHashCreator;
 import ngram.interfaces.ISetComparer;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +20,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -56,6 +58,11 @@ public class FSNGramTest {
 
             @Override
             public IArray<Integer> allocateNewArray(Integer[] items) {
+                return null;
+            }
+
+            @Override
+            public IHashCreator<Integer, BigInteger[]> getHashCreator() {
                 return null;
             }
 
@@ -103,7 +110,7 @@ public class FSNGramTest {
 
         TimeUtils util = new TimeUtils();
         int size = 1000;
-        Generator g = new HashCompressinGenerator();
+        Generator g = new HashCompressinGenerator(t -> t[0].longValue());
 
 
         LogProvider.info("Traces count", traces.size() + "");

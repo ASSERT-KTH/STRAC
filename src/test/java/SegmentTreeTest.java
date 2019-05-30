@@ -6,6 +6,7 @@ import core.data_structures.ISet;
 import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemorySet;
 import core.data_structures.segment_tree.SegmentTree;
+import core.utils.TimeUtils;
 import ngram.hash_keys.IHashCreator;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +35,11 @@ public class SegmentTreeTest extends BaseTest {
             @Override
             public IArray<Integer> allocateNewArray(Integer[] items) {
                 return new InMemoryArray(items);
+            }
+
+            @Override
+            public IHashCreator<Integer, BigInteger[]> getHashCreator() {
+                return null;
             }
 
             @Override
@@ -111,10 +117,13 @@ public class SegmentTreeTest extends BaseTest {
     @Test
     public void segmentTreeBasic(){
 
-        IArray<Integer> array = ServiceRegister.getProvider().allocateNewArray(new Integer[]{1, 2, 3, 4, 5, 6});
+        IArray<Integer> array = ServiceRegister.getProvider().allocateNewArray(new Integer[]{1, 2, 3, 4, 5, 6, 1, 2, 1, 2});
 
-        //IArray<Integer> array = ServiceRegister.getProvider().allocateNewArray(generateRandomIntegers(8000000));
+        TimeUtils utl = new TimeUtils();
+        utl.reset();
+        //IArray<Integer> array = ServiceRegister.getProvider().allocateNewArray(generateRandomIntegers(800000));
 
+        utl.time("Creating the array");
         IHashCreator<Integer, BigInteger[]> hash1 = new IHashCreator<Integer, BigInteger[]>() {
             @Override
             public BigInteger[] getHash(BigInteger[] left, BigInteger[] right) {
@@ -157,12 +166,18 @@ public class SegmentTreeTest extends BaseTest {
         SegmentTree<Integer, BigInteger[]> root = SegmentTree.build(array, 0, array.size() - 1, hash1);
 
 
+        utl.time("Creating the tree");
+
         LogProvider.info(root.query(0, 1, hash1));
+        LogProvider.info(root.query(6, 7, hash1));
+        LogProvider.info(root.query(8, 9, hash1));
         LogProvider.info(root.query(2, 3, hash1));
         LogProvider.info(root.query(0, 5, hash1));
         LogProvider.info(root.query(0, 5, hash1));
         LogProvider.info(root.query(0, 3, hash1));
 
+
+        utl.time("Querying");
 
     }
 
