@@ -161,6 +161,20 @@ public class Main {
         traces = helper.mapTraceSetByFileLine(payload.files);
 
 
+        if(payload.exportSegmentTrees){
+            LogProvider.info("Saving trees");
+            int i = 0;
+            for(TraceMap tm: traces){
+                String[] chunks = tm.traceFile.split("/");
+
+                FileWriter writer = new FileWriter(String.format("%s_%s.tree.json",i++, chunks[chunks.length - 1]));
+
+                writer.write(new Gson().toJson(tm.trace));
+
+                writer.close();
+            }
+        }
+
         // Generator g = new StringKeyGenerator(t -> String.format("%s %s", t[0], t[1]));
         ComparisonDto dto = new ComparisonDto(traces.size(), traces.size());
 
@@ -198,6 +212,8 @@ public class Main {
 
             writer.close();
         }
+
+
 
         //Scanner sc = new Scanner(System.in);
 

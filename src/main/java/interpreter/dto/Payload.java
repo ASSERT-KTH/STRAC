@@ -14,6 +14,7 @@ public class Payload {
 
     public boolean printComparisson;
 
+    public boolean exportSegmentTrees;
 
     public static class MethodInfo{
 

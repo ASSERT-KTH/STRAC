@@ -17,9 +17,10 @@
   ],
 
   "method": {
-    "name": "Overall",
-    "params": [3, 40]
+    "name": "Max",
+    "params": [30]
   },
   "exportComparisson": "out.json",
-  "printComparisson": true
+  "printComparisson": true,
+  "exportSegmentTrees": false
 }
