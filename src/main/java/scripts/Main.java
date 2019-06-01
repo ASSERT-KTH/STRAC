@@ -161,6 +161,16 @@ public class Main {
         traces = helper.mapTraceSetByFileLine(payload.files);
 
 
+        if(payload.exportBag != null){
+            LogProvider.info("Exporting bag...");
+
+            FileWriter writer = new FileWriter(String.format("%s", payload.exportBag));
+
+            writer.write(new Gson().toJson(helper));
+
+            writer.close();
+        }
+
         if(payload.exportSegmentTrees){
             LogProvider.info("Saving trees");
             int i = 0;

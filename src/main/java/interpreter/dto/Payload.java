@@ -16,6 +16,8 @@ public class Payload {
 
     public boolean exportSegmentTrees;
 
+    public String exportBag;
+
     public static class MethodInfo{
 
         public String name;

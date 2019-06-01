@@ -22,5 +22,6 @@
   },
   "exportComparisson": "out.json",
   "printComparisson": true,
-  "exportSegmentTrees": false
+  "exportSegmentTrees": false,
+  "exportBag": "bag.json"
 }
