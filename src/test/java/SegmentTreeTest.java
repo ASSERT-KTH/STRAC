@@ -7,6 +7,7 @@ import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemorySet;
 import core.data_structures.segment_tree.SegmentTree;
 import core.utils.TimeUtils;
+import ngram.Generator;
 import ngram.hash_keys.IHashCreator;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +46,11 @@ public class SegmentTreeTest extends BaseTest {
             @Override
             public <T> ISet<T> allocateNewSet() {
                 return new InMemorySet<>(new HashSet<>());
+            }
+
+            @Override
+            public Generator getGenerator() {
+                return null;
             }
         });
     }

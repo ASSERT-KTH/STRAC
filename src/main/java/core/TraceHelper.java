@@ -63,7 +63,7 @@ public class TraceHelper {
     }
 
 
-    public TraceMap mapTraceFileByLine(String fileName) {
+    public TraceMap mapTraceFileByLine(String fileName, boolean createTree) {
 
         LogProvider.LOGGER()
                 .info("Processing " + fileName);
@@ -78,22 +78,37 @@ public class TraceHelper {
 
             trace.close(); // Save caching
 
-            return new TraceMap(trace, fileName);
+            return new TraceMap(trace, fileName, createTree);
         } catch (IOException e) {
             core.LogProvider.info("Error", e.getMessage());
-            return new TraceMap(ServiceRegister.getProvider().allocateNewArray(), fileName + ' ' + e.getMessage());
+            return new TraceMap(ServiceRegister.getProvider().allocateNewArray(), fileName + ' ' + e.getMessage(), false);
         }
 
 
     }
 
+    public List<TraceMap> mapTraceSetByFileLine(List<String> files, boolean createTree){
+
+
+        return files.stream()
+                .map(t -> this.mapTraceFileByLine(t, createTree))
+                .collect(Collectors.toList());
+
+    }
+
+
+
     public List<TraceMap> mapTraceSetByFileLine(List<String> files){
 
 
         return files.stream()
-                .map(this::mapTraceFileByLine)
+                .map(t -> this.mapTraceFileByLine(t, true))
                 .collect(Collectors.toList());
 
+    }
+
+    public List<TraceMap> mapTraceSetByFileLine(String[] files){
+        return this.mapTraceSetByFileLine(Arrays.asList(files));
     }
 
 

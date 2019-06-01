@@ -11,12 +11,22 @@ public class TraceMap {
 
     public SegmentTree<Integer, BigInteger[]> trace;
 
+    public IReadArray<Integer> plainTrace;
+
     public String traceFile;
 
-    public TraceMap(IReadArray<Integer> trace, String traceFile){
+    public TraceMap(IReadArray<Integer> trace, String traceFile, boolean createTree){
 
-        this.trace = SegmentTree.build(trace, 0, trace.size() - 1, ServiceRegister.getProvider().getHashCreator());
+        if(createTree)
+            this.trace = SegmentTree.build(trace, 0, trace.size() - 1, ServiceRegister.getProvider().getHashCreator());
 
+        this.plainTrace = trace;
         this.traceFile = traceFile;
     }
+    public TraceMap(IReadArray<Integer> trace, String traceFile){
+        this(trace, traceFile, true);
+    }
+
+
+
 }

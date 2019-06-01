@@ -50,6 +50,11 @@ public class NGramTest {
             public <T> ISet<T> allocateNewSet() {
                 return new InMemorySet<>(new HashSet<>());
             }
+
+            @Override
+            public Generator getGenerator() {
+                return null;
+            }
         });
     }
 

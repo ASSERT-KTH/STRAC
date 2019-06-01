@@ -11,7 +11,7 @@ import core.models.TraceMap;
 import core.persistence.array.PersistentIntegerArray;
 import core.utils.TimeUtils;
 import ngram.Generator;
-import ngram.generators.HashCompressinGenerator;
+import ngram.generators.StringKeyGenerator;
 import ngram.hash_keys.IHashCreator;
 import ngram.interfaces.ISetComparer;
 import org.junit.Before;
@@ -70,6 +70,11 @@ public class FSNGramTest {
             public <T> ISet<T> allocateNewSet() {
                 return new InMemorySet<>(new HashSet<>());
             }
+
+            @Override
+            public Generator getGenerator() {
+                return null;
+            }
         });
     }
 
@@ -110,7 +115,7 @@ public class FSNGramTest {
 
         TimeUtils util = new TimeUtils();
         int size = 1000;
-        Generator g = new HashCompressinGenerator(t -> t[0].longValue());
+        Generator g = new StringKeyGenerator(t -> t[0] + " " + t[1]);
 
 
         LogProvider.info("Traces count", traces.size() + "");

@@ -8,6 +8,10 @@ public class ComparisonDto {
         this.map = new double[size][size];
     }
 
+    public ComparisonDto(int height, int width)
+    {
+        this.map = new double[height][width];
+    }
 
     public void set(int row, int column, double value){
         this.map[row][column] = value;

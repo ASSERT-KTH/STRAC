@@ -1,3 +1,4 @@
+import com.google.gson.Gson;
 import core.IServiceProvider;
 import core.LogProvider;
 import core.ServiceRegister;
@@ -11,7 +12,7 @@ import core.models.TraceMap;
 import core.utils.SetHelper;
 import core.utils.TimeUtils;
 import ngram.Generator;
-import ngram.generators.HashCompressinGenerator;
+import ngram.generators.StringKeyGenerator;
 import ngram.generators.IdemGenerator;
 import ngram.hash_keys.IHashCreator;
 import ngram.hash_keys.IIHashSetKeyCreator;
@@ -20,6 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
@@ -91,6 +94,11 @@ public class NGramStatTest {
             @Override
             public <T> ISet<T> allocateNewSet() {
                 return new InMemorySet<>(new HashSet<>());
+            }
+
+            @Override
+            public Generator getGenerator() {
+                return null;
             }
         });
     }
@@ -175,7 +183,7 @@ public class NGramStatTest {
 
 
         TimeUtils util = new TimeUtils();
-        int size = 2;
+        int size = 6;
         Generator g = new IdemGenerator(t -> t[0].intValue());
 
 
@@ -304,24 +312,14 @@ public class NGramStatTest {
 
 
         TimeUtils util = new TimeUtils();
-        int size = 1000;
-        Generator g = new HashCompressinGenerator(t -> t[0].longValue());
+        int size = 3;
+        Generator g = new StringKeyGenerator(t -> t[0] + " " + t[1]);
 
 
         LogProvider.info("Traces count", traces.size() + "");
 
         List<ISetComparer> comparers = Arrays.asList(
-                new ISetComparer() {
-                    @Override
-                    public <T> double getDistance(ISet<T> s1, ISet<T> s2) {
-                        return 1 - s1.intersect(s2).size()*1.0/s1.union(s2).size();
-                    }
 
-                    @Override
-                    public String getName() {
-                        return "Union";
-                    }
-                },
                 new ISetComparer() {
                     @Override
                     public <T> double getDistance(ISet<T> s1, ISet<T> s2) {
@@ -364,6 +362,8 @@ public class NGramStatTest {
 
                 LogProvider.info("Generating ngran");
                 util.reset();
+
+                LogProvider.info("Traces info", "s1: " + traces.get(0).trace.getSize(), " s2: " + traces.get(1).trace.getSize());
 
                 ISet s1 = g.getNGramSet(k, traces.get(0).trace);
                 ISet s2 = g.getNGramSet(k, traces.get(1).trace);
@@ -410,7 +410,7 @@ public class NGramStatTest {
 
         int size = 10000;
 
-        Generator g = new HashCompressinGenerator(t -> t[0].longValue());
+        Generator g = new StringKeyGenerator(t -> t[0] + " " + t[1]);
 
         TimeUtils util = new TimeUtils();
 
@@ -451,6 +451,83 @@ public class NGramStatTest {
         util.time();
 
         LogProvider.info(comparer.getName(), " " + distance);
+
+
+    }
+
+    @Test
+    public void measureOriginals() throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("sha256.old.js").getFile());
+
+        String testFolder = file.getAbsolutePath(); //;
+        LogProvider.info(testFolder);
+
+        TraceHelper helper = new TraceHelper();
+        List<String> files = new ArrayList<>();
+
+        for (File d: new File(testFolder).listFiles()
+        ) {
+
+            // mutation folder name
+
+            LogProvider.info("Processing folder", d.getName());
+
+            if(d.isDirectory())
+            for(File inner: d.listFiles()){
+                if(inner.getAbsolutePath().endsWith("original.bytecode.txt")) {
+                    files.add(inner.getAbsolutePath());
+                }
+            }
+        }
+
+        Generator g = new StringKeyGenerator(t -> t[0] + " " + t[1]);
+
+        TimeUtils util = new TimeUtils();
+
+
+        LogProvider.info("Mapping and getting traces...");
+        traces = helper.mapTraceSetByFileLine(files);
+
+        LogProvider.info("Trees had been created");
+
+        ISetComparer comparer = new ISetComparer() {
+            @Override
+            public <T> double getDistance(ISet<T> s1, ISet<T> s2) {
+                return 1 - s1.intersect(s2).size()*1.0/s1.union(s2).size();
+            }
+
+            @Override
+            public String getName() {
+                return "Union";
+            }
+        };
+
+        ComparisonDto dto = new ComparisonDto(100, traces.size() - 1);
+
+        for(int i  = 1; i <= 100; i++) {
+
+
+            int k = 0;
+
+            for (int j  = k + 1; j < traces.size(); j++) {
+
+                TraceMap tr = traces.get(k);
+                TraceMap tr2 = traces.get(j);
+
+                ISet s1 = g.getNGramSet(i, tr.trace);
+                ISet s2 = g.getNGramSet(i, tr2.trace);
+
+                double distance = comparer.getDistance(s1, s2);
+
+                dto.set(i, j - 1, distance);
+            }
+
+
+
+            new FileOutputStream(String.format("reports/originals_%s_%s.json", i, comparer.getName())).write(
+                    new Gson().toJson(dto).getBytes());
+        }
 
     }
 

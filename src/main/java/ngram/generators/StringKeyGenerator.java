@@ -8,8 +8,8 @@ import ngram.interfaces.ICompressor;
 
 import java.math.BigInteger;
 
-public class HashCompressinGenerator extends Generator<Integer, BigInteger[], Long> {
-    public HashCompressinGenerator(IIHashSetKeyCreator<BigInteger[], Long> creator) {
+public class StringKeyGenerator extends Generator<Integer, BigInteger[], String> {
+    public StringKeyGenerator(IIHashSetKeyCreator<BigInteger[], String> creator) {
         super(creator);
     }
     /*@Override

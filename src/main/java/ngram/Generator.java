@@ -26,7 +26,7 @@ public abstract class Generator<T, R, H> {
 
 
 
-        return traces.query(index, n + index, getProvider().getHashCreator());
+        return traces.query(index, n + index - 1, getProvider().getHashCreator());
 
     }
 

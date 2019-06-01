@@ -4,15 +4,22 @@ import align.implementations.FastDWT;
 import core.IServiceProvider;
 import core.LogProvider;
 import core.ServiceRegister;
+import core.TraceHelper;
 import core.data_structures.IArray;
 import core.data_structures.ISet;
 import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemorySet;
+import core.models.ComparisonDto;
+import core.models.TraceMap;
 import core.utils.TimeUtils;
+import ngram.Generator;
+import ngram.generators.StringKeyGenerator;
 import ngram.hash_keys.IHashCreator;
+import ngram.interfaces.ISetComparer;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -46,6 +53,11 @@ public class TestDWT {
             @Override
             public <T> ISet<T> allocateNewSet() {
                 return new InMemorySet<>(new HashSet<>());
+            }
+
+            @Override
+            public Generator getGenerator() {
+                return null;
             }
         });
     }
@@ -113,6 +125,57 @@ public class TestDWT {
         utl.time();
         LogProvider.info(distance.getDistance());
         LogProvider.info(distance.getInsertions());
+    }
+
+    @Test
+    public void testRealData(){
+
+        List<TraceMap> traces = getTraces(
+                "mutated12/original.bytecode.txt",
+                "mutated10/original.bytecode.txt"
+        );
+
+
+        Aligner al = new FastDWT( 4, (a, b) -> a == b? 2: -1);
+
+        AlignDistance distance =  al.align(traces.get(0).plainTrace, traces.get(1).plainTrace);
+
+        LogProvider.info(distance.getDistance());
+        LogProvider.info(distance.getInsertions());
+
+
+        LogProvider.info("Distance", distance.getDistance(
+                traces.get(0).plainTrace, traces.get(1).plainTrace,
+                new IAlignComparer<Integer>() {
+                    @Override
+                    public double compare(Integer t1, Integer t2) {
+                        return t1.equals(t2) ? 0: 1;
+                    }
+
+                    @Override
+                    public double getGap() {
+                        return 1;
+                    }
+                }
+
+        ));
+    }
+
+    private List<TraceMap> getTraces(String path1, String path2){
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("sha256.old.js").getFile());
+
+        String testFolder = file.getAbsolutePath(); //;
+
+        TraceHelper helper = new TraceHelper();
+        List<String> files = Arrays.asList(
+                String.format("%s/%s", testFolder, path1),
+                String.format("%s/%s", testFolder, path2)
+        );
+
+
+        return helper.mapTraceSetByFileLine(files, false);
     }
 
 
