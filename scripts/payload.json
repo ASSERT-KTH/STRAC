@@ -23,5 +23,6 @@
   "exportComparisson": "out.json",
   "printComparisson": true,
   "exportSegmentTrees": false,
-  "exportBag": "bag.json"
+  "exportBag": "bag.json",
+  "exportNgram": [30]
 }

@@ -18,6 +18,8 @@ public class Payload {
 
     public String exportBag;
 
+    public int[] exportNgram;
+
     public static class MethodInfo{
 
         public String name;

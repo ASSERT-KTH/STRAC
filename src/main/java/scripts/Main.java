@@ -7,8 +7,10 @@ import core.LogProvider;
 import core.ServiceRegister;
 import core.TraceHelper;
 import core.data_structures.IArray;
+import core.data_structures.IDict;
 import core.data_structures.ISet;
 import core.data_structures.memory.InMemoryArray;
+import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemorySet;
 import core.models.ComparisonDto;
 import core.models.TraceMap;
@@ -46,6 +48,11 @@ public class Main {
             @Override
             public IArray<Integer> allocateNewArray(Integer[] items) {
                 return new InMemoryArray(items);
+            }
+
+            @Override
+            public <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary() {
+                return new InMemoryDict<TKey, TValue>();
             }
 
             @Override
@@ -189,6 +196,25 @@ public class Main {
         ComparisonDto dto = new ComparisonDto(traces.size(), traces.size());
 
         Comparer cmp = comparerMap.get(payload.method.name).getDeclaredConstructor().newInstance();
+
+        Generator generatpr = ServiceRegister.getProvider().getGenerator();
+
+        if(payload.exportNgram != null){
+
+            for(int size: payload.exportNgram){
+                int i = 0;
+
+                for(TraceMap tm: traces){
+                    String[] chunks = tm.traceFile.split("/");
+
+                    FileWriter writer = new FileWriter(String.format("%s_%s.%s.gram.json",i++, size, chunks[chunks.length - 1]));
+
+                    writer.write(new Gson().toJson(generatpr.getNGramSet(size, tm.trace)));
+
+                    writer.close();
+                }
+            }
+        }
 
         for(int i = 0; i < traces.size(); i++){
 

@@ -2,8 +2,10 @@ import core.IServiceProvider;
 import core.LogProvider;
 import core.ServiceRegister;
 import core.data_structures.IArray;
+import core.data_structures.IDict;
 import core.data_structures.ISet;
 import core.data_structures.memory.InMemoryArray;
+import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemorySet;
 import core.data_structures.segment_tree.SegmentTree;
 import core.utils.TimeUtils;
@@ -36,6 +38,11 @@ public class SegmentTreeTest extends BaseTest {
             @Override
             public IArray<Integer> allocateNewArray(Integer[] items) {
                 return new InMemoryArray(items);
+            }
+
+            @Override
+            public <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary() {
+                return new InMemoryDict<>();
             }
 
             @Override

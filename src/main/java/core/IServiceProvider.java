@@ -1,6 +1,7 @@
 package core;
 
 import core.data_structures.IArray;
+import core.data_structures.IDict;
 import core.data_structures.ISet;
 import ngram.Generator;
 import ngram.hash_keys.IHashCreator;
@@ -15,6 +16,8 @@ public interface IServiceProvider {
     IArray<Integer> allocateNewArray(int size);
 
     IArray<Integer> allocateNewArray(Integer[] items);
+
+    <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary();
 
     <T, R> IHashCreator<T, R> getHashCreator();
 

@@ -3,6 +3,7 @@ package ngram;
 import core.LogProvider;
 import core.ServiceRegister;
 import core.data_structures.IArray;
+import core.data_structures.IDict;
 import core.data_structures.IReadArray;
 import core.data_structures.ISet;
 import core.data_structures.segment_tree.SegmentTree;
@@ -24,18 +25,16 @@ public abstract class Generator<T, R, H> {
 
     private R getNGramAt(int n, int index, SegmentTree<T, R> traces){
 
-
-
         return traces.query(index, n + index - 1, getProvider().getHashCreator());
 
     }
 
-    public ISet<H> getNGramSet(int n, SegmentTree<T, R> traces){
+    public IDict<H, Integer> getNGramSet(int n, SegmentTree<T, R> traces){
 
         if(n < 1)
             throw new RuntimeException("The ngram size must be greater than 1");
 
-        ISet<H> result = getProvider().allocateNewSet();
+        IDict<H, Integer> result = getProvider().allocateNewDictionary();
 
 
         for(int i = 0; i <= traces.getSize() - n; i++){ // O(n)
@@ -51,10 +50,13 @@ public abstract class Generator<T, R, H> {
 
                 //if(result.contains(k))
                 //    System.out.println("uhmm");
-                result.add(k);
+
+                if(result.contains(k))
+                    result.set(k, result.get(k) + 1);
+                else
+                    result.set(k, 1);
             }
         }
-
 
         return result;
     }

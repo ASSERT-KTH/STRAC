@@ -3,8 +3,10 @@ import core.LogProvider;
 import core.ServiceRegister;
 import core.TraceHelper;
 import core.data_structures.IArray;
+import core.data_structures.IDict;
 import core.data_structures.ISet;
 import core.data_structures.memory.InMemoryArray;
+import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemorySet;
 import core.models.ComparisonDto;
 import core.models.TraceMap;
@@ -59,6 +61,11 @@ public class FSNGramTest {
             @Override
             public IArray<Integer> allocateNewArray(Integer[] items) {
                 return null;
+            }
+
+            @Override
+            public <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary() {
+                return new InMemoryDict<>();
             }
 
             @Override
@@ -175,8 +182,8 @@ public class FSNGramTest {
             LogProvider.info("Generating ngran");
             util.reset();
 
-            ISet s1 = g.getNGramSet(k, traces.get(0).trace);
-            ISet s2 = g.getNGramSet(k, traces.get(1).trace);
+            ISet s1 = g.getNGramSet(k, traces.get(0).trace).keySet();
+            ISet s2 = g.getNGramSet(k, traces.get(1).trace).keySet();
 
             LogProvider.info("Sets info", "s1: " + s1.size(), " s2: " + s2.size());
 

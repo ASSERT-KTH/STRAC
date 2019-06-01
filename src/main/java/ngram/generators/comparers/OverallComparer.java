@@ -19,8 +19,8 @@ public class OverallComparer extends Comparer {
 
         for(int i = fromI; i <= toI; i++){
 
-            ISet s1 = g.getNGramSet(i, tr1.trace);
-            ISet s2 = g.getNGramSet(i, tr2.trace);
+            ISet s1 = g.getNGramSet(i, tr1.trace).keySet();
+            ISet s2 = g.getNGramSet(i, tr2.trace).keySet();
 
             up += s1.intersect(s2).size();
             bottom += s1.union(s2).size();

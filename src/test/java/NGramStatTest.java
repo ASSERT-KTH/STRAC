@@ -4,8 +4,10 @@ import core.LogProvider;
 import core.ServiceRegister;
 import core.TraceHelper;
 import core.data_structures.IArray;
+import core.data_structures.IDict;
 import core.data_structures.ISet;
 import core.data_structures.memory.InMemoryArray;
+import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemorySet;
 import core.models.ComparisonDto;
 import core.models.TraceMap;
@@ -47,6 +49,11 @@ public class NGramStatTest {
             @Override
             public IArray<Integer> allocateNewArray(Integer[] items) {
                 return new InMemoryArray(items);
+            }
+
+            @Override
+            public <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary() {
+                return new InMemoryDict<>();
             }
 
             @Override
@@ -246,8 +253,8 @@ public class NGramStatTest {
 
             LogProvider.info("Traces info", "s1: " + traces.get(0).trace.getSize(), " s2: " + traces.get(1).trace.getSize());
 
-            ISet s1 = g.getNGramSet(k, traces.get(0).trace);
-            ISet s2 = g.getNGramSet(k, traces.get(1).trace);
+            ISet s1 = g.getNGramSet(k, traces.get(0).trace).keySet();
+            ISet s2 = g.getNGramSet(k, traces.get(1).trace).keySet();
 
             LogProvider.info("Sets info", "s1: " + s1.size(), " s2: " + s2.size());
 
@@ -365,8 +372,8 @@ public class NGramStatTest {
 
                 LogProvider.info("Traces info", "s1: " + traces.get(0).trace.getSize(), " s2: " + traces.get(1).trace.getSize());
 
-                ISet s1 = g.getNGramSet(k, traces.get(0).trace);
-                ISet s2 = g.getNGramSet(k, traces.get(1).trace);
+                ISet s1 = g.getNGramSet(k, traces.get(0).trace).keySet();
+                ISet s2 = g.getNGramSet(k, traces.get(1).trace).keySet();
 
                 LogProvider.info("Sets info", "s1: " + s1.size(), " s2: " + s2.size());
 
@@ -421,8 +428,8 @@ public class NGramStatTest {
         LogProvider.info("Generating ngran");
         util.reset();
 
-        ISet s1 = g.getNGramSet(size, trace1.trace);
-        ISet s2 = g.getNGramSet(size, trace2.trace);
+        ISet s1 = g.getNGramSet(size, trace1.trace).keySet();
+        ISet s2 = g.getNGramSet(size, trace2.trace).keySet();
 
         ISetComparer comparer = new ISetComparer() {
             @Override
@@ -515,8 +522,8 @@ public class NGramStatTest {
                 TraceMap tr = traces.get(k);
                 TraceMap tr2 = traces.get(j);
 
-                ISet s1 = g.getNGramSet(i, tr.trace);
-                ISet s2 = g.getNGramSet(i, tr2.trace);
+                ISet s1 = g.getNGramSet(i, tr.trace).keySet();
+                ISet s2 = g.getNGramSet(i, tr2.trace).keySet();
 
                 double distance = comparer.getDistance(s1, s2);
 
