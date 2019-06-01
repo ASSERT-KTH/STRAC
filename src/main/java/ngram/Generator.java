@@ -64,6 +64,7 @@ public abstract class Generator<T, R, H> {
     IIHashSetKeyCreator<R, H> _creator;
 
     public Generator(IIHashSetKeyCreator<R, H> creator){
+
         _creator = creator;
     }
 

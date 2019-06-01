@@ -115,6 +115,8 @@ public class Main {
         comparerMap.put("Dice", DiceComparer.class);
         comparerMap.put("Min", MinComparer.class);
         comparerMap.put("Max", MaxComparer.class);
+        comparerMap.put("Frequency", FrequencyComparer.class);
+        comparerMap.put("Extractor", GramsExtractor.class);
     }
 
     public static<T> T[] subArray(T[] array, int beg, int end) {

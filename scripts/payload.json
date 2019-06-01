@@ -17,12 +17,13 @@
   ],
 
   "method": {
-    "name": "Max",
-    "params": [30]
+    "name": "Extractor",
+    "params": [4, ["trace1", "trace2"]],
+    "names": ["size", "file names"]
   },
   "exportComparisson": "out.json",
   "printComparisson": true,
   "exportSegmentTrees": false,
   "exportBag": "bag.json",
-  "exportNgram": [30]
+  "exportNgram": []
 }

@@ -15,6 +15,8 @@ public class TraceMap {
 
     public String traceFile;
 
+    public String traceFileName;
+
     public TraceMap(IReadArray<Integer> trace, String traceFile, boolean createTree){
 
         if(createTree)
@@ -22,6 +24,10 @@ public class TraceMap {
 
         this.plainTrace = trace;
         this.traceFile = traceFile;
+
+        String[] chunks = this.traceFile.split("/");
+
+        this.traceFileName = chunks[chunks.length - 1];
     }
     public TraceMap(IReadArray<Integer> trace, String traceFile){
         this(trace, traceFile, true);
