@@ -43,6 +43,17 @@ public class TraceHelper {
         return this.bag.keySet().size();
     }
 
+    public Integer updateBag(String sentence){
+
+        this.sentencesCount++;
+        if(!bag.containsKey(sentence)){
+            bag.put(sentence, bag.keySet().size() + 1);
+            inverseBag.put(bag.keySet().size(), sentence);
+
+        }
+        return this.bag.keySet().size();
+    }
+
     public IArray<Integer> updateBag(Stream<String> sentences){
 
         IArray<Integer> result = ServiceRegister.getProvider().allocateNewArray();

@@ -47,6 +47,11 @@ public class NGramStatTest {
             }
 
             @Override
+            public IArray<Integer> allocateNewArray(String id) {
+                return null;
+            }
+
+            @Override
             public IArray<Integer> allocateNewArray(Integer[] items) {
                 return new InMemoryArray(items);
             }

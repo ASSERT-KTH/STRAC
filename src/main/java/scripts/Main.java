@@ -46,6 +46,11 @@ public class Main {
             }
 
             @Override
+            public IArray<Integer> allocateNewArray(String id) {
+                return new InMemoryArray();
+            }
+
+            @Override
             public IArray<Integer> allocateNewArray(Integer[] items) {
                 return new InMemoryArray(items);
             }

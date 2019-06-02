@@ -15,6 +15,8 @@ public interface IServiceProvider {
 
     IArray<Integer> allocateNewArray(int size);
 
+    IArray<Integer> allocateNewArray(String id);
+
     IArray<Integer> allocateNewArray(Integer[] items);
 
     <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary();

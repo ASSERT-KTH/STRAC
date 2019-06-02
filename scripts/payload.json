@@ -1,24 +1,12 @@
 {
   "files": [
     "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated1/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated12/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated13/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated10/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated9/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated8/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated7/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated6/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated5/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated4/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated3/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated2/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated0/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated16/original.bytecode.txt"
+    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated1/mutation.bytecode.txt"
   ],
 
   "method": {
     "name": "Extractor",
-    "params": [4, ["trace1", "trace2"]],
+    "params": [1, ["trace1", "trace2"]],
     "names": ["size", "file names"]
   },
   "exportComparisson": "out.json",

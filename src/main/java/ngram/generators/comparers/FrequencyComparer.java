@@ -48,7 +48,7 @@ public class FrequencyComparer extends Comparer {
 
 
     private void processTrace(int sizeI, IDict<String, Integer> dict1, IDict<String, Integer> dict2, TraceMap tr1) {
-        for(int i = 0; i < tr1.trace.getSize(); i += sizeI){
+        for(int i = 0; i <= tr1.trace.getSize() - sizeI; i ++){
             BigInteger[] hash = tr1.trace.query(i, i + sizeI, ServiceRegister.getProvider().getHashCreator());
 
             if(hash != null && hash.length > 1) {
