@@ -61,6 +61,11 @@ public class FastDWT extends Aligner {
 
             LogProvider.info("Growing to",  trace1.size(), trace2.size() , "from", reduced1.size(), reduced2.size());
 
+
+            utl.reset();
+            reduced1.dispose();
+            reduced2.dispose();
+            utl.time("Disposing");
             utl.reset();
 
             WindowedDWT.WindowMap<WindowedDWT.CellInfo> window = DWTHelper.expandWindow(distance.getInsertions(), radius, trace1.size(),trace2.size()); // O(n)

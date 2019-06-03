@@ -1,5 +1,6 @@
 package core.data_structures.postgreSQL;
 
+import core.LogProvider;
 import core.data_structures.IArray;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,10 +21,34 @@ public class PostgreArray implements IArray<Integer> {
         size = _interface.executeScalarQuery(String.format("SELECT COUNT(*) as count FROM TRACE WHERE name = '%s'", name), 0l);
     }
 
+    int addCacheSize = 10000;
+    int elements = 0;
+
+    String cacheString = "";
+
     @Override
     public void add(Integer value) {
 
-        _interface.executeQuery(String.format("INSERT INTO TRACE(name, index, value) VALUES('%s',%s, %s)", _traceName, size++, value));
+        if(elements == addCacheSize ){
+           clearAddCache();
+        }
+        else{
+            cacheString += String.format("('%s', %s, %s),", _traceName, size++, value);
+            elements++;
+        }
+
+    }
+
+    private void clearAddCache(){
+        if(cacheString.length() > 0){
+            String toInser = cacheString.substring(0, cacheString.length() - 1);
+
+            //LogProvider.info(toInser);
+            _interface.executeQuery(String.format("INSERT INTO TRACE(name, index, value) VALUES %s",
+                    toInser));
+            elements = 0;
+            cacheString  = "";
+        }
     }
 
     @Override
@@ -38,7 +63,7 @@ public class PostgreArray implements IArray<Integer> {
 
     @Override
     public void close() {
-
+        clearAddCache();
     }
 
     @Override

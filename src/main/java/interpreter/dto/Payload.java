@@ -2,7 +2,7 @@ package interpreter.dto;
 
 import java.util.Map;
 
-public class Payload {
+public class Payload extends BaseDto {
 
     public String[] files;
 

@@ -54,9 +54,10 @@ public class TraceHelper {
         return this.bag.keySet().size();
     }
 
-    public IArray<Integer> updateBag(Stream<String> sentences){
+    public IArray<Integer> updateBag(Stream<String> sentences, String fileName){
 
-        IArray<Integer> result = ServiceRegister.getProvider().allocateNewArray();
+        IArray<Integer> result = ServiceRegister.getProvider().allocateNewArray(fileName);
+
 
         for (Iterator<String> it = sentences.iterator(); it.hasNext(); ) {
             String sentence = it.next();
@@ -82,7 +83,9 @@ public class TraceHelper {
         IArray<Integer> trace ;
 
         try {
-            trace = updateBag(Files.lines(Paths.get(fileName)));
+
+            trace = updateBag(Files.lines(Paths.get(fileName)), fileName);
+            trace.close();
 
             core.LogProvider.LOGGER()
                     .info(String.format("Global bag info: total sentences %s different sentences %s", this.getSentecesCount(), this.getDifferentSentenceCount()));

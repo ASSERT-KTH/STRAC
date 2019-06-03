@@ -9,7 +9,12 @@
   "method":
   {
     "name": "FastDTW",
-    "params": [40]
+    "params": [2]
   },
-  "outputData": false
+  "outputData": false,
+  "dbHost": "localhost",
+  "dbPort": 5433,
+  "dbName": "alignments",
+  "password": "Omaha1942",
+  "user": "postgres"
 }

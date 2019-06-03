@@ -1,6 +1,6 @@
 package interpreter.dto;
 
-public class Mapping {
+public class Mapping extends BaseDto {
 
     public String[] files;
 

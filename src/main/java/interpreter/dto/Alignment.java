@@ -2,7 +2,7 @@ package interpreter.dto;
 
 import java.util.List;
 
-public class Alignment {
+public class Alignment extends BaseDto {
 
     public List<String> files;
 

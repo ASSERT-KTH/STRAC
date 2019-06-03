@@ -17,6 +17,8 @@ import core.data_structures.ISet;
 import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemorySet;
+import core.data_structures.postgreSQL.PostgreArray;
+import core.data_structures.postgreSQL.PostgreInterface;
 import core.models.TraceMap;
 import interpreter.dto.Alignment;
 import ngram.Generator;
@@ -26,10 +28,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static core.utils.HashingHelper.getRandomName;
 
 public class Align {
 
@@ -37,22 +42,22 @@ public class Align {
         ServiceRegister.registerProvider(new IServiceProvider() {
             @Override
             public IArray<Integer> allocateNewArray() {
-                return new InMemoryArray();
+                return new PostgreArray(getRandomName());
             }
 
             @Override
             public IArray<Integer> allocateNewArray(int size) {
-                return new InMemoryArray(size);
+                return new PostgreArray(getRandomName());
             }
 
             @Override
             public IArray<Integer> allocateNewArray(String id) {
-                return new InMemoryArray();
+                return new PostgreArray(id);
             }
 
             @Override
             public IArray<Integer> allocateNewArray(Integer[] items) {
-                return new InMemoryArray(items);
+                return new PostgreArray(getRandomName());
             }
 
             @Override
@@ -79,15 +84,18 @@ public class Align {
         comparers = new HashMap<>();
         comparers.put("DTW", (objs) -> new DWT((x, y) -> x == y? 2: -1));
         comparers.put("FastDTW", (objs) -> new FastDWT(((Double)objs[0]).intValue(), (x, y) -> x == y? 2: -1));
+
     }
 
     static Map<String, IImplementationInfo> comparers;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, SQLException {
 
         setup();
 
         Alignment dto = new Gson().fromJson(new FileReader(args[0]), Alignment.class);
+
+        PostgreInterface.setup(dto.dbHost, dto.dbPort, dto.dbName, dto.user, dto.password, false);
 
         TraceHelper helper = new TraceHelper();
 
@@ -100,6 +108,7 @@ public class Align {
 
         List<TraceMap> traces = helper.mapTraceSetByFileLine(dto.files, false);
         Aligner align = comparers.get(dto.method.name).getAligner(dto.method.params);
+
 
         for(int[] pair: dto.pairs){
             TraceMap tr1 = traces.get(pair[0]);
