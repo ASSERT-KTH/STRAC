@@ -124,7 +124,7 @@ public class DWTHelper {
                     int nJ = op.getTrace2Index() + j;
 
                     //LogProvider.info("Size", expansion.size());
-                    if(nI >= 0 && nJ >=0 && nI < lenT1 && nJ < lenT2)
+                    if(nI >= 0 && nJ >=0 && nI < lenT1 && nJ < lenT2 && (!expansion.existColumn(nI) || !expansion.existRow(nI, nJ)))
                         expansion.set(nI, nJ, new WindowedDWT.CellInfo(0, nI,nJ));
 
                 }

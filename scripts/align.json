@@ -9,7 +9,7 @@
   "method":
   {
     "name": "FastDTW",
-    "params": [10]
+    "params": [100]
   },
   "outputAlignment": true,
   "dbHost": "localhost",
