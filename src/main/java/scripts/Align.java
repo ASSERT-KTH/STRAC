@@ -262,10 +262,11 @@ public class Align {
                 "\t\t\t  flex-direction: 'row';\n" +
                 "\t\t  }\n" +
                 "\t\t  .trace{\n" +
-                "\t\t\t  flex: 10\n" +
+                "\t\t\t  flex: 10;\n" +
+                "overflow-x: hidden;" +
                 "\t\t  }\n" +
                 "\t\t  .status{\n" +
-                "\t\t\t  width: 10px;\n" +
+                "\t\t\t  width: 50px;\n" +
                 "\t\t\t  background-color: rgb(10,10,10);\n" +
                 "\t\t\t  margin-right: 20px;\n" +
                 "\t\t\t  margin-left: 20px;\n" +
@@ -288,7 +289,7 @@ public class Align {
                 "\t\t  }\n" +
                 "\n" +
                 "\t\t  .trace.gap{\n" +
-                "\t\t\t  color:transparent;\n" +
+                "\t\t\t  \n" +
                 "\t\t  }\n" +
                 "\n" +
                 "\t  </style>\n" +
@@ -306,8 +307,7 @@ public class Align {
 
             if(t1 == t2)
                 cl = "eq";
-
-            if(t1 == - 1 || t2 == -1){
+            else if(t1 == - 1 || t2 == -1){
                 cl = "gap";
             }
 

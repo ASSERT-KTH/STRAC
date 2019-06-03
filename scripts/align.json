@@ -14,7 +14,7 @@
   "comparison": {
     "eq": 0,
     "diff": 2,
-    "gap": 1
+    "gap": 2
   },
 
   "outputAlignment": true,
