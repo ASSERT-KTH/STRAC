@@ -125,6 +125,9 @@ public class Align {
                 writer.close();
             }
         }
+
+        for(TraceMap m: traces)
+            m.plainTrace.dispose();
     }
 
 }

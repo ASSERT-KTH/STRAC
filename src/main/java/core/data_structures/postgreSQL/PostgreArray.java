@@ -4,7 +4,9 @@ import core.LogProvider;
 import core.data_structures.IArray;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import static core.utils.HashingHelper.getRandomName;
 
@@ -19,6 +21,7 @@ public class PostgreArray implements IArray<Integer> {
         _interface = PostgreInterface.getInstance();
 
         size = _interface.executeScalarQuery(String.format("SELECT COUNT(*) as count FROM TRACE WHERE name = '%s'", name), 0l);
+
     }
 
     int addCacheSize = 10000;
@@ -56,9 +59,25 @@ public class PostgreArray implements IArray<Integer> {
 
     }
 
+    int readCacheSize = 40000;
+    List<Integer> cache = null;
+    int cacheStart = 0;
+
+
+
     @Override
     public Integer read(int position) {
-        return _interface.executeScalarQuery(String.format("SELECT value FROM TRACE WHERE name='%s' AND index=%s", _traceName, position));
+
+        if(cache != null && position >= cacheStart && position <= cacheStart + readCacheSize){
+            return cache.get(position - cacheStart);
+        }else{
+
+            cache = _interface.executeCollection(String.format("SELECT value FROM TRACE WHERE index >= %s AND index <= %s", position, position + readCacheSize));
+            cacheStart = position;
+
+            return read(position);
+        }
+
     }
 
     @Override

@@ -56,7 +56,7 @@ public class TraceHelper {
 
     public IArray<Integer> updateBag(Stream<String> sentences, String fileName){
 
-        IArray<Integer> result = ServiceRegister.getProvider().allocateNewArray(fileName);
+        IArray<Integer> result = ServiceRegister.getProvider().allocateNewArray();
 
 
         for (Iterator<String> it = sentences.iterator(); it.hasNext(); ) {

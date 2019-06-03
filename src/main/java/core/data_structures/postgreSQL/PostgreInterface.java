@@ -3,6 +3,8 @@ package core.data_structures.postgreSQL;
 import core.LogProvider;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PostgreInterface {
 
@@ -82,6 +84,32 @@ public class PostgreInterface {
             throw  new RuntimeException(e.getMessage());
         }
     }
+
+
+    public <T> List<T> executeCollection(String query){
+        try {
+            Statement st = connection.createStatement();
+
+
+            ResultSet set = st.executeQuery(query);
+
+            List<T> result = new ArrayList<>();
+
+            while(set.next()){
+                result.add((T)set.getObject(1));
+            }
+
+            set.close();
+
+            st.close();
+
+            return result;
+
+        } catch (SQLException e) {
+            throw  new RuntimeException(e.getMessage());
+        }
+    }
+
 
     public void executeQuery(String query){
         try {
