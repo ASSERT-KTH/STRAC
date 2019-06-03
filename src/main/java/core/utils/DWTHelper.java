@@ -106,6 +106,8 @@ public class DWTHelper {
 
         TimeUtils utl = new TimeUtils();
 
+        LogProvider.info("Expanding...");
+
         utl.reset();
         for(InsertOperation op: ops){
 
@@ -117,6 +119,7 @@ public class DWTHelper {
                     int nI = op.getTrace1Index() + i;
                     int nJ = op.getTrace2Index() + j;
 
+                    //LogProvider.info("Size", expansion.size());
                     if(nI >= 0 && nJ >=0 && nI < lenT1 && nJ < lenT2)
                         expansion.add(new InsertOperation(nI, nJ));
                 }

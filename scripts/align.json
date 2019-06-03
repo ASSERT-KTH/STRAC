@@ -1,6 +1,6 @@
 {
   "files": [
-    "/Users/javier/Documents/Develop/div-reporting/sha256_transform/50.timer.traces.txt",
+    "/Users/javier/Documents/Develop/div-reporting/bbc_transform/50.timer.traces.txt",
     "/Users/javier/Documents/Develop/div-reporting/sha256_transform/57.timer.traces.txt"
   ],
   "pairs": [
@@ -9,7 +9,7 @@
   "method":
   {
     "name": "FastDTW",
-    "params": [100]
+    "params": [2]
   },
   "outputData": false,
   "dbHost": "localhost",

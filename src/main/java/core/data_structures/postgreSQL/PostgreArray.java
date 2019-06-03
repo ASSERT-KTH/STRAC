@@ -59,7 +59,7 @@ public class PostgreArray implements IArray<Integer> {
 
     }
 
-    int readCacheSize = 40000;
+    int readCacheSize = 10000;
     List<Integer> cache = null;
     int cacheStart = 0;
 
@@ -68,16 +68,28 @@ public class PostgreArray implements IArray<Integer> {
     @Override
     public Integer read(int position) {
 
-        if(cache != null && position >= cacheStart && position <= cacheStart + readCacheSize){
-            return cache.get(position - cacheStart);
-        }else{
+        try {
 
-            cache = _interface.executeCollection(String.format("SELECT value FROM TRACE WHERE index >= %s AND index <= %s", position, position + readCacheSize));
-            cacheStart = position;
+            if(!this.cacheString.equals(""))
+                this.clearAddCache();
 
-            return read(position);
+            if (cache != null && position - cacheStart >= 0 && position - cacheStart < cache.size()) {
+                return cache.get(position - cacheStart);
+            } else {
+
+                String query = String.format("SELECT value FROM TRACE WHERE index >= %s AND index <= %s AND name='%s'"
+                        , position, position + readCacheSize - 1, _traceName);
+                cache = _interface.executeCollection(query);
+                cacheStart = position;
+
+                return cache.get(position - cacheStart);
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
 
+        return -1;
     }
 
     @Override
