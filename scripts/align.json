@@ -1,6 +1,6 @@
 {
   "files": [
-    "/Users/javier/Documents/Develop/div-reporting/bbc_transform/50.timer.traces.txt",
+    "/Users/javier/Documents/Develop/div-reporting/sha256_transform/50.timer.traces.txt",
     "/Users/javier/Documents/Develop/div-reporting/sha256_transform/57.timer.traces.txt"
   ],
   "pairs": [
@@ -9,12 +9,20 @@
   "method":
   {
     "name": "FastDTW",
-    "params": [100]
+    "params": [10]
   },
+  "comparison": {
+    "eq": 0,
+    "diff": 2,
+    "gap": 1
+  },
+
   "outputAlignment": true,
+  "outputAlignmentMap": "map.json",
   "dbHost": "localhost",
   "dbPort": 5433,
   "dbName": "alignments3",
   "password": "Omaha1942",
-  "user": "postgres"
+  "user": "postgres",
+  "exportHTML": true
 }

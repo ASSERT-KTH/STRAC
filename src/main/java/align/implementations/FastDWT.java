@@ -79,7 +79,7 @@ public class FastDWT extends Aligner {
             //LogProvider.info(trace2);
             //LogProvider.info(growUp);
 
-
+            distance.getInsertions().dispose();
 
             utl.reset();
             AlignDistance result = this.windowed.align(trace1, trace2, window);

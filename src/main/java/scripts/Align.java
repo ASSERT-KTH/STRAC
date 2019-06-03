@@ -21,6 +21,7 @@ import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemorySet;
 import core.data_structures.postgreSQL.PostgreArray;
 import core.data_structures.postgreSQL.PostgreInterface;
+import core.models.AlignResultDto;
 import core.models.TraceMap;
 import interpreter.dto.Alignment;
 import ngram.Generator;
@@ -82,7 +83,8 @@ public class Align {
 
         comparers = new HashMap<>();
         comparers.put("DTW", (objs) -> new DWT((x, y) -> x == y? 2: -1));
-        comparers.put("FastDTW", (objs) -> new FastDWT(((Double)objs[0]).intValue(), (x, y) -> x == y? 2: -1));
+        comparers.put("FastDTW", (objs) -> new FastDWT(((Double)objs[0]).intValue()
+                , (x, y) -> x == y? 2: -1));
 
     }
 
@@ -109,15 +111,13 @@ public class Align {
         Aligner align = comparers.get(dto.method.name).getAligner(dto.method.params);
 
 
+        AlignResultDto resultDto = new AlignResultDto();
+
         for(int[] pair: dto.pairs){
             TraceMap tr1 = traces.get(pair[0]);
             TraceMap tr2 = traces.get(pair[1]);
 
             AlignDistance distance = align.align(tr1.plainTrace, tr2.plainTrace);
-
-            LogProvider.info("Distance",  distance.getDistance());
-            LogProvider.info("Path", distance.getInsertions());
-
 
             helper.getInverseBag().put(-1, "-");
 
@@ -168,11 +168,47 @@ public class Align {
                 trace1Alignment.close();
                 trace2Alignment.close();
 
+                // Comparing the two traces
+
+                double total = 0;
+
+                for(int i = 0; i < trace1Alignment.size(); i++){
+
+                    int t1 = trace1Alignment.read(i);
+                    int t2 = trace2Alignment.read(i);
+
+                    double val = dto.comparison.diff;
+
+                    if(t1 == t2)
+                        val = dto.comparison.eq;
+
+                    total += val;
+
+                }
+
+                total = total/(dto.comparison.diff*trace1Alignment.size());
+
+                LogProvider.info("Distance", total);
+
+                resultDto.set(pair[0], pair[1], total);
+                resultDto.fileMap.put(pair[0], tr1.traceFile);
+                resultDto.fileMap.put(pair[1], tr2.traceFile);
+
                 // Write file
 
 
-                writeTraceFile(trace1Alignment, helper, file1);
-                writeTraceFile(trace2Alignment, helper, file2);
+                if(dto.outputAlignment) {
+                    LogProvider.info("Writing align result to file");
+                    writeTraceFile(trace1Alignment, helper, file1);
+                    writeTraceFile(trace2Alignment, helper, file2);
+                }
+
+                if(dto.exportHTML){
+                    LogProvider.info("Exporting to html preview");
+                    exportHTML(trace1Alignment, trace2Alignment, helper,
+                            String.format("%s_%s.html", pair[0], pair[1]));
+                }
+
 
                 trace1Alignment.dispose();
                 trace2Alignment.dispose();
@@ -180,10 +216,17 @@ public class Align {
             }
 
         }
+        if(dto.outputAlignmentMap != null){
+            LogProvider.info("Exporting  json distances");
+            FileWriter writer = new FileWriter(dto.outputAlignmentMap);
+            writer.write(new Gson().toJson(resultDto));
+            writer.close();
+        }
 
         for(TraceMap map: traces){
             map.plainTrace.dispose();
         }
+
 
     }
 
@@ -198,6 +241,99 @@ public class Align {
         }
 
         w1.close();
+
+    }
+
+    public static void exportHTML(IReadArray<Integer> align1, IReadArray<Integer> align2, TraceHelper helper, String fileName) throws IOException {
+
+        FileWriter writer = new FileWriter(fileName);
+
+        // Writing header
+
+        writer.write("<!DOCTYPE html>\n" +
+                "  <html lang=\"en\">\n" +
+                "  <head>\n" +
+                "\t  <meta charset=\"UTF-8\">\n" +
+                "\t  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                "\t  <title>Traces alignment</title>\n" +
+                "\t  <style>\n" +
+                "\t  \t.row{\n" +
+                "\t\t\t  display: flex;\n" +
+                "\t\t\t  flex-direction: 'row';\n" +
+                "\t\t  }\n" +
+                "\t\t  .trace{\n" +
+                "\t\t\t  flex: 10\n" +
+                "\t\t  }\n" +
+                "\t\t  .status{\n" +
+                "\t\t\t  width: 10px;\n" +
+                "\t\t\t  background-color: rgb(10,10,10);\n" +
+                "\t\t\t  margin-right: 20px;\n" +
+                "\t\t\t  margin-left: 20px;\n" +
+                "\t\t  }\n" +
+                "\n" +
+                "\t\t  .status.eq{\n" +
+                "\t\t\t  background-color: green;\n" +
+                "\t\t  }\n" +
+                "\t\t  .status.diff{\n" +
+                "\t\t\t  background-color: red;\n" +
+                "\t\t  }\n" +
+                "\t\t  .status.gap{\n" +
+                "\t\t\t  background-color: rgb(200,200,200)\n" +
+                "\t\t  }\n" +
+                "\t\t  .trace1{\n" +
+                "\t\t\t  text-align: right;\n" +
+                "\t\t  }\n" +
+                "\t\t  .trace2{\n" +
+                "\t\t\t  text-align: left;\n" +
+                "\t\t  }\n" +
+                "\n" +
+                "\t\t  .trace.gap{\n" +
+                "\t\t\t  color:transparent;\n" +
+                "\t\t  }\n" +
+                "\n" +
+                "\t  </style>\n" +
+                "  </head>\n" +
+                "  <body>\n" +
+                "\t<div class='div-container'>");
+
+
+        for(int i = 0; i < align1.size(); i++){
+
+            String cl = "diff";
+
+            int t1 = align1.read(i);
+            int t2 = align2.read(i);
+
+            if(t1 == t2)
+                cl = "eq";
+
+            if(t1 == - 1 || t2 == -1){
+                cl = "gap";
+            }
+
+            writer.write(String.format("<div class='row'>\n" +
+                    "\t\t\t\t<div class='trace trace1 %s'>\n" +
+                    "\t\t\t\t\t%s\n" +
+                    "\t\t\t\t</div>\n" +
+                    "\t\t\t\t<div class=\"status %s\"></div>\n" +
+                    "\t\t\t\t<div class='trace trace2 %s'>\n" +
+                    "\t\t\t\t\t%s\n" +
+                    "\t\t\t\t</div>\n" +
+                    "\t\t\t</div>",
+                    cl,
+                    helper.getInverseBag().get(t1),
+                    cl,
+                    cl,
+                    helper.getInverseBag().get(t2)
+                    ));
+        }
+
+        // Write tail
+        writer.write("</div>\n" +
+                "  </body>\n" +
+                "  </html>");
+
+        writer.close();
 
     }
 
