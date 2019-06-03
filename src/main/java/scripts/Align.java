@@ -6,7 +6,6 @@ import align.InsertOperation;
 import align.implementations.DWT;
 import align.implementations.FastDWT;
 import align.implementations.IImplementationInfo;
-import align.implementations.WindowedDWT;
 import com.google.gson.Gson;
 import core.IServiceProvider;
 import core.LogProvider;
@@ -16,9 +15,7 @@ import core.data_structures.IArray;
 import core.data_structures.IDict;
 import core.data_structures.IReadArray;
 import core.data_structures.ISet;
-import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryDict;
-import core.data_structures.memory.InMemorySet;
 import core.data_structures.postgreSQL.PostgreArray;
 import core.data_structures.postgreSQL.PostgreInterface;
 import core.models.AlignResultDto;
@@ -26,10 +23,15 @@ import core.models.TraceMap;
 import interpreter.dto.Alignment;
 import ngram.Generator;
 import ngram.hash_keys.IHashCreator;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 
 import java.io.*;
+import java.net.URL;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +88,15 @@ public class Align {
         comparers.put("FastDTW", (objs) -> new FastDWT(((Double)objs[0]).intValue()
                 , (x, y) -> x == y? 2: -1));
 
+        ClassLoader classLoader = Main.class.getClassLoader();
+        File file = new File(classLoader.getResource("templates").getFile());
+
+        ve = new VelocityEngine();
+        ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "file");
+        ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, file.getAbsolutePath());
+        ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_CACHE, "true");
+        ve.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.NullLogChute" );
+        ve.init();
     }
 
     static Map<String, IImplementationInfo> comparers;
@@ -204,9 +215,12 @@ public class Align {
                 }
 
                 if(dto.exportHTML){
-                    LogProvider.info("Exporting to html preview");
+                    LogProvider.info("Exporting to svg preview");
                     exportHTML(trace1Alignment, trace2Alignment, helper,
-                            String.format("%s_%s.html", pair[0], pair[1]));
+                            tr1.traceFile,
+                            tr2.traceFile,
+                            total,
+                            String.format("%s_%s.svg", pair[0], pair[1]));
                 }
 
 
@@ -244,96 +258,100 @@ public class Align {
 
     }
 
-    public static void exportHTML(IReadArray<Integer> align1, IReadArray<Integer> align2, TraceHelper helper, String fileName) throws IOException {
+    public static void exportHTML(IReadArray<Integer> align1,
+                                  IReadArray<Integer> align2, TraceHelper helper,
+                                  String trace1Name,
+                                  String trace2Name,
+                                  double distance,
+                                  String fileName) throws IOException {
 
         FileWriter writer = new FileWriter(fileName);
 
         // Writing header
 
-        writer.write("<!DOCTYPE html>\n" +
-                "  <html lang=\"en\">\n" +
-                "  <head>\n" +
-                "\t  <meta charset=\"UTF-8\">\n" +
-                "\t  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-                "\t  <title>Traces alignment</title>\n" +
-                "\t  <style>\n" +
-                "\t  \t.row{\n" +
-                "\t\t\t  display: flex;\n" +
-                "\t\t\t  flex-direction: 'row';\n" +
-                "\t\t  }\n" +
-                "\t\t  .trace{\n" +
-                "\t\t\t  flex: 10;\n" +
-                "overflow-x: hidden;" +
-                "\t\t  }\n" +
-                "\t\t  .status{\n" +
-                "\t\t\t  width: 50px;\n" +
-                "\t\t\t  background-color: rgb(10,10,10);\n" +
-                "\t\t\t  margin-right: 20px;\n" +
-                "\t\t\t  margin-left: 20px;\n" +
-                "\t\t  }\n" +
-                "\n" +
-                "\t\t  .status.eq{\n" +
-                "\t\t\t  background-color: green;\n" +
-                "\t\t  }\n" +
-                "\t\t  .status.diff{\n" +
-                "\t\t\t  background-color: red;\n" +
-                "\t\t  }\n" +
-                "\t\t  .status.gap{\n" +
-                "\t\t\t  background-color: rgb(200,200,200)\n" +
-                "\t\t  }\n" +
-                "\t\t  .trace1{\n" +
-                "\t\t\t  text-align: right;\n" +
-                "\t\t  }\n" +
-                "\t\t  .trace2{\n" +
-                "\t\t\t  text-align: left;\n" +
-                "\t\t  }\n" +
-                "\n" +
-                "\t\t  .trace.gap{\n" +
-                "\t\t\t  \n" +
-                "\t\t  }\n" +
-                "\n" +
-                "\t  </style>\n" +
-                "  </head>\n" +
-                "  <body>\n" +
-                "\t<div class='div-container'>");
+        int width = 1000;
+        int traceSize = 12;
+        int itemWidth = 500;
+
+        writer.write(String.format("<?xml version=\"1.0\" standalone=\"no\"?>\n" +
+                "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width='%spx' height='%spx'>", width, traceSize*align1.size()));
+
 
 
         for(int i = 0; i < align1.size(); i++){
 
-            String cl = "diff";
+            String cl = "#e74c3c";
 
             int t1 = align1.read(i);
             int t2 = align2.read(i);
 
             if(t1 == t2)
-                cl = "eq";
+                cl = "#2ecc71";
             else if(t1 == - 1 || t2 == -1){
-                cl = "gap";
+                cl = "#ecf0f1";
             }
 
-            writer.write(String.format("<div class='row'>\n" +
-                    "\t\t\t\t<div class='trace trace1 %s'>\n" +
-                    "\t\t\t\t\t%s\n" +
-                    "\t\t\t\t</div>\n" +
-                    "\t\t\t\t<div class=\"status %s\"></div>\n" +
-                    "\t\t\t\t<div class='trace trace2 %s'>\n" +
-                    "\t\t\t\t\t%s\n" +
-                    "\t\t\t\t</div>\n" +
-                    "\t\t\t</div>",
-                    cl,
-                    helper.getInverseBag().get(t1),
-                    cl,
-                    cl,
-                    helper.getInverseBag().get(t2)
-                    ));
+            String text1 = helper.getInverseBag().get(t1);
+            String text2 = helper.getInverseBag().get(t2);
+
+            text1 = StringEscapeUtils.escapeHtml4(text1);
+            text2 = StringEscapeUtils.escapeHtml4(text2);
+
+            writer.write(
+                    getTemplate("item_template.html",
+                            new KeyValuePair("width", itemWidth),
+                            new KeyValuePair("height", traceSize),
+                            new KeyValuePair("x", width/2),
+                            new KeyValuePair("y", traceSize*i),
+                            new KeyValuePair("text1", text1),
+                            new KeyValuePair("text2", text2),
+                            new KeyValuePair("totalWidth", width),
+                            new KeyValuePair("fill", cl))
+            );
         }
 
+        writer.write(getTemplate("info_template.html",
+                new KeyValuePair("file1", trace1Name),
+                new KeyValuePair("file2", trace2Name),
+                new KeyValuePair("distance", distance)));
+
         // Write tail
-        writer.write("</div>\n" +
-                "  </body>\n" +
-                "  </html>");
+        writer.write("</svg>");
 
         writer.close();
+
+        /*
+        *
+        */
+    }
+
+    public static class KeyValuePair{
+        public String key;
+        public Object value;
+
+        public KeyValuePair(String key, Object value){
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    static VelocityEngine ve;
+
+    public static String getTemplate(String name, KeyValuePair ... dict){
+
+
+        Template t = ve.getTemplate(name);
+        VelocityContext context = new VelocityContext();
+
+
+        for(KeyValuePair pair: dict)
+            context.put(pair.key, pair.value);
+
+
+        StringWriter writer = new StringWriter();
+        t.merge( context, writer );
+        /* show the World */
+        return writer.toString();
 
     }
 
