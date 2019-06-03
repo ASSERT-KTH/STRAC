@@ -1,12 +1,13 @@
 {
   "files": [
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated1/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated1/mutation.bytecode.txt"
+
+    "/Users/javier/Documents/Develop/div-reporting/bbc_transform/52.timer.traces.txt",
+    "/Users/javier/Documents/Develop/div-reporting/sha256_transform/57.timer.traces.txt"
   ],
 
   "method": {
     "name": "Extractor",
-    "params": [1, ["trace1", "trace2"]],
+    "params": [1000, ["trace1", "trace2"]],
     "names": ["size", "file names"]
   },
   "exportComparisson": "out.json",

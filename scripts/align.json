@@ -1,0 +1,15 @@
+{
+  "files": [
+    "/Users/javier/Documents/Develop/div-reporting/sha256_transform/50.timer.traces.txt",
+    "/Users/javier/Documents/Develop/div-reporting/sha256_transform/57.timer.traces.txt"
+  ],
+  "pairs": [
+    [0, 1]
+  ],
+  "method":
+  {
+    "name": "FastDTW",
+    "params": [40]
+  },
+  "outputData": false
+}
