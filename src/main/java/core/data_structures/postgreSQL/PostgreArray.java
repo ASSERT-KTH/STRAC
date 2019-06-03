@@ -60,9 +60,7 @@ public class PostgreArray implements IArray<Integer> {
     }
 
     int readCacheSize = 10000;
-    List<Integer> cache = null;
-    int cacheStart = 0;
-
+    PostgresCache cache;
 
 
     @Override
@@ -73,16 +71,19 @@ public class PostgreArray implements IArray<Integer> {
             if(!this.cacheString.equals(""))
                 this.clearAddCache();
 
-            if (cache != null && position - cacheStart >= 0 && position - cacheStart < cache.size()) {
-                return cache.get(position - cacheStart);
+            if (cache != null && cache.inCache(position)) {
+                return cache.getValue(position);
             } else {
 
                 String query = String.format("SELECT value FROM TRACE WHERE index >= %s AND index <= %s AND name='%s'"
-                        , position, position + readCacheSize - 1, _traceName);
-                cache = _interface.executeCollection(query);
-                cacheStart = position;
+                        , Math.max(position - readCacheSize/2, 0), position + readCacheSize/2 - 1, _traceName);
 
-                return cache.get(position - cacheStart);
+                cache = new PostgresCache();
+
+                cache.cache = _interface.executeCollection(query);
+                cache.from = Math.max(position - readCacheSize/2, 0);
+
+                return cache.getValue(position);
             }
         }
         catch (Exception e){
@@ -127,6 +128,28 @@ public class PostgreArray implements IArray<Integer> {
         return new PostGresIterator(this);
     }
 
+
+    public class PostgresCache {
+
+        public int from = 0;
+        public int size;
+
+        List<Integer> cache;
+
+
+        public int getSize(){
+            return cache.size();
+        }
+
+        public boolean inCache(int position){
+            return position >= from && position - from < cache.size();
+        }
+
+        public Integer getValue(int position){
+            return cache.get(position - from);
+        }
+
+    }
 
     public class PostGresIterator implements Iterator<Integer>{
 
