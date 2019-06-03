@@ -64,7 +64,6 @@ public class PersistentIntegerArray extends PersistentDataStructure implements I
         tailCache[(int)(position - (size() - tailPosition))] = value;
     }
 
-    @Override
     public void write(int position, Integer value) {
         try {
 
@@ -118,6 +117,11 @@ public class PersistentIntegerArray extends PersistentDataStructure implements I
     }
 
     @Override
+    public void add(int position, Integer value) {
+
+    }
+
+    @Override
     public IArray<Integer> subArray(int index, int size) {
 
         return this.moveTo(index, size);
@@ -125,7 +129,7 @@ public class PersistentIntegerArray extends PersistentDataStructure implements I
 
     private IArray<Integer> moveTo(int index, int size){
 
-        IArray<Integer> sub = ServiceRegister.getProvider().allocateNewArray();
+        IArray<Integer> sub = ServiceRegister.getProvider().allocateNewArray(Integer.class);
 
         for(int i  = index; i < size; i++){
             sub.add(this.read(i));

@@ -4,6 +4,7 @@ import align.AlignDistance;
 import align.Aligner;
 import align.ICellComparer;
 import align.InsertOperation;
+import core.ServiceRegister;
 import core.data_structures.IArray;
 import core.data_structures.IReadArray;
 
@@ -76,7 +77,7 @@ public class WindowedDWT extends Aligner {
         int i = trace1.size();
         int j = trace2.size();
 
-        List<InsertOperation> ops = new ArrayList<>();
+        IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray(InsertOperation.class);
 
 
         while ((i > 0) || (j > 0)) // 0,0 item
@@ -115,7 +116,7 @@ public class WindowedDWT extends Aligner {
                 i--;
 
             if(i >= 0  && j >= 0)
-                ops.add(0, new InsertOperation(i, j));
+                ops.add(new InsertOperation(i, j));
         }
 
 

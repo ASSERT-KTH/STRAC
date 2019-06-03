@@ -8,11 +8,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-public class InMemoryArray implements IArray<Integer> {
+public class InMemoryArray<T> implements IArray<T> {
 
-    List<Integer> items;
+    List<T> items;
 
-    public InMemoryArray(List<Integer> items){
+    public InMemoryArray(List<T> items){
         this.items = items;
     }
 
@@ -25,12 +25,12 @@ public class InMemoryArray implements IArray<Integer> {
         this.items = new ArrayList<>(size);
     }
 
-    public InMemoryArray(Integer... array){
+    public InMemoryArray(T... array){
         items = Arrays.asList(array);
     }
 
     @Override
-    public Integer read(int position) {
+    public T read(int position) {
         return items.get(position);
     }
 
@@ -40,12 +40,12 @@ public class InMemoryArray implements IArray<Integer> {
     }
 
     @Override
-    public void write(int position, Integer value) {
+    public void add(int position, T value) {
         items.set(position, value);
     }
 
     @Override
-    public void add(Integer value) {
+    public void add(T value) {
         items.add(value);
     }
 
@@ -60,13 +60,13 @@ public class InMemoryArray implements IArray<Integer> {
     }
 
     @Override
-    public IArray<Integer> subArray(int index, int size) {
-        return new InMemoryArray(items.subList(index, size));
+    public IArray<T> subArray(int index, int size) {
+        return new InMemoryArray<T>(items.subList(index, size));
     }
 
     @NotNull
     @Override
-    public Iterator<Integer> iterator() {
+    public Iterator<T> iterator() {
         return this.items.iterator();
     }
 }

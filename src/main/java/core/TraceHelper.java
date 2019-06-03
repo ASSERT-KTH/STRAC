@@ -56,8 +56,7 @@ public class TraceHelper {
 
     public IArray<Integer> updateBag(Stream<String> sentences, String fileName){
 
-        IArray<Integer> result = ServiceRegister.getProvider().allocateNewArray();
-
+        IArray<Integer> result = ServiceRegister.getProvider().allocateNewArray(fileName, Integer.class);
 
         for (Iterator<String> it = sentences.iterator(); it.hasNext(); ) {
             String sentence = it.next();
@@ -95,7 +94,7 @@ public class TraceHelper {
             return new TraceMap(trace, fileName, createTree);
         } catch (IOException e) {
             core.LogProvider.info("Error", e.getMessage());
-            return new TraceMap(ServiceRegister.getProvider().allocateNewArray(), fileName + ' ' + e.getMessage(), false);
+            return new TraceMap(ServiceRegister.getProvider().allocateNewArray(Integer.class), fileName + ' ' + e.getMessage(), false);
         }
 
 

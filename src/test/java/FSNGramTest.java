@@ -22,6 +22,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,12 +33,12 @@ import static core.utils.HashingHelper.getRandomName;
 
 public class FSNGramTest {
 
-
+/*
     @Before
     public void setup(){
         ServiceRegister.registerProvider(new IServiceProvider() {
             @Override
-            public IArray<Integer> allocateNewArray() {
+            public  <T extends Serializable> IArray<T> allocateNewArray() {
                 try {
                     return new PersistentIntegerArray("grams/" + getRandomName() + ".array", PersistentIntegerArray.CachePolicy.SEQUENTIAL, 10000);
                 } catch (IOException e) {
@@ -217,5 +218,5 @@ public class FSNGramTest {
             }
 
         }
-    }
+    }*/
 }

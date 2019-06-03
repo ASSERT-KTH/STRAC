@@ -14,6 +14,8 @@ import core.utils.TimeUtils;
 
 import java.util.List;
 
+import static core.utils.HashingHelper.getRandomName;
+
 public class FastDWT extends Aligner {
 
 
@@ -48,11 +50,11 @@ public class FastDWT extends Aligner {
 
             TimeUtils utl = new TimeUtils();
 
-            IArray<Integer> reduced1 = ServiceRegister.getProvider().allocateNewArray(trace1.size()/2);
+            IArray<Integer> reduced1 = ServiceRegister.getProvider().allocateNewArray(getRandomName(), Integer.class);
             ArrayHelper.reduceByHalf(trace1, reduced1,
                     ArrayHelper::getMostFequentRepresentation); // O(n)
 
-            IArray<Integer> reduced2 = ServiceRegister.getProvider().allocateNewArray(trace1.size()/2);
+            IArray<Integer> reduced2 = ServiceRegister.getProvider().allocateNewArray(getRandomName(), Integer.class);
             ArrayHelper.reduceByHalf(trace2, reduced2,
                     ArrayHelper::getMostFequentRepresentation); // O(n)
 

@@ -3,9 +3,13 @@ package core.utils;
 import align.InsertOperation;
 import align.implementations.WindowedDWT;
 import core.LogProvider;
+import core.ServiceRegister;
+import core.data_structures.IArray;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static core.utils.HashingHelper.getRandomName;
 
 public class DWTHelper {
 
@@ -98,11 +102,11 @@ public class DWTHelper {
         return result;
     }
 
-    public static WindowedDWT.WindowMap<WindowedDWT.CellInfo> expandWindow(List<InsertOperation> ops, int radius, int lenT1, int lenT2){
+    public static WindowedDWT.WindowMap<WindowedDWT.CellInfo>
+    expandWindow(IArray<InsertOperation> ops, int radius, int lenT1, int lenT2){
 
         WindowedDWT.WindowMap<WindowedDWT.CellInfo> grown = new WindowedDWT.WindowMap<WindowedDWT.CellInfo>();
-
-        List<InsertOperation> expansion = new ArrayList<>();
+        WindowedDWT.WindowMap<WindowedDWT.CellInfo> expansion = new WindowedDWT.WindowMap<WindowedDWT.CellInfo>();
 
         TimeUtils utl = new TimeUtils();
 
@@ -111,7 +115,7 @@ public class DWTHelper {
         utl.reset();
         for(InsertOperation op: ops){
 
-            expansion.add(op);
+            expansion.set(op.getTrace1Index(), op.getTrace2Index(), new WindowedDWT.CellInfo(0, 0,0));
 
             for(int i = -radius; i <= radius; i++){
                 for(int j = -radius; j <= radius; j++){
@@ -121,22 +125,23 @@ public class DWTHelper {
 
                     //LogProvider.info("Size", expansion.size());
                     if(nI >= 0 && nJ >=0 && nI < lenT1 && nJ < lenT2)
-                        expansion.add(new InsertOperation(nI, nJ));
+                        expansion.set(nI, nJ, new WindowedDWT.CellInfo(0, nI,nJ));
+
                 }
             }
 
         }
 
         utl.time("Scaling");
-        for(InsertOperation op: expansion){
 
-            int i = op.getTrace1Index();
-            int j = op.getTrace2Index();
+        for(int i: expansion.getColumns()){
+            for(int j: expansion.getRow(i)){
 
-            grown.set(i*2, j*2, new WindowedDWT.CellInfo(0, i, j));
-            grown.set(i*2, j*2 + 1, new WindowedDWT.CellInfo(0, i, j));
-            grown.set(i*2 + 1, j*2 + 1, new WindowedDWT.CellInfo(0, i, j));
-            grown.set(i*2 + 1, j*2, new WindowedDWT.CellInfo(0, i, j));
+                grown.set(i*2, j*2, new WindowedDWT.CellInfo(0, i, j));
+                grown.set(i*2, j*2 + 1, new WindowedDWT.CellInfo(0, i, j));
+                grown.set(i*2 + 1, j*2 + 1, new WindowedDWT.CellInfo(0, i, j));
+                grown.set(i*2 + 1, j*2, new WindowedDWT.CellInfo(0, i, j));
+            }
         }
 
         utl.time("Growing");

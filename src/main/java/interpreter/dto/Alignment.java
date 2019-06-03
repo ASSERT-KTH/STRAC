@@ -10,5 +10,5 @@ public class Alignment extends BaseDto {
 
     public Payload.MethodInfo method;
 
-    public boolean outputData;
+    public boolean outputAlignment;
 }

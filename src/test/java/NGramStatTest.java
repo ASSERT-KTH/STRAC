@@ -22,10 +22,7 @@ import ngram.interfaces.ISetComparer;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -37,23 +34,23 @@ public class NGramStatTest {
     public void setProvider(){
         ServiceRegister.registerProvider(new IServiceProvider() {
             @Override
-            public IArray<Integer> allocateNewArray() {
-                return new InMemoryArray();
+            public  <T> IArray<T> allocateNewArray(Class<T> clazz) {
+                return new InMemoryArray<T>();
             }
 
             @Override
-            public IArray<Integer> allocateNewArray(int size) {
-                return new InMemoryArray(size);
+            public  <T> IArray<T> allocateNewArray(int size, Class<T> clazz) {
+                return new InMemoryArray<T>(size);
             }
 
             @Override
-            public IArray<Integer> allocateNewArray(String id) {
+            public  <T> IArray<T> allocateNewArray(String id, Class<T> clazz) {
                 return null;
             }
 
             @Override
-            public IArray<Integer> allocateNewArray(Integer[] items) {
-                return new InMemoryArray(items);
+            public  <T> IArray<T> allocateNewArray(T[] items, Class<T> clazz) {
+                return new InMemoryArray<T>(items);
             }
 
             @Override
@@ -412,11 +409,11 @@ public class NGramStatTest {
     public void testStressHasing(){
 
         TraceMap trace1 =
-                new TraceMap(ServiceRegister.getProvider().allocateNewArray(generateRandomIntegers(180000)), "test.1");
+                new TraceMap(ServiceRegister.getProvider().allocateNewArray(generateRandomIntegers(180000), Integer.class), "test.1");
 
 
         TraceMap trace2 =
-                new TraceMap(ServiceRegister.getProvider().allocateNewArray(generateRandomIntegers(180000)), "test.2");
+                new TraceMap(ServiceRegister.getProvider().allocateNewArray(generateRandomIntegers(180000), Integer.class), "test.2");
 
 
 

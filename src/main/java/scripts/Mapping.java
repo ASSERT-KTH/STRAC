@@ -20,21 +20,21 @@ import java.util.regex.Pattern;
 
 public class Mapping {
 
-
+/*
     public static void setup(){
         ServiceRegister.registerProvider(new IServiceProvider() {
             @Override
-            public IArray<Integer> allocateNewArray() {
+            public  <T extends Serializable> IArray<T> allocateNewArray() {
                 return null;
             }
 
             @Override
-            public IArray<Integer> allocateNewArray(int size) {
+            public  <T extends Serializable> IArray<T> allocateNewArray(int size) {
                 return null;
             }
 
             @Override
-            public IArray<Integer> allocateNewArray(String id) {
+            public  <T extends Serializable> IArray<T> allocateNewArray(String id) {
                 try {
                     return new PersistentIntegerArray(id, PersistentIntegerArray.CachePolicy.SEQUENTIAL, 1000);
                 } catch (IOException e) {
@@ -140,5 +140,5 @@ public class Mapping {
 
             writer.close();
         }
-    }
+    }\*/
 }

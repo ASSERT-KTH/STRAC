@@ -1,16 +1,17 @@
 package align;
 
+import core.data_structures.IArray;
 import core.data_structures.IReadArray;
 
 import java.util.List;
 
 public class AlignDistance {
 
-    List<InsertOperation> operations;
+    IArray<InsertOperation> operations;
 
     double distance;
 
-    public AlignDistance(double distance, List<InsertOperation> ops){
+    public AlignDistance(double distance, IArray<InsertOperation> ops){
         this.operations = ops;
         this.distance = distance;
     }
@@ -20,7 +21,7 @@ public class AlignDistance {
         return distance;
     }
 
-    public List<InsertOperation> getInsertions(){
+    public IArray<InsertOperation> getInsertions(){
         return operations;
     }
 

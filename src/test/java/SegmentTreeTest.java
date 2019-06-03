@@ -14,6 +14,7 @@ import ngram.hash_keys.IHashCreator;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,23 +27,23 @@ public class SegmentTreeTest extends BaseTest {
     public void setup(){
         ServiceRegister.registerProvider(new IServiceProvider() {
             @Override
-            public IArray<Integer> allocateNewArray() {
-                return new InMemoryArray();
+            public <T> IArray<T> allocateNewArray(Class<T> clazz) {
+                return new InMemoryArray<T>();
             }
 
             @Override
-            public IArray<Integer> allocateNewArray(int size) {
-                return new InMemoryArray(size);
+            public  <T> IArray<T> allocateNewArray(int size, Class<T> clazz) {
+                return new InMemoryArray<>(size);
             }
 
             @Override
-            public IArray<Integer> allocateNewArray(String id) {
+            public  <T> IArray<T> allocateNewArray(String id, Class<T> clazz) {
                 return null;
             }
 
             @Override
-            public IArray<Integer> allocateNewArray(Integer[] items) {
-                return new InMemoryArray(items);
+            public  <T> IArray<T> allocateNewArray(T[] items, Class<T> clazz) {
+                return new InMemoryArray<T>(items);
             }
 
             @Override
@@ -70,7 +71,7 @@ public class SegmentTreeTest extends BaseTest {
     @Test
     public void segmentTreeTest(){
 
-        IArray<Integer> array = ServiceRegister.getProvider().allocateNewArray(generateRandomIntegers(8000));
+        IArray<Integer> array = ServiceRegister.getProvider().allocateNewArray(generateRandomIntegers(8000), Integer.class);
 
         SegmentTree<Integer, Integer[]> root = SegmentTree.build(array, 0, array.size() - 1, new IHashCreator<Integer, Integer[]>() {
             @Override
@@ -135,7 +136,7 @@ public class SegmentTreeTest extends BaseTest {
     @Test
     public void segmentTreeBasic(){
 
-        IArray<Integer> array = ServiceRegister.getProvider().allocateNewArray(new Integer[]{1, 2, 3, 4, 5, 6, 1, 2, 1, 2});
+        IArray<Integer> array = ServiceRegister.getProvider().allocateNewArray(new Integer[]{1, 2, 3, 4, 5, 6, 1, 2, 1, 2}, Integer.class);
 
         TimeUtils utl = new TimeUtils();
         utl.reset();

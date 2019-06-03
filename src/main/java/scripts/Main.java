@@ -36,23 +36,23 @@ public class Main {
     public static void setup(){
         ServiceRegister.registerProvider(new IServiceProvider() {
             @Override
-            public IArray<Integer> allocateNewArray() {
-                return new InMemoryArray();
+            public  <T> IArray<T> allocateNewArray(Class<T> clazz) {
+                return new InMemoryArray<T>();
             }
 
             @Override
-            public IArray<Integer> allocateNewArray(int size) {
-                return new InMemoryArray(size);
+            public  <T> IArray<T> allocateNewArray(int size,Class<T> clazz) {
+                return new InMemoryArray<T>(size);
             }
 
             @Override
-            public IArray<Integer> allocateNewArray(String id) {
-                return new InMemoryArray();
+            public  <T> IArray<T> allocateNewArray(String id,Class<T> clazz) {
+                return new InMemoryArray<T>();
             }
 
             @Override
-            public IArray<Integer> allocateNewArray(Integer[] items) {
-                return new InMemoryArray(items);
+            public  <T> IArray<T> allocateNewArray(T[] items, Class<T> clazz) {
+                return new InMemoryArray<T>(items);
             }
 
             @Override

@@ -1,9 +1,14 @@
 package core.data_structures.postgreSQL;
 
+import com.google.gson.Gson;
 import core.LogProvider;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 public class PostgreInterface {
@@ -86,7 +91,7 @@ public class PostgreInterface {
     }
 
 
-    public <T> List<T> executeCollection(String query){
+    public <T> List<T> executeCollection(String query, Class<T> clazz){
         try {
             Statement st = connection.createStatement();
 
@@ -96,7 +101,9 @@ public class PostgreInterface {
             List<T> result = new ArrayList<>();
 
             while(set.next()){
-                result.add((T)set.getObject(1));
+
+                String b64 =  set.getString(1);
+                 result.add(new Gson().fromJson(b64, clazz));
             }
 
             set.close();
@@ -108,6 +115,7 @@ public class PostgreInterface {
         } catch (SQLException e) {
             throw  new RuntimeException(e.getMessage());
         }
+
     }
 
 
@@ -119,7 +127,7 @@ public class PostgreInterface {
             st.close();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -128,11 +136,11 @@ public class PostgreInterface {
         Statement st = connection.createStatement();
 
         String createTable = "CREATE TABLE TRACE" +
-                "(name TEXT NOT NULL," +
-                "value INT NOT NULL," +
+                "(id serial PRIMARY KEY," +
+                "name TEXT NOT NULL," +
+                "value TEXT NOT NULL," +
                 "map TEXT," +
-                "index INT NOT NULL, " +
-                "PRIMARY KEY(name, index)" +
+                "index INT NOT NULL" +
                 ")";
 
         st.executeUpdate(createTable);

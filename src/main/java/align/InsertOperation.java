@@ -1,6 +1,8 @@
 package align;
 
-public class InsertOperation {
+import java.io.Serializable;
+
+public class InsertOperation implements Serializable {
 
     private int trace1Index;
 

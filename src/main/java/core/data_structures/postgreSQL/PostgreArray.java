@@ -1,74 +1,95 @@
 package core.data_structures.postgreSQL;
 
+import com.google.gson.Gson;
 import core.LogProvider;
 import core.data_structures.IArray;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static core.utils.HashingHelper.getRandomName;
 
-public class PostgreArray implements IArray<Integer> {
+public class PostgreArray<T> implements IArray<T> {
 
     String _traceName;
     PostgreInterface _interface;
+    Class<T> clazz;
     long size;
 
-    public PostgreArray(String name){
+    public PostgreArray(String name, Class<T> clazz){
         this._traceName = name;
         _interface = PostgreInterface.getInstance();
 
         size = _interface.executeScalarQuery(String.format("SELECT COUNT(*) as count FROM TRACE WHERE name = '%s'", name), 0l);
 
+        this.clazz = clazz;
     }
 
-    int addCacheSize = 10000;
-    int elements = 0;
+    int addCacheSize = 30000;
+    List<PosgresInsertOperation<T>> cachedElements = new ArrayList<>();
 
-    String cacheString = "";
+
+    String getObjectRepr(Object obj) {
+        return new Gson().toJson(obj);
+    }
 
     @Override
-    public void add(Integer value) {
+    public void add(T value) {
 
-        if(elements == addCacheSize ){
+        if(cachedElements.size() == addCacheSize ){
            clearAddCache();
         }
         else{
-            cacheString += String.format("('%s', %s, %s),", _traceName, size++, value);
-            elements++;
+            cachedElements.add(new PosgresInsertOperation<T>(value, size++));
         }
+
+    }
+
+    @Override
+    public void add(int position, T value) {
+        _interface.executeQuery(String.format("UPDATE TRACE SET index=index + 1 WHERE name='%s' AND index >= %s", _traceName, position));
+
+        _interface.executeQuery(String.format("INSERT INTO TRACE(name, index, value) VALUES(" +
+                "'%s', %s, '%s'" +
+                ")", _traceName, position, getObjectRepr(value)));
+
+
 
     }
 
     private void clearAddCache(){
-        if(cacheString.length() > 0){
-            String toInser = cacheString.substring(0, cacheString.length() - 1);
+        if(cachedElements.size() > 0){
+
+            CharSequence[] ops = new String[cachedElements.size()];
+
+            for(int i = 0; i < cachedElements.size(); i++)
+                ops[i] = cachedElements.get(i).getValues();
 
             //LogProvider.info(toInser);
             _interface.executeQuery(String.format("INSERT INTO TRACE(name, index, value) VALUES %s",
-                    toInser));
-            elements = 0;
-            cacheString  = "";
+                    String.join(",",ops)));
+            cachedElements.clear();
         }
     }
 
-    @Override
-    public void write(int position, Integer value) {
-
-    }
-
-    int readCacheSize = 10000;
+    int readCacheSize = 30000;
     PostgresCache cache;
 
 
     @Override
-    public Integer read(int position) {
+    public T read(int position) {
 
         try {
 
-            if(!this.cacheString.equals(""))
+            if(this.cachedElements.size() != 0)
                 this.clearAddCache();
 
             if (cache != null && cache.inCache(position)) {
@@ -80,17 +101,16 @@ public class PostgreArray implements IArray<Integer> {
 
                 cache = new PostgresCache();
 
-                cache.cache = _interface.executeCollection(query);
+                cache.cache = _interface.executeCollection(query, clazz);
                 cache.from = Math.max(position - readCacheSize/2, 0);
 
                 return cache.getValue(position);
             }
         }
         catch (Exception e){
-            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         }
 
-        return -1;
     }
 
     @Override
@@ -104,7 +124,7 @@ public class PostgreArray implements IArray<Integer> {
     }
 
     @Override
-    public IArray<Integer> subArray(int index, int size) {
+    public IArray<T> subArray(int index, int size) {
 
         String name = getRandomName();
 
@@ -112,7 +132,7 @@ public class PostgreArray implements IArray<Integer> {
                 " (SELECT '%s', value, index - %s, map FROM TRACE " +
                 "WHERE name='%s' AND index >= %s AND index <= %s)", name, index, _traceName, index, index + size - 1));
 
-        return new PostgreArray(name);
+        return new PostgreArray<T>(name, clazz);
     }
 
     @Override
@@ -124,7 +144,7 @@ public class PostgreArray implements IArray<Integer> {
 
     @NotNull
     @Override
-    public Iterator<Integer> iterator(){
+    public Iterator<T> iterator(){
         return new PostGresIterator(this);
     }
 
@@ -134,7 +154,7 @@ public class PostgreArray implements IArray<Integer> {
         public int from = 0;
         public int size;
 
-        List<Integer> cache;
+        List<T> cache;
 
 
         public int getSize(){
@@ -145,29 +165,47 @@ public class PostgreArray implements IArray<Integer> {
             return position >= from && position - from < cache.size();
         }
 
-        public Integer getValue(int position){
+        public T getValue(int position){
             return cache.get(position - from);
         }
 
     }
 
-    public class PostGresIterator implements Iterator<Integer>{
 
-        PostgreArray arr;
+    public class PosgresInsertOperation<T> {
+
+        public T value;
+        public long index;
+
+        public PosgresInsertOperation(T value, long index){
+            this.value = value;
+            this.index = index;
+        }
+
+        public String getValues(){
+            return String.format("('%s', %s, '%s')", _traceName, index, getObjectRepr(value));
+        }
+    }
+
+    public class PostGresIterator implements Iterator<T>{
+
+        PostgreArray<T> arr;
         int index = 0;
 
-        public PostGresIterator(PostgreArray arr){
+        public PostGresIterator(PostgreArray<T> arr){
             this.arr = arr;
 
         }
 
         @Override
         public boolean hasNext() {
-            return index < arr.size - 1;
+
+            return index < arr.size;
         }
 
         @Override
-        public Integer next() {
+        public T next() {
+
             return arr.read(this.index++);
         }
     }

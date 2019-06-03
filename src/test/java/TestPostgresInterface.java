@@ -12,7 +12,7 @@ public class TestPostgresInterface {
     @Test
     public void testCreatingDatabase() throws SQLException {
 
-        PostgreInterface.setup("localhost", 5433, "test2", "postgres", "Omaha1942", true);
+        PostgreInterface.setup("localhost", 5433, "test4", "postgres", "Omaha1942", true);
 
         PostgreInterface i = PostgreInterface.getInstance();
 
@@ -20,10 +20,10 @@ public class TestPostgresInterface {
     @Test
     public void testPostgresArray() throws SQLException {
 
-        PostgreInterface.setup("localhost", 5433, "test2", "postgres", "Omaha1942", false);
+        PostgreInterface.setup("localhost", 5433, "test4", "postgres", "Omaha1942", false);
 
 
-        PostgreArray arr = new PostgreArray("testTrace2");
+        PostgreArray<Integer> arr = new PostgreArray<>("testTrace2", Integer.class);
 
         arr.add(10);
         arr.add(10);
@@ -31,16 +31,18 @@ public class TestPostgresInterface {
         arr.add(10);
         arr.add(16);
 
+        arr.close();
+
     }
 
 
     @Test
     public void testPostgresArray2() throws SQLException {
 
-        PostgreInterface.setup("localhost", 5433, "test2", "postgres", "Omaha1942", false);
+        PostgreInterface.setup("localhost", 5433, "test4", "postgres", "Omaha1942", false);
 
 
-        PostgreArray arr = new PostgreArray("testTrace2");
+        PostgreArray<Integer> arr = new PostgreArray<>("testTrace2", Integer.class);
 
         LogProvider.info(arr.read(2));
         LogProvider.info(arr.read(3));
@@ -53,9 +55,9 @@ public class TestPostgresInterface {
     @Test
     public void testPostgresArrayStress() throws SQLException {
 
-        PostgreInterface.setup("localhost", 5433, "test2", "postgres", "Omaha1942", false);
+        PostgreInterface.setup("localhost", 5433, "test4", "postgres", "Omaha1942", false);
 
-        PostgreArray arr = new PostgreArray("largeTrace");
+        PostgreArray arr = new PostgreArray("largeTrace", Integer.class);
 
         for(int i = 0; i < 1 << 30; i++)
             arr.add(i);
@@ -65,9 +67,9 @@ public class TestPostgresInterface {
     @Test
     public void testPostgresArrayDeleteTrace() throws SQLException {
 
-        PostgreInterface.setup("localhost", 5433, "test2", "postgres", "Omaha1942", false);
+        PostgreInterface.setup("localhost", 5433, "test4", "postgres", "Omaha1942", false);
 
-        PostgreArray arr = new PostgreArray("largeTrace");
+        PostgreArray arr = new PostgreArray("largeTrace", Integer.class);
 
         arr.dispose();
     }
@@ -76,9 +78,9 @@ public class TestPostgresInterface {
     @Test
     public void testPostgressSubarray() throws SQLException {
 
-        PostgreInterface.setup("localhost", 5433, "test2", "postgres", "Omaha1942", false);
+        PostgreInterface.setup("localhost", 5433, "test4", "postgres", "Omaha1942", false);
 
-        PostgreArray arr = new PostgreArray("testTrace2");
+        PostgreArray arr = new PostgreArray("testTrace2", Integer.class);
 
         IArray copy = arr.subArray(0, 2);
 
@@ -88,9 +90,9 @@ public class TestPostgresInterface {
     @Test
     public void testPostgresIterator() throws SQLException {
 
-        PostgreInterface.setup("localhost", 5433, "test2", "postgres", "Omaha1942", false);
+        PostgreInterface.setup("localhost", 5433, "test4", "postgres", "Omaha1942", false);
 
-        PostgreArray arr = new PostgreArray("testTrace2");
+        PostgreArray<Integer> arr = new PostgreArray<>("testTrace2", Integer.class);
 
         for(Integer i: arr){
             LogProvider.info(i);

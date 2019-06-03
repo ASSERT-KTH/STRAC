@@ -5,6 +5,7 @@ import align.Aligner;
 import align.ICellComparer;
 import align.InsertOperation;
 import core.LogProvider;
+import core.ServiceRegister;
 import core.data_structures.IArray;
 import core.data_structures.IReadArray;
 
@@ -53,7 +54,7 @@ public class DWT extends Aligner {
             }
         }
 
-        List<InsertOperation> ops = new ArrayList<>();
+        IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray(InsertOperation.class);
 
 
         int i = maxI;
@@ -94,7 +95,7 @@ public class DWT extends Aligner {
             else
                 i--;
 
-            ops.add(0, new InsertOperation(i, j));
+            ops.add(new InsertOperation(i, j));
         }
 
         /*for(int in = 0; in < maxI + 1; in++) {
