@@ -33,7 +33,7 @@ public class PostgreArray<T> implements IArray<T> {
         this.clazz = clazz;
     }
 
-    int addCacheSize = 30000;
+    int addCacheSize = 40000;
     List<PosgresInsertOperation<T>> cachedElements = new ArrayList<>();
 
 
@@ -43,6 +43,9 @@ public class PostgreArray<T> implements IArray<T> {
 
     @Override
     public void add(T value) {
+
+        if(_closed)
+            throw new RuntimeException("The collection is closed");
 
         if(cachedElements.size() == addCacheSize ){
            clearAddCache();
@@ -61,7 +64,7 @@ public class PostgreArray<T> implements IArray<T> {
                 "'%s', %s, '%s'" +
                 ")", _traceName, position, getObjectRepr(value)));
 
-
+        size++;
 
     }
 
@@ -80,7 +83,7 @@ public class PostgreArray<T> implements IArray<T> {
         }
     }
 
-    int readCacheSize = 30000;
+    int readCacheSize = 70000;
     PostgresCache cache;
 
 
@@ -96,13 +99,13 @@ public class PostgreArray<T> implements IArray<T> {
                 return cache.getValue(position);
             } else {
 
-                String query = String.format("SELECT value FROM TRACE WHERE index >= %s AND index <= %s AND name='%s'"
-                        , Math.max(position - readCacheSize/2, 0), position + readCacheSize/2 - 1, _traceName);
+                String query = String.format("SELECT value FROM TRACE WHERE index >= %s AND index <= %s AND name='%s' ORDER BY index ASC"
+                        , Math.max(position - readCacheSize, 0), position + readCacheSize - 1, _traceName);
 
                 cache = new PostgresCache();
 
                 cache.cache = _interface.executeCollection(query, clazz);
-                cache.from = Math.max(position - readCacheSize/2, 0);
+                cache.from = Math.max(position - readCacheSize, 0);
 
                 return cache.getValue(position);
             }
@@ -113,9 +116,13 @@ public class PostgreArray<T> implements IArray<T> {
 
     }
 
+    boolean _closed = false;
+
     @Override
     public void close() {
         clearAddCache();
+
+        _closed = true;
     }
 
     @Override
@@ -130,7 +137,7 @@ public class PostgreArray<T> implements IArray<T> {
 
         _interface.executeQuery(String.format("INSERT INTO TRACE(name, value, index, map)" +
                 " (SELECT '%s', value, index - %s, map FROM TRACE " +
-                "WHERE name='%s' AND index >= %s AND index <= %s)", name, index, _traceName, index, index + size - 1));
+                "WHERE name='%s' AND index >= %s AND index <= %s ORDER BY index ASC)", name, index, _traceName, index, index + size - 1));
 
         return new PostgreArray<T>(name, clazz);
     }

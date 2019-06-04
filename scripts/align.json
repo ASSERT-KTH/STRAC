@@ -1,28 +1,25 @@
 {
   "files": [
-    "/Users/javier/Documents/Develop/div-reporting/sha256_transform/50.timer.traces.txt",
-    "/Users/javier/Documents/Develop/div-reporting/sha256_transform/57.timer.traces.txt"
+    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated0/original.bytecode.txt",
+    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated1/original.bytecode.txt"
   ],
+  "delimiter": "\n",
   "pairs": [
-    [0, 1]
+
   ],
   "method":
   {
     "name": "FastDTW",
-    "params": [10]
+    "params": [40]
   },
   "comparison": {
     "eq": 0,
     "diff": 2,
-    "gap": 2
+    "gap": 0
   },
-
+  "outputDir": "reports",
   "outputAlignment": true,
-  "outputAlignmentMap": "map.json",
-  "dbHost": "localhost",
-  "dbPort": 5433,
-  "dbName": "alignments3",
-  "password": "Omaha1942",
-  "user": "postgres",
-  "exportHTML": true
+  "outputAlignmentMap": "reports/map.json",
+  "exportHTML": false,
+  "exportImage": true
 }

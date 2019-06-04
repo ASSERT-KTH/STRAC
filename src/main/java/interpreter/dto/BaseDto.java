@@ -11,4 +11,8 @@ public abstract class BaseDto {
     public String password;
 
     public String user;
+
+    public String outputDir;
+
+    public String delimiter;
 }

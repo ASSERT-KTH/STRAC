@@ -4,6 +4,7 @@ import align.AlignDistance;
 import align.Aligner;
 import align.ICellComparer;
 import align.InsertOperation;
+import core.LogProvider;
 import core.ServiceRegister;
 import core.data_structures.IArray;
 import core.data_structures.IReadArray;
@@ -41,6 +42,7 @@ public class WindowedDWT extends Aligner {
         WindowMap<Integer> D = new WindowMap<>();
 
         D.set(0, 0, 0);
+
 
         for(int i : map.getColumns()){
             for(int j: map.getRow(i)){
@@ -115,8 +117,8 @@ public class WindowedDWT extends Aligner {
             else
                 i--;
 
-            if(i >= 0  && j >= 0)
-                ops.add(new InsertOperation(i, j));
+            //LogProvider.info(i, j);
+            ops.add(new InsertOperation(i, j));
         }
 
 

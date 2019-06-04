@@ -15,6 +15,7 @@ import core.data_structures.IArray;
 import core.data_structures.IDict;
 import core.data_structures.IReadArray;
 import core.data_structures.ISet;
+import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryDict;
 import core.data_structures.postgreSQL.PostgreArray;
 import core.data_structures.postgreSQL.PostgreInterface;
@@ -29,9 +30,14 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,22 +50,23 @@ public class Align {
         ServiceRegister.registerProvider(new IServiceProvider() {
             @Override
             public <T> IArray<T> allocateNewArray(Class<T> clazz) {
-                return new PostgreArray<T>(getRandomName(), clazz);
+                return new InMemoryArray<T>();
             }
 
             @Override
             public <T> IArray<T> allocateNewArray(int size, Class<T> clazz) {
-                return new PostgreArray<T>(getRandomName(), clazz);
+                return new InMemoryArray<T>();
             }
 
             @Override
             public <T> IArray<T> allocateNewArray(String id, Class<T> clazz) {
-                return new PostgreArray<T>(id, clazz);
+
+                return new InMemoryArray<>();
             }
 
             @Override
             public <T> IArray<T> allocateNewArray(T[] items,Class<T> clazz) {
-                return new PostgreArray<T>(getRandomName(), clazz);
+                return new InMemoryArray<>();
             }
 
             @Override
@@ -84,7 +91,7 @@ public class Align {
         });
 
         comparers = new HashMap<>();
-        comparers.put("DTW", (objs) -> new DWT((x, y) -> x == y? 2: -1));
+        comparers.put("DTW", (objs) -> new DWT((x, y) -> x == y? 1: -1));
         comparers.put("FastDTW", (objs) -> new FastDWT(((Double)objs[0]).intValue()
                 , (x, y) -> x == y? 2: -1));
 
@@ -107,7 +114,7 @@ public class Align {
 
         Alignment dto = new Gson().fromJson(new FileReader(args[0]), Alignment.class);
 
-        PostgreInterface.setup(dto.dbHost, dto.dbPort, dto.dbName, dto.user, dto.password, false);
+        //PostgreInterface.setup(dto.dbHost, dto.dbPort, dto.dbName, dto.user, dto.password, false);
 
         TraceHelper helper = new TraceHelper();
 
@@ -124,16 +131,34 @@ public class Align {
 
         AlignResultDto resultDto = new AlignResultDto();
 
+
+        if(dto.pairs.size() == 0){
+            LogProvider.info("No specific pairs, two vs two tournament");
+
+            List<int[]> pairs = new ArrayList<>();
+
+            for(int i = 0; i < traces.size(); i++){
+                for(int j  = i + 1; j < traces.size(); j++){
+                    pairs.add(new int[] {i, j});
+                }
+            }
+
+            dto.pairs = pairs;
+        }
+
         for(int[] pair: dto.pairs){
             TraceMap tr1 = traces.get(pair[0]);
             TraceMap tr2 = traces.get(pair[1]);
 
             AlignDistance distance = align.align(tr1.plainTrace, tr2.plainTrace);
+            distance.getInsertions().close();
 
             helper.getInverseBag().put(-1, "-");
 
-            writeTraceFile(tr1.plainTrace, helper, "t1.txt");
-            writeTraceFile(tr2.plainTrace, helper, "t2.txt");
+            //writeTraceFile(tr1.plainTrace, helper, "t1.txt");
+            //writeTraceFile(tr2.plainTrace, helper, "t2.txt");
+
+
 
             if(dto.outputAlignment){
 
@@ -150,27 +175,42 @@ public class Align {
 
                 InsertOperation i1 = new InsertOperation(0, 0);
 
-                for(int i= distance.getInsertions().size() - 1; i >= 0; i--){
-                    InsertOperation i2 = distance.getInsertions().read(i);
+                tr1.plainTrace.close();
+                tr2.plainTrace.close();
 
+                for(int i= distance.getInsertions().size() - 1; i >=0 ; i--){
+
+                   InsertOperation i2 = distance.getInsertions().read(i);
+                   //LogProvider.info(i2);
+
+                    InsertOperation s = i2;
                     int[] direction = new int[] {
                             i2.getTrace1Index() - i1.getTrace1Index(),
                             i2.getTrace2Index() - i1.getTrace2Index()
                     };
 
-                    if(direction[0] != 0 && direction[1] != 0){
-                        trace1Alignment.add(tr1.plainTrace.read(i2.getTrace1Index()));
-                        trace2Alignment.add(tr2.plainTrace.read(i2.getTrace2Index()));
-
-                    }
-                    if(direction[0] == 0){
-                        trace1Alignment.add(-1);
-                        trace2Alignment.add(tr2.plainTrace.read(i2.getTrace2Index()));
+                    if(direction[0] > 1){
+                        LogProvider.info("Warning", direction[0], direction[1], i);
                     }
 
-                    if(direction[1] == 0){
-                        trace2Alignment.add(-1);
-                        trace1Alignment.add(tr1.plainTrace.read(i2.getTrace1Index()));
+                    try {
+                        if (direction[0] > 0 && direction[1] > 0) {
+                            trace1Alignment.add(tr1.plainTrace.read(s.getTrace1Index()));
+                            trace2Alignment.add(tr2.plainTrace.read(s.getTrace2Index()));
+
+                        }
+                        if (direction[0] == 0) {
+                            trace1Alignment.add(-1);
+                            trace2Alignment.add(tr2.plainTrace.read(s.getTrace2Index()));
+                        }
+
+                        if (direction[1] == 0) {
+                            trace2Alignment.add(-1);
+                            trace1Alignment.add(tr1.plainTrace.read(s.getTrace1Index()));
+                        }
+                    }
+                    catch (Exception e){
+                        throw new RuntimeException(e.getMessage());
                     }
 
                     i1 = i2;
@@ -185,25 +225,37 @@ public class Align {
 
                 for(int i = 0; i < trace1Alignment.size(); i++){
 
-                    int t1 = trace1Alignment.read(i);
-                    int t2 = trace2Alignment.read(i);
+                    try{
+                        int t1 = trace1Alignment.read(i);
+                        int t2 = trace2Alignment.read(i);
 
-                    double val = dto.comparison.diff;
+                        double val = dto.comparison.diff;
 
-                    if(t1 == t2)
-                        val = dto.comparison.eq;
+                        if(t1 == -1 || t2 == -1)
+                            val = dto.comparison.gap;
+                        else if(t1 == t2)
+                            val = dto.comparison.eq;
 
-                    total += val;
+                        total += val;
+                    }
+                    catch (Exception e){
+                        throw new RuntimeException(e.getMessage());
+                    }
 
                 }
 
                 total = total/(dto.comparison.diff*trace1Alignment.size());
 
+                LogProvider.info("DTW Distance", distance.getDistance());
                 LogProvider.info("Distance", total);
 
                 resultDto.set(pair[0], pair[1], total);
+                resultDto.setFunctioNMap(pair[0], pair[1], distance.getDistance());
+
                 resultDto.fileMap.put(pair[0], tr1.traceFile);
                 resultDto.fileMap.put(pair[1], tr2.traceFile);
+                resultDto.results.add(total);
+                resultDto.method = dto.method;
 
                 // Write file
 
@@ -220,7 +272,14 @@ public class Align {
                             tr1.traceFile,
                             tr2.traceFile,
                             total,
-                            String.format("%s_%s.svg", pair[0], pair[1]));
+                            String.format("%s_%s.svg", dto.outputDir, pair[0], pair[1]));
+                }
+
+                if(dto.exportImage){
+                    LogProvider.info("Exporting to image");
+                    exportImage(
+                            String.format("%s/%s_%s.png",dto.outputDir, pair[0], pair[1]),
+                            trace1Alignment, trace2Alignment);
                 }
 
 
@@ -232,7 +291,7 @@ public class Align {
         }
         if(dto.outputAlignmentMap != null){
             LogProvider.info("Exporting  json distances");
-            FileWriter writer = new FileWriter(dto.outputAlignmentMap);
+            FileWriter writer = new FileWriter(String.format("%s/%s", dto.outputDir,  dto.outputAlignmentMap));
             writer.write(new Gson().toJson(resultDto));
             writer.close();
         }
@@ -270,7 +329,7 @@ public class Align {
         // Writing header
 
         int width = 1000;
-        int traceSize = 12;
+        int traceSize = 20;
         int itemWidth = 500;
 
         writer.write(String.format("<?xml version=\"1.0\" standalone=\"no\"?>\n" +
@@ -352,6 +411,48 @@ public class Align {
         t.merge( context, writer );
         /* show the World */
         return writer.toString();
+
+    }
+
+    public static void exportImage(String fileName,
+                                   IReadArray<Integer> trace1,
+                                   IReadArray<Integer> trace2) throws IOException {
+
+        int scale = 1;
+        File writer = new File(fileName);
+        int pieceSize =40*scale;
+
+        int width = (int)Math.ceil(Math.sqrt(trace1.size())) + 1;
+
+
+        BufferedImage img = new BufferedImage(width*pieceSize, width*pieceSize, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = img.createGraphics();
+
+        int row = 0;
+        int col = 0;
+
+        for(int i = 0; i < trace1.size(); i++){
+
+            int t1 = trace1.read(i);
+            int t2 = trace2.read(i);
+
+            String color = "#e74c3c";
+
+            if(t1 == t2)
+                color = "#2ecc71";
+            else if(t1 == - 1 || t2 == -1){
+                color = "#ecf0f1";
+            }
+
+            col = i%width;
+            row = i/width;
+
+            g.setColor(Color.decode(color));
+            g.drawRect(col*pieceSize, row*pieceSize, pieceSize, pieceSize);
+            g.fillRect(col*pieceSize, row*pieceSize, pieceSize, pieceSize);
+        }
+
+        ImageIO.write(img, "png", writer);
 
     }
 

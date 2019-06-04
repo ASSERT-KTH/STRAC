@@ -36,11 +36,14 @@ public class ArrayHelper {
         return index;
     }
 
+    static Random r = new Random();
+
     public static void reduceByHalf(IReadArray<Integer> target, IArray<Integer> result, RepresentationFunction<Integer, Integer> representativeExtractor){
 
         for(int i = 0; i < target.size() - target.size()%2; i += 2){
 
-            result.add(representativeExtractor.getRepresentativeElement(Arrays.asList(target.read(i), target.read(i + 1))));
+            //result.add(target.read( i + r.nextInt(100)%2));
+            result.add(target.read( i));
         }
 
     }

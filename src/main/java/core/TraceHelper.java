@@ -7,12 +7,14 @@ import core.data_structures.memory.InMemoryArray;
 import core.models.TraceMap;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.nio.file.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class TraceHelper {
 
