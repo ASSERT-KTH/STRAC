@@ -6,4 +6,5 @@ public interface IArray<T> extends IReadArray<T> {
 
     void add(int position, T value);
 
+
 }

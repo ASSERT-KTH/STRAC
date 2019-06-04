@@ -1,8 +1,11 @@
 package core.data_structures.memory;
 
 import core.data_structures.IArray;
+import core.data_structures.IMapAdaptor;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -37,6 +40,21 @@ public class InMemoryArray<T> implements IArray<T> {
     @Override
     public int size() {
         return items.size();
+    }
+
+    @Override
+    public void reset() {
+
+    }
+
+    @Override
+    public void writeTo(Writer wr, IMapAdaptor<T> adaptor) throws IOException {
+        this.reset();
+
+        for(T item: this)
+            wr.write(adaptor.getValue(item));
+
+        wr.close();
     }
 
     @Override

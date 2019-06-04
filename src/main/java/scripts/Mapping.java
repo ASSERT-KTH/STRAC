@@ -9,7 +9,6 @@ import core.data_structures.IArray;
 import core.data_structures.IDict;
 import core.data_structures.ISet;
 import core.data_structures.memory.InMemoryDict;
-import core.persistence.array.PersistentIntegerArray;
 import ngram.Generator;
 import ngram.hash_keys.IHashCreator;
 

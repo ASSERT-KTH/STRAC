@@ -1,4 +1,3 @@
-import core.persistence.array.PersistentIntegerArray;
 import core.utils.TimeUtils;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -11,7 +10,7 @@ import java.io.IOException;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DataStructureTest {
 
-    @Test
+    /*@Test
     public void test0CreateFile() throws IOException {
 
         new File("test1.array").delete();
@@ -76,6 +75,6 @@ public class DataStructureTest {
 
         store.close();
 
-    }
+    }*/
 
 }

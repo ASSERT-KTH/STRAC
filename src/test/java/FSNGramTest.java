@@ -10,7 +10,6 @@ import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemorySet;
 import core.models.ComparisonDto;
 import core.models.TraceMap;
-import core.persistence.array.PersistentIntegerArray;
 import core.utils.TimeUtils;
 import ngram.Generator;
 import ngram.generators.StringKeyGenerator;

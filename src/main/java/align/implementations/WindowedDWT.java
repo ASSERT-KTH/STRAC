@@ -79,7 +79,7 @@ public class WindowedDWT extends Aligner {
         int i = trace1.size();
         int j = trace2.size();
 
-        IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray(InsertOperation.class);
+        IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray(null, 1000000, InsertOperation.OperationAdapter);
 
 
         while ((i > 0) || (j > 0)) // 0,0 item

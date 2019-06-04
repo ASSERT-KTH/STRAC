@@ -4,10 +4,12 @@ import core.ServiceRegister;
 import core.data_structures.IArray;
 import core.data_structures.IDict;
 import core.data_structures.ISet;
+import core.data_structures.buffered.BufferedCollection;
 import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemorySet;
 import core.data_structures.segment_tree.SegmentTree;
+import core.utils.HashingHelper;
 import core.utils.TimeUtils;
 import ngram.Generator;
 import ngram.hash_keys.IHashCreator;
@@ -26,24 +28,10 @@ public class SegmentTreeTest extends BaseTest {
     @Before
     public void setup(){
         ServiceRegister.registerProvider(new IServiceProvider() {
-            @Override
-            public <T> IArray<T> allocateNewArray(Class<T> clazz) {
-                return new InMemoryArray<T>();
-            }
 
             @Override
-            public  <T> IArray<T> allocateNewArray(int size, Class<T> clazz) {
-                return new InMemoryArray<>(size);
-            }
-
-            @Override
-            public  <T> IArray<T> allocateNewArray(String id, Class<T> clazz) {
-                return null;
-            }
-
-            @Override
-            public  <T> IArray<T> allocateNewArray(T[] items, Class<T> clazz) {
-                return new InMemoryArray<T>(items);
+            public <T> IArray<T> allocateNewArray(String id, int size, BufferedCollection.ITypeAdaptor<T> adaptor) {
+                return new InMemoryArray<>();
             }
 
             @Override
@@ -71,7 +59,8 @@ public class SegmentTreeTest extends BaseTest {
     @Test
     public void segmentTreeTest(){
 
-        IArray<Integer> array = ServiceRegister.getProvider().allocateNewArray(generateRandomIntegers(8000), Integer.class);
+        IArray<Integer> array = ServiceRegister.getProvider().allocateNewArray(
+                null, 10000, HashingHelper.IntegerAdapter);
 
         SegmentTree<Integer, Integer[]> root = SegmentTree.build(array, 0, array.size() - 1, new IHashCreator<Integer, Integer[]>() {
             @Override
@@ -136,7 +125,8 @@ public class SegmentTreeTest extends BaseTest {
     @Test
     public void segmentTreeBasic(){
 
-        IArray<Integer> array = ServiceRegister.getProvider().allocateNewArray(new Integer[]{1, 2, 3, 4, 5, 6, 1, 2, 1, 2}, Integer.class);
+        IArray<Integer> array = ServiceRegister.getProvider().allocateNewArray(
+                null, 100, HashingHelper.IntegerAdapter);
 
         TimeUtils utl = new TimeUtils();
         utl.reset();

@@ -10,6 +10,7 @@ import core.data_structures.IArray;
 import core.data_structures.IReadArray;
 import core.utils.ArrayHelper;
 import core.utils.DWTHelper;
+import core.utils.HashingHelper;
 import core.utils.TimeUtils;
 
 import java.util.List;
@@ -50,11 +51,16 @@ public class FastDWT extends Aligner {
 
             TimeUtils utl = new TimeUtils();
 
-            IArray<Integer> reduced1 = ServiceRegister.getProvider().allocateNewArray(getRandomName(), Integer.class);
+            int halfSize1 = trace1.size() - trace1.size()%2;
+            int halfSize2 = trace2.size() - trace2.size()%2;
+
+            IArray<Integer> reduced1 = ServiceRegister.getProvider().allocateNewArray
+                    (null, halfSize1, HashingHelper.IntegerAdapter);
             ArrayHelper.reduceByHalf(trace1, reduced1,
                     ArrayHelper::getMostFequentRepresentation); // O(n)
 
-            IArray<Integer> reduced2 = ServiceRegister.getProvider().allocateNewArray(getRandomName(), Integer.class);
+            IArray<Integer> reduced2 = ServiceRegister.getProvider().allocateNewArray(
+                    null, halfSize2, HashingHelper.IntegerAdapter);
             ArrayHelper.reduceByHalf(trace2, reduced2,
                     ArrayHelper::getMostFequentRepresentation); // O(n)
 

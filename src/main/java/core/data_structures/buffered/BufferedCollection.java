@@ -2,12 +2,10 @@ package core.data_structures.buffered;
 
 import core.ServiceRegister;
 import core.data_structures.IArray;
+import core.data_structures.IMapAdaptor;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Iterator;
@@ -93,9 +91,11 @@ public class BufferedCollection<T> implements IArray<T> {
     @Override
     public T read(int position) {
 
+
         position = position*adaptor.size();
 
         int previous = buffer.position();
+
 
         byte[] chunk = new byte[adaptor.size()];
         buffer.position(position);
@@ -137,10 +137,25 @@ public class BufferedCollection<T> implements IArray<T> {
         return (int)_size;
     }
 
+    @Override
+    public void reset() {
+        buffer.position(0);
+    }
+
+    @Override
+    public void writeTo(Writer wr, IMapAdaptor<T> adaptor) throws IOException {
+        this.reset();
+        buffer.force();
+        for(T item: this)
+            wr.write(adaptor.getValue(item));
+
+        wr.close();
+    }
+
     @NotNull
     @Override
     public Iterator<T> iterator() {
-        return null;
+        return new BufferedIterator<>(this);
     }
 
     public interface ITypeAdaptor<T>{
@@ -150,5 +165,26 @@ public class BufferedCollection<T> implements IArray<T> {
         byte[] toBytes(T i);
 
         int size();
+    }
+
+    public class BufferedIterator<T> implements Iterator<T>{
+
+        int index = 0;
+
+        BufferedCollection<T> collection;
+
+        public BufferedIterator(BufferedCollection<T> collection){
+            this.collection = collection;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return index < this.collection.size();
+        }
+
+        @Override
+        public T next() {
+            return collection.read(index++);
+        }
     }
 }

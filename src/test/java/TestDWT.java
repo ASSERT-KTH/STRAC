@@ -8,6 +8,7 @@ import core.TraceHelper;
 import core.data_structures.IArray;
 import core.data_structures.IDict;
 import core.data_structures.ISet;
+import core.data_structures.buffered.BufferedCollection;
 import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemorySet;
@@ -33,24 +34,10 @@ public class TestDWT {
     @Before
     public void setup(){
         ServiceRegister.registerProvider(new IServiceProvider() {
-            @Override
-            public  <T> IArray<T> allocateNewArray(Class<T> clazz) {
-                return new InMemoryArray<T>();
-            }
 
             @Override
-            public  <T> IArray<T> allocateNewArray(int size, Class<T> clazz) {
-                return new InMemoryArray<T>(size);
-            }
-
-            @Override
-            public <T> IArray<T> allocateNewArray(String id, Class<T> clazz) {
-                return null;
-            }
-
-            @Override
-            public  <T> IArray<T> allocateNewArray(T[] items, Class<T> clazz) {
-                return new InMemoryArray<T>(items);
+            public <T> IArray<T> allocateNewArray(String id, int size, BufferedCollection.ITypeAdaptor<T> adaptor) {
+                return new InMemoryArray<>();
             }
 
             @Override

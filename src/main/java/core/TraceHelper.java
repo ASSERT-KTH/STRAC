@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import core.data_structures.IArray;
 import core.data_structures.memory.InMemoryArray;
 import core.models.TraceMap;
+import core.utils.HashingHelper;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
@@ -56,9 +57,14 @@ public class TraceHelper {
         return this.bag.keySet().size();
     }
 
-    public IArray<Integer> updateBag(Stream<String> sentences, String fileName){
+    public IArray<Integer> updateBag(Stream<String> sentences,
+                                     Stream<String> patch,
+                                     String fileName){
 
-        IArray<Integer> result = ServiceRegister.getProvider().allocateNewArray(fileName, Integer.class);
+        IArray<Integer> result = ServiceRegister.getProvider().allocateNewArray
+                (null,
+                (int)patch.count(), HashingHelper.IntegerAdapter);
+
 
         for (Iterator<String> it = sentences.iterator(); it.hasNext(); ) {
             String sentence = it.next();
@@ -85,7 +91,9 @@ public class TraceHelper {
 
         try {
 
-            trace = updateBag(Files.lines(Paths.get(fileName)), fileName);
+            trace = updateBag(Files.lines(Paths.get(fileName)),
+                    Files.lines(Paths.get(fileName)),
+                    fileName);
             trace.close();
 
             core.LogProvider.LOGGER()
@@ -96,10 +104,9 @@ public class TraceHelper {
             return new TraceMap(trace, fileName, createTree);
         } catch (IOException e) {
             core.LogProvider.info("Error", e.getMessage());
-            return new TraceMap(ServiceRegister.getProvider().allocateNewArray(Integer.class), fileName + ' ' + e.getMessage(), false);
+
+            throw new RuntimeException("Error");
         }
-
-
     }
 
     public List<TraceMap> mapTraceSetByFileLine(List<String> files, boolean createTree){

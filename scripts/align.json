@@ -1,7 +1,7 @@
 {
   "files": [
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated0/original.bytecode.txt",
-    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated1/original.bytecode.txt"
+    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated11/original.bytecode.txt",
+    "/Users/javier/Documents/Develop/naenie/out/sha256.old.js/mutated12/original.bytecode.txt"
   ],
   "delimiter": "\n",
   "pairs": [
@@ -19,7 +19,7 @@
   },
   "outputDir": "reports",
   "outputAlignment": true,
-  "outputAlignmentMap": "reports/map.json",
+  "outputAlignmentMap": "map.json",
   "exportHTML": false,
   "exportImage": true
 }

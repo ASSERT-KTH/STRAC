@@ -54,7 +54,8 @@ public class DWT extends Aligner {
             }
         }
 
-        IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray(InsertOperation.class);
+        IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray
+                (null, 1000000, InsertOperation.OperationAdapter);
 
 
         int i = maxI;

@@ -2,7 +2,9 @@ package core.utils;
 
 import core.data_structures.IArray;
 import core.data_structures.IReadArray;
+import core.data_structures.buffered.BufferedCollection;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,4 +46,21 @@ public class HashingHelper {
     public static String getRandomName(){
         return UUID.randomUUID().toString();
     }
+
+    public static BufferedCollection.ITypeAdaptor<Integer> IntegerAdapter = new BufferedCollection.ITypeAdaptor<Integer>() {
+        @Override
+        public Integer fromBytes(byte[] chunk) {
+            return ByteBuffer.wrap(chunk).getInt();
+        }
+
+        @Override
+        public byte[] toBytes(Integer i) {
+            return ByteBuffer.allocate(4).putInt(i).array();
+        }
+
+        @Override
+        public int size() {
+            return 4;
+        }
+    };
 }
