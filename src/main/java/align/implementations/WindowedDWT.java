@@ -28,10 +28,10 @@ public class WindowedDWT extends Aligner {
         return this.align(trace1, trace2, null);
     }
 
-    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2, WindowMap<CellInfo> window) {
+    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2, WindowMap<Boolean> window) {
 
 
-        WindowMap<CellInfo> map = window;
+        WindowMap<Boolean> map = window;
 
         if(window == null)
             map = createWindow(trace1.size() + 1, trace2.size() + 1);
@@ -142,34 +142,19 @@ public class WindowedDWT extends Aligner {
     }
 
 
-    public WindowMap<CellInfo> createWindow(int maxI, int maxJ){
+    public WindowMap<Boolean> createWindow(int maxI, int maxJ){
 
-        WindowMap<CellInfo> map = new WindowMap<>();
+        WindowMap<Boolean> map = new WindowMap<>();
 
         for(int i = 1; i < maxI; i ++){
             for(int j = 1; j < maxJ; j++){
-                map.set(i, j, new CellInfo(0, i, j));
+                map.set(i, j, true);
             }
         }
 
         return map;
     }
 
-    public static class CellInfo{
-
-        public int value;
-
-        public int j;
-        public int i;
-
-        public CellInfo(int value, int i, int j){
-            this.i = i;
-            this.j = j;
-
-            this.value = value;
-        }
-
-    }
 
     public static class WindowMap<T>{
 
@@ -178,6 +163,7 @@ public class WindowedDWT extends Aligner {
 
         public WindowMap(){
             this.map = new HashMap<>();
+
         }
 
         public boolean existColumn(int i)

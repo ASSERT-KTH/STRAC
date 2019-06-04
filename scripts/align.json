@@ -10,7 +10,7 @@
   "method":
   {
     "name": "FastDTW",
-    "params": [40]
+    "params": [100]
   },
   "comparison": {
     "eq": 0,

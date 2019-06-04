@@ -76,7 +76,7 @@ public class FastDWT extends Aligner {
             utl.time("Disposing");
             utl.reset();
 
-            WindowedDWT.WindowMap<WindowedDWT.CellInfo> window = DWTHelper.expandWindow(distance.getInsertions(), radius, trace1.size(),trace2.size()); // O(n)
+            WindowedDWT.WindowMap<Boolean> window = DWTHelper.expandWindow(distance.getInsertions(), radius, trace1.size(),trace2.size()); // O(n)
 
 
             utl.time("Expanding total");
