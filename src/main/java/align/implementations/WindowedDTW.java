@@ -28,10 +28,10 @@ public class WindowedDTW extends Aligner {
         return this.align(trace1, trace2, null);
     }
 
-    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2, WindowMap<Boolean> window) {
+    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2, EmptyMap window) {
 
 
-        WindowMap<Boolean> map = window;
+        EmptyMap map = window;
 
         if(window == null)
             map = createWindow(trace1.size() + 1, trace2.size() + 1);
@@ -142,19 +142,57 @@ public class WindowedDTW extends Aligner {
     }
 
 
-    public WindowMap<Boolean> createWindow(int maxI, int maxJ){
+    public EmptyMap createWindow(int maxI, int maxJ){
 
-        WindowMap<Boolean> map = new WindowMap<>();
+        EmptyMap map = new EmptyMap();
 
         for(int i = 1; i < maxI; i ++){
             for(int j = 1; j < maxJ; j++){
-                map.set(i, j, true);
+                map.set(i, j);
             }
         }
 
         return map;
     }
 
+
+    public static class EmptyMap{
+        Map<Integer, Set<Integer>> map;
+
+
+        public EmptyMap(){
+            this.map = new HashMap<>();
+
+        }
+
+        public boolean existColumn(int i)
+        {
+            return this.map.containsKey(i);
+        }
+
+        public boolean existRow(int i, int j){
+            return this.map.get(i).contains(j);
+        }
+
+        public void set(int i, int j){
+
+            if(i < 0 || j < 0)
+                throw new RuntimeException("Invalid indexes " + i + " " + j);
+
+            if(!this.map.containsKey(i))
+                this.map.put(i, new HashSet<>());
+
+            this.map.get(i).add(j);
+        }
+
+        public Iterable<Integer> getColumns(){
+            return this.map.keySet();
+        }
+
+        public Iterable<Integer> getRow(int column){
+            return this.map.get(column);
+        }
+    }
 
     public static class WindowMap<T>{
 

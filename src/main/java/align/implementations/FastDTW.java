@@ -71,7 +71,7 @@ public class FastDTW extends Aligner {
             utl.time("Disposing");
             utl.reset();
 
-            WindowedDTW.WindowMap<Boolean> window = DWTHelper.expandWindow(distance.getInsertions(), radius, trace1.size(),trace2.size()); // O(n)
+            WindowedDTW.EmptyMap window = DWTHelper.expandWindow(distance.getInsertions(), radius, trace1.size(),trace2.size()); // O(n)
 
 
             utl.time("Expanding total");

@@ -99,11 +99,11 @@ public class DWTHelper {
         return result;
     }
 
-    public static WindowedDTW.WindowMap<Boolean>
+    public static WindowedDTW.EmptyMap
     expandWindow(IArray<InsertOperation> ops, int radius, int lenT1, int lenT2){
 
-        WindowedDTW.WindowMap<Boolean> grown = new WindowedDTW.WindowMap<Boolean>();
-        WindowedDTW.WindowMap<Boolean> expansion = new WindowedDTW.WindowMap<Boolean>();
+        WindowedDTW.EmptyMap grown = new WindowedDTW.EmptyMap();
+        WindowedDTW.EmptyMap expansion = new WindowedDTW.EmptyMap();
 
         TimeUtils utl = new TimeUtils();
 
@@ -112,7 +112,7 @@ public class DWTHelper {
         utl.reset();
         for(InsertOperation op: ops){
 
-            expansion.set(op.getTrace1Index(), op.getTrace2Index(), true);
+            expansion.set(op.getTrace1Index(), op.getTrace2Index());
 
             for(int i = -radius; i <= radius; i++) {
                 for (int j = -radius; j <= radius; j++) {
@@ -122,7 +122,7 @@ public class DWTHelper {
 
                     //LogProvider.info("Size", expansion.size());
                     if (nI >= 0 && nJ >= 0 && nI < lenT1 && nJ < lenT2 && (!expansion.existColumn(nI) || !expansion.existRow(nI, nJ)))
-                        expansion.set(nI, nJ, true);
+                        expansion.set(nI, nJ);
 
                 }
             }
@@ -134,17 +134,17 @@ public class DWTHelper {
         for(int i: expansion.getColumns()){
             for(int j: expansion.getRow(i)){
 
-                grown.set(i*2, j*2, true);
-                grown.set(i*2, j*2 + 1, true);
-                grown.set(i*2 + 1, j*2 + 1, true);
-                grown.set(i*2 + 1, j*2, true);
+                grown.set(i*2, j*2);
+                grown.set(i*2, j*2 + 1);
+                grown.set(i*2 + 1, j*2 + 1);
+                grown.set(i*2 + 1, j*2);
             }
         }
 
         utl.time("Growing");
 
 
-        WindowedDTW.WindowMap<Boolean> result = new WindowedDTW.WindowMap<>();
+        WindowedDTW.EmptyMap result = new WindowedDTW.EmptyMap();
 
         int startJ = 0;
 
@@ -152,7 +152,7 @@ public class DWTHelper {
             int newStartJ = -1;
             for(int j =startJ; j < lenT2; j++){
                 if(grown.existColumn(i) && grown.existRow(i, j)){
-                    result.set(i + 1, j + 1, true);
+                    result.set(i + 1, j + 1);
 
                     if(newStartJ == -1){
                         newStartJ = j;
