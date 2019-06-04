@@ -11,15 +11,15 @@ import core.data_structures.IReadArray;
 
 import java.util.*;
 
-public class WindowedDWT extends Aligner {
+public class WindowedDTW extends Aligner {
     @Override
     public String getName() {
-        return "Windowed DWT";
+        return "Windowed DTW";
     }
 
     private ICellComparer comparer;
 
-    public WindowedDWT(ICellComparer comparer){
+    public WindowedDTW(ICellComparer comparer){
         this.comparer = comparer;
     }
 

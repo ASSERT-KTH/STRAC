@@ -1,15 +1,12 @@
 package core.utils;
 
 import align.InsertOperation;
-import align.implementations.WindowedDWT;
+import align.implementations.WindowedDTW;
 import core.LogProvider;
-import core.ServiceRegister;
 import core.data_structures.IArray;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static core.utils.HashingHelper.getRandomName;
 
 public class DWTHelper {
 
@@ -102,29 +99,29 @@ public class DWTHelper {
         return result;
     }
 
-    public static WindowedDWT.WindowMap<Boolean>
+    public static WindowedDTW.WindowMap<Boolean>
     expandWindow(IArray<InsertOperation> ops, int radius, int lenT1, int lenT2){
 
-        WindowedDWT.WindowMap<Boolean> grown = new WindowedDWT.WindowMap<Boolean>();
-        WindowedDWT.WindowMap<Boolean> expansion = new WindowedDWT.WindowMap<Boolean>();
+        WindowedDTW.WindowMap<Boolean> grown = new WindowedDTW.WindowMap<Boolean>();
+        WindowedDTW.WindowMap<Boolean> expansion = new WindowedDTW.WindowMap<Boolean>();
 
         TimeUtils utl = new TimeUtils();
 
-        LogProvider.info("Expanding...");
+        LogProvider.info("Expanding to...", ops.size()*4*radius*radius);
 
         utl.reset();
         for(InsertOperation op: ops){
 
             expansion.set(op.getTrace1Index(), op.getTrace2Index(), true);
 
-            for(int i = -radius; i <= radius; i++){
-                for(int j = -radius; j <= radius; j++){
+            for(int i = -radius; i <= radius; i++) {
+                for (int j = -radius; j <= radius; j++) {
 
                     int nI = op.getTrace1Index() + i;
                     int nJ = op.getTrace2Index() + j;
 
                     //LogProvider.info("Size", expansion.size());
-                    if(nI >= 0 && nJ >=0 && nI < lenT1 && nJ < lenT2 && (!expansion.existColumn(nI) || !expansion.existRow(nI, nJ)))
+                    if (nI >= 0 && nJ >= 0 && nI < lenT1 && nJ < lenT2 && (!expansion.existColumn(nI) || !expansion.existRow(nI, nJ)))
                         expansion.set(nI, nJ, true);
 
                 }
@@ -147,7 +144,7 @@ public class DWTHelper {
         utl.time("Growing");
 
 
-        WindowedDWT.WindowMap<Boolean> result = new WindowedDWT.WindowMap<>();
+        WindowedDTW.WindowMap<Boolean> result = new WindowedDTW.WindowMap<>();
 
         int startJ = 0;
 

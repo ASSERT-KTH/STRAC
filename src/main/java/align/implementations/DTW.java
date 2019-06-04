@@ -13,17 +13,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class DWT extends Aligner {
+public class DTW extends Aligner {
 
 
     ICellComparer comparer;
 
     @Override
     public String getName() {
-        return "DWT";
+        return "DTW";
     }
 
-    public DWT(ICellComparer comparer){
+    public DTW(ICellComparer comparer){
         this.comparer = comparer;
     }
 

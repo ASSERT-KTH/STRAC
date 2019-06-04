@@ -1,6 +1,6 @@
 import align.*;
-import align.implementations.DWT;
-import align.implementations.FastDWT;
+import align.implementations.DTW;
+import align.implementations.FastDTW;
 import core.IServiceProvider;
 import core.LogProvider;
 import core.ServiceRegister;
@@ -12,22 +12,18 @@ import core.data_structures.buffered.BufferedCollection;
 import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemorySet;
-import core.models.ComparisonDto;
 import core.models.TraceMap;
 import core.utils.TimeUtils;
 import ngram.Generator;
-import ngram.generators.StringKeyGenerator;
 import ngram.hash_keys.IHashCreator;
-import ngram.interfaces.ISetComparer;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.*;
 
-public class TestDWT {
+public class TestDTW {
 
     Random r = new Random();
 
@@ -80,7 +76,7 @@ public class TestDWT {
         IArray<Integer> trace1 = new InMemoryArray(Arrays.asList(1,2,3, 2, 1, 3, 1));
         IArray<Integer> trace2 = new InMemoryArray(Arrays.asList(1, 2, 3, 2, 4, 2, 1, 4, 1));
 
-        Aligner al = new DWT((a, b) -> a == b? 2: -1);
+        Aligner al = new DTW((a, b) -> a == b? 2: -1);
 
         AlignDistance distance =  al.align(trace2, trace1);
 
@@ -107,7 +103,7 @@ public class TestDWT {
 
         utl.reset();
 
-        al = new FastDWT(2, (a, b) -> a == b? 2: -1);
+        al = new FastDTW(2, (a, b) -> a == b? 2: -1);
 
         distance =  al.align(trace1, trace2);
 
@@ -118,7 +114,7 @@ public class TestDWT {
 
 
         utl.reset();
-        al = new DWT((a, b) -> a == b? 2: -1);
+        al = new DTW((a, b) -> a == b? 2: -1);
 
         distance =  al.align(trace1, trace2);
 
@@ -136,7 +132,7 @@ public class TestDWT {
         );
 
 
-        Aligner al = new FastDWT( 4, (a, b) -> a == b? 2: -1);
+        Aligner al = new FastDTW( 4, (a, b) -> a == b? 2: -1);
 
         AlignDistance distance =  al.align(traces.get(0).plainTrace, traces.get(1).plainTrace);
 
@@ -189,7 +185,7 @@ public class TestDWT {
         IArray<Integer> trace2 = new InMemoryArray(Arrays.asList(1, 2, 3, 2, 4, 2, 1, 4, 1));
 
 
-        Aligner al = new FastDWT( 0, (a, b) -> a == b? 2: -1);
+        Aligner al = new FastDTW( 0, (a, b) -> a == b? 2: -1);
 
         AlignDistance distance =  al.align(trace1, trace2);
 
@@ -197,7 +193,7 @@ public class TestDWT {
         LogProvider.info(distance.getInsertions());
 
 
-        al = new DWT((a, b) -> a == b? 2: -1);
+        al = new DTW((a, b) -> a == b? 2: -1);
 
         distance =  al.align(trace1, trace2);
 

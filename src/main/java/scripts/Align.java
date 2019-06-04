@@ -1,48 +1,31 @@
 package scripts;
 
-import align.AlignDistance;
-import align.Aligner;
-import align.InsertOperation;
-import align.implementations.DWT;
-import align.implementations.FastDWT;
+import align.implementations.DTW;
+import align.implementations.FastDTW;
 import align.implementations.IImplementationInfo;
 import com.google.gson.Gson;
 import core.IServiceProvider;
 import core.LogProvider;
 import core.ServiceRegister;
-import core.TraceHelper;
 import core.data_structures.IArray;
 import core.data_structures.IDict;
-import core.data_structures.IReadArray;
 import core.data_structures.ISet;
 import core.data_structures.buffered.BufferedCollection;
-import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryDict;
-import core.models.AlignResultDto;
-import core.models.TraceMap;
 import interpreter.AlignInterpreter;
 import interpreter.dto.Alignment;
 import ngram.Generator;
 import ngram.hash_keys.IHashCreator;
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
-import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageOutputStream;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static core.utils.HashingHelper.IntegerAdapter;
 import static core.utils.HashingHelper.getRandomName;
 
 public class Align {
@@ -84,8 +67,8 @@ public class Align {
         });
 
         comparers = new HashMap<>();
-        comparers.put("DTW", (objs) -> new DWT((x, y) -> x == y? 1: -1));
-        comparers.put("FastDTW", (objs) -> new FastDWT(((Double)objs[0]).intValue()
+        comparers.put("DTW", (objs) -> new DTW((x, y) -> x == y? 1: -1));
+        comparers.put("FastDTW", (objs) -> new FastDTW(((Double)objs[0]).intValue()
                 , (x, y) -> x == y? 2: -1));
 
         ClassLoader classLoader = Main.class.getClassLoader();

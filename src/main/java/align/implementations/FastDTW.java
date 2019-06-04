@@ -3,7 +3,6 @@ package align.implementations;
 import align.AlignDistance;
 import align.Aligner;
 import align.ICellComparer;
-import align.InsertOperation;
 import core.LogProvider;
 import core.ServiceRegister;
 import core.data_structures.IArray;
@@ -13,31 +12,27 @@ import core.utils.DWTHelper;
 import core.utils.HashingHelper;
 import core.utils.TimeUtils;
 
-import java.util.List;
-
-import static core.utils.HashingHelper.getRandomName;
-
-public class FastDWT extends Aligner {
+public class FastDTW extends Aligner {
 
 
     private int radius = 2;
     private ICellComparer comparer;
 
-    private DWT standard;
-    private WindowedDWT windowed;
+    private DTW standard;
+    private WindowedDTW windowed;
 
 
-    public FastDWT(int radius, ICellComparer comparer){
+    public FastDTW(int radius, ICellComparer comparer){
         this.radius = radius;
         this.comparer = comparer;
 
-        this.standard = new DWT(comparer);
-        this.windowed = new WindowedDWT(comparer);
+        this.standard = new DTW(comparer);
+        this.windowed = new WindowedDTW(comparer);
     }
 
     @Override
     public String getName() {
-        return "FastDWT";
+        return "FastDTW";
     }
 
     @Override
@@ -76,7 +71,7 @@ public class FastDWT extends Aligner {
             utl.time("Disposing");
             utl.reset();
 
-            WindowedDWT.WindowMap<Boolean> window = DWTHelper.expandWindow(distance.getInsertions(), radius, trace1.size(),trace2.size()); // O(n)
+            WindowedDTW.WindowMap<Boolean> window = DWTHelper.expandWindow(distance.getInsertions(), radius, trace1.size(),trace2.size()); // O(n)
 
 
             utl.time("Expanding total");
