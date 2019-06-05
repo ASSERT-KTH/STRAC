@@ -3,12 +3,12 @@
 
   "method": {
     "name": "Jaccard",
-    "params": [1000],
+    "params": [10],
     "names": ["size"]
   },
   "exportComparisson": "out.json",
   "printComparisson": true,
   "exportSegmentTrees": false,
   "exportBag": "bag.json",
-  "exportNgram": [1000]
+  "exportNgram": []
 }
