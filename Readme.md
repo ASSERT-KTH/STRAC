@@ -63,11 +63,14 @@ traces.get(j).plainTrace)
 {
   "files": [
     "t1.bytecode.txt",
-    "t2.bytecode.txt"
+    "t2.bytecode.txt",
+    "t3.bytecode.txt",
+    "t4.bytecode.txt"
   ],
   "pairs": [
-
-  ],
+        [0, 1],
+        [0, 3]
+        ],
   "method":
   {
     "name": "FastDTW",
