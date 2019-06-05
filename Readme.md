@@ -133,7 +133,7 @@ ISet s1 = generator.getNGramSet(1000, traces.get(i).trace).keySet();
 ISet s2 = generator.getNGramSet(1000, traces.get(j).trace).keySet();
 
 
-// Computing Jaccard distance for example
+// Computing Jaccard distance
 ...
 return 1 - 1.0*s1.intersect(s2).size()/(s1.union(s2).size());
 
