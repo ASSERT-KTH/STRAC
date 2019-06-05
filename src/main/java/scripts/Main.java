@@ -195,8 +195,10 @@ public class Main {
 
         Generator generatpr = ServiceRegister.getProvider().getGenerator();
 
-        if(payload.exportNgram != null){
+        new StringKeyGenerator(t -> t[0] + " " + t[1]);
 
+        if(payload.exportNgram != null){
+            LogProvider.info("Exporting bag...");
             for(int size: payload.exportNgram){
                 int i = 0;
 

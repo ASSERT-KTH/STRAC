@@ -1,5 +1,6 @@
 package core.data_structures.segment_tree;
 
+import core.LogProvider;
 import core.data_structures.IArray;
 import core.data_structures.IReadArray;
 import ngram.hash_keys.IHashCreator;
@@ -84,6 +85,9 @@ public class SegmentTree<T, THash> {
 
 
     public static  <T, THash> SegmentTree<T, THash> build(IReadArray<T> stream, int start, int end, IHashCreator<T, THash> hashCreator){
+
+        if(stream.size() == 0)
+            return null;
 
         if(start == end){
             // is Leaf

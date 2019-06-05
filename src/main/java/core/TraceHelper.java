@@ -96,6 +96,9 @@ public class TraceHelper {
                     fileName);
             trace.close();
 
+
+            LogProvider.info("New trace added size: ", trace.size());
+
             core.LogProvider.LOGGER()
                     .info(String.format("Global bag info: total sentences %s different sentences %s", this.getSentecesCount(), this.getDifferentSentenceCount()));
 
@@ -103,6 +106,7 @@ public class TraceHelper {
 
             return new TraceMap(trace, fileName, createTree);
         } catch (IOException e) {
+            e.printStackTrace();
             core.LogProvider.info("Error", e.getMessage());
 
             throw new RuntimeException("Error");
