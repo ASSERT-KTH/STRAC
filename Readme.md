@@ -1,13 +1,35 @@
-## Time warping toolkit
+## Token series toolkit
 
-Time warping algorithms implemented with MappedByteBuffer data structure bringing the capability of processing large files in an efficent way 
+This tool is based in two principal concepts, one for ngrams processing and another for time warping processing.The algorithms are implemented with a MappedByteBuffer data structure abstraction,bringing the capability of processing large files in an efficent way. 
 
-### Included algorithms
+All files are processed line by line, asigning a different integer to a different String line , which is the alphabet. For example: 
+```
+malloc   ------ 1
+free     ------ 2
+malloc   ------ 1
+malloc   ------ 1
+```
+
+In the case of ngram query tool, we have comparisson and ngram-set exporting capabilities. The ngram sequence is <a href="https://github.com/Jacarte/bufferedDTW/blob/master/src/main/java/core/utils/HashingHelper.java">hashing</a> into a integer tuple of size 2 to achieve a fast-lite way to compare and store ngrams, we are taking in count that there is no collision probability between these hashes due to alphabet size in the possible token series. The whole query data structure is stored in a SegmentTree, then, getting the sequence hash of an interval is retrieved in the query SegmentTree node operation.
+
+```
+    [0:4] -> hx
+     /        \
+    /          \
+ [0:1] -> h1   [2: 3] -> h2     [4:5] -> h1  
+  /\            /\                       / \
+1   2          3  4                     1   2 
+
+```
+
+### Dynamic time warping
+
+#### Included algorithms
 - DTW
 - FastDTW
 - WindowedDTW
 
-### Use source code
+#### Use source code
 
 1 - Register collection allocator
 
@@ -33,19 +55,22 @@ traces.get(j).plainTrace)
 
 ```
 
-### Use cli
+#### Use from console
 
-- Call java Align.main **config.json**
+- Call ```java Align.main **config.json**```
 
 ```json
 {
   "files": [
     "t1.bytecode.txt",
-    "t2.bytecode.txt"
+    "t2.bytecode.txt",
+    "t3.bytecode.txt",
+    "t4.bytecode.txt"
   ],
   "pairs": [
-
-  ],
+        [0, 1],
+        [0, 3]
+        ],
   "method":
   {
     "name": "FastDTW",
@@ -65,13 +90,77 @@ traces.get(j).plainTrace)
 
 ```
 
-### Output example
+### NGram tools
+
+
+#### Use in code
+
+1 - Register collection allocator
+
+```java
+ServiceRegister.registerProvider
+```
+
+2 - Map files
+```java
+TraceHelper helper = new TraceHelper()
+List<TraceMap> traces = helper.mapTraceSetByFileLine(new String[] { "absolute_path1.txt", "absolute_path2.txt"}, true);
+
+// The segment tree for one trace is stored in the **trace** property.
 
 ```
-2019-06-04 23:03:59 INFO  LogProvider:33 - DTW Distance 119170.0
-2019-06-04 23:03:59 INFO  LogProvider:33 - Distance 0.0
-2019-06-04 23:03:59 INFO  LogProvider:33 - Writing align result to file
-2019-06-04 23:03:59 INFO  LogProvider:33 - Exporting to image
-2019-06-04 23:04:04 INFO  LogProvider:33 - Exporting  json distances
-2019-06-04 23:04:04 INFO  LogProvider:33 - Disposing map files
+
+
+
+3 - Invoke a set generator that works with the trace trees
+
+```java
+
+Generator generator = new StringKeyGenerator(t -> t[0] + " " + t[1]);
+
+...
+ 
+ISet nGramSetOfSize1000 = generator.getNGramSet(1000, traces.get(i).trace)
+
+
+```
+
+4 - Work with sets
+
+```java
+
+ISet s1 = generator.getNGramSet(1000, traces.get(i).trace).keySet();
+ISet s2 = generator.getNGramSet(1000, traces.get(j).trace).keySet();
+
+
+// Computing Jaccard distance
+...
+return 1 - 1.0*s1.intersect(s2).size()/(s1.union(s2).size());
+
+```
+
+### Use from console
+
+- Call ```java Main.main **config.json**```
+
+```json
+{
+  "files": [
+
+    "file1",
+    "file2"
+  ],
+
+  "method": {
+    "name": "Jaccard",
+    "params": [1000],
+    "names": ["size"]
+  },
+  "exportComparisson": "out.json",
+  "printComparisson": true,
+  "exportSegmentTrees": true,
+  "exportBag": "bag.json",
+  "exportNgram": [10, 30, 1000, 200000]
+}
+
 ```
