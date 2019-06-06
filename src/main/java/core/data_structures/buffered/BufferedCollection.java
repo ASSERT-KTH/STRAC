@@ -143,6 +143,11 @@ public class BufferedCollection<T> implements IArray<T> {
     }
 
     @Override
+    public T[] getPlain() {
+        return null;
+    }
+
+    @Override
     public void writeTo(Writer wr, IMapAdaptor<T> adaptor) throws IOException {
         this.reset();
         buffer.force();

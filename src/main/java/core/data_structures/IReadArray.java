@@ -2,6 +2,7 @@ package core.data_structures;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.Array;
 
 public interface IReadArray<T> extends Iterable<T>{
 
@@ -16,6 +17,8 @@ public interface IReadArray<T> extends Iterable<T>{
     int size();
 
     void reset();
+
+    T[] getPlain();
 
     void writeTo(Writer wr, IMapAdaptor<T> adaptor) throws IOException;
 }

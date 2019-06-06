@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -45,6 +46,11 @@ public class InMemoryArray<T> implements IArray<T> {
     @Override
     public void reset() {
 
+    }
+
+    @Override
+    public T[] getPlain() {
+        return (T[])items.toArray();
     }
 
     @Override

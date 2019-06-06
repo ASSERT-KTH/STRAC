@@ -1,6 +1,7 @@
 package scripts;
 
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import core.IServiceProvider;
 import core.LogProvider;
 import core.ServiceRegister;
@@ -8,136 +9,154 @@ import core.TraceHelper;
 import core.data_structures.IArray;
 import core.data_structures.IDict;
 import core.data_structures.ISet;
+import core.data_structures.buffered.BufferedCollection;
+import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryDict;
+import core.data_structures.memory.InMemorySet;
+import core.data_structures.postgres.PostgreInterface;
+import core.models.TraceMap;
+import interpreter.dto.Payload;
 import ngram.Generator;
+import ngram.generators.StringKeyGenerator;
+import ngram.generators.comparers.*;
 import ngram.hash_keys.IHashCreator;
 
 import java.io.*;
+import java.math.BigInteger;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Mapping {
 
-/*
     public static void setup(){
         ServiceRegister.registerProvider(new IServiceProvider() {
-            @Override
-            public  <T extends Serializable> IArray<T> allocateNewArray() {
-                return null;
-            }
+
+
 
             @Override
-            public  <T extends Serializable> IArray<T> allocateNewArray(int size) {
-                return null;
-            }
-
-            @Override
-            public  <T extends Serializable> IArray<T> allocateNewArray(String id) {
-                try {
-                    return new PersistentIntegerArray(id, PersistentIntegerArray.CachePolicy.SEQUENTIAL, 1000);
-                } catch (IOException e) {
-                    e.printStackTrace();
-
-                    return null;
-                }
-            }
-
-            @Override
-            public IArray<Integer> allocateNewArray(Integer[] items) {
-                return null;
+            public <T> IArray<T> allocateNewArray(String id, int size, BufferedCollection.ITypeAdaptor<T> adaptor) {
+                return new InMemoryArray<T>();
             }
 
             @Override
             public <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary() {
-                return new InMemoryDict<>();
+                return new InMemoryDict<TKey, TValue>();
             }
 
             @Override
-            public <T, R> IHashCreator<T, R> getHashCreator() {
-                return null;
+            public IHashCreator<Integer, BigInteger[]> getHashCreator() {
+                return new IHashCreator<Integer, BigInteger[]>() {
+                    @Override
+                    public BigInteger[] getHash(BigInteger[] left, BigInteger[] right) {
+
+
+                        BigInteger prime1 = new BigInteger(String.valueOf(1000000000 + 7));
+                        BigInteger prime2 = new BigInteger(String.valueOf(100002593));
+
+                        // These modules for example (also primes)
+                        BigInteger module1 = new BigInteger(String.valueOf(1011013823));
+                        BigInteger module2 = new BigInteger(String.valueOf(1011013823));
+
+                        BigInteger hash1 = new BigInteger("0");
+                        BigInteger hash2 = new BigInteger("0");
+
+
+                        for(BigInteger val: left){
+                            hash1 = hash1.multiply(prime1).add(val).mod(module1);
+                            hash2 = hash2.multiply(prime2).add(val).mod(module2);
+                        }
+
+                        for(BigInteger val: right){
+                            hash1 = hash1.multiply(prime1).add(val).mod(module1);
+                            hash2 = hash2.multiply(prime2).add(val).mod(module2);
+                        }
+
+
+                        return new BigInteger[]{hash1, hash2};
+                    }
+
+                    @Override
+                    public BigInteger[] getHash(Integer left) {
+                        return new BigInteger[] {
+                                new BigInteger(String.valueOf(left)),
+                                new BigInteger(String.valueOf(left))
+                        };
+                    }
+                };
             }
 
             @Override
             public <T> ISet<T> allocateNewSet() {
-                return null;
+                return new InMemorySet<>(new HashSet<>());
             }
+
 
             @Override
             public Generator getGenerator() {
-                return null;
+
+                return new StringKeyGenerator(t -> t[0] + " " + t[1]);
             }
         });
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, SQLException, ParseException {
 
         setup();
 
-        interpreter.dto.Mapping mappingDto =
-                new Gson().fromJson(new FileReader(args[0]), interpreter.dto.Mapping.class);
+
+
+        Payload payload = null;
+
+        LogProvider.info(args);
+
+        String payloadPath = args[0];
+
+        payload = new Gson().fromJson(new JsonReader(new FileReader(payloadPath)), Payload.class);
+        PostgreInterface.setup(payload.dbHost, payload.dbPort, payload.dbName, payload.user, payload.password, false);
+
+
+        // Create session
+        String sessionName = payload.sessionName;
+        String dateString = payload.sessionDate;
+
+        PostgreInterface.getInstance()
+                .executeQuery(String.format("INSERT INTO public.\"Session\" VALUES('%s', false, '%s') ON CONFLICT DO NOTHING", sessionName, dateString));
+
 
         TraceHelper helper = new TraceHelper();
 
-        int size = 1000;
-        StringBuilder lines = new StringBuilder();
-        Pattern p = Pattern.compile(mappingDto.pattern);
+        List<TraceMap> traces = helper.mapTraceSetByFileLine(payload.files, false, true);
 
-        for(String f: mappingDto.files){
 
-            LogProvider.info("Transforming", f);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-            String mapFileName = String.format("%s.marray", f);
+        for(TraceMap tr: traces){
 
-            if(new File(mapFileName).exists())
-                new File(String.format("%s.marray", f)).delete();
+            LogProvider.info("Uploading file", tr.traceFile);
 
-            IArray<Integer> mapResult = ServiceRegister.getProvider().allocateNewArray(mapFileName);
+            PreparedStatement ts = PostgreInterface.getInstance()
+                    .connection.prepareStatement("INSERT INTO public.\"File\" VALUES(?, ?, ?, ?, ?) ON CONFLICT DO NOTHING");
+            ts.setString(1, tr.traceFileName);
+            ts.setString(2, sessionName);
+            ts.setDate(3,  new Date(format.parse(dateString).getTime()));
+            ts.setArray(4, PostgreInterface.getInstance().connection.createArrayOf("integer",
+                    tr.plainTrace.getPlain()));
+            ts.setArray(5, PostgreInterface.getInstance().connection
+            .createArrayOf("text", tr.originalSentences));
 
-            FileInputStream str = new FileInputStream(f);
 
-            while(str.available() != 0) {
-
-                byte[] read = str.readNBytes(size);
-
-                lines.append(new String(read));
-
-                // Split builder;
-
-                String[] split = lines.toString().split(mappingDto.delimiter);
-
-                for (int i = 0; i < split.length - 1; i++) {
-
-                    Matcher m = p.matcher(split[i]);
-
-                    if (m.find()) {
-                        Integer id = helper.updateBag(m.group(mappingDto.groupId));
-
-                        lines = new StringBuilder(lines.substring(split[i].length() +
-                                mappingDto.delimiter.length()));
-
-                        mapResult.add(id);
-                    }
-                }
-
-            }
-
-            Matcher m = p.matcher(lines);
-
-            if (m.find()) {
-                Integer id = helper.updateBag(m.group(mappingDto.groupId));
-                mapResult.add(id);
-            }
-
-            mapResult.close();
+            ts.executeUpdate();
         }
 
-        if(mappingDto.exportPayload){
-            FileWriter writer = new FileWriter("bags.json");
-
-            writer.write(new Gson().toJson(helper));
-
-            writer.close();
-        }
-    }\*/
+    }
 }

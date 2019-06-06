@@ -61,6 +61,8 @@ public class TraceHelper {
                                      Stream<String> patch,
                                      String fileName){
 
+
+
         IArray<Integer> result = ServiceRegister.getProvider().allocateNewArray
                 (null,
                 (int)patch.count(), HashingHelper.IntegerAdapter);
@@ -82,12 +84,13 @@ public class TraceHelper {
     }
 
 
-    public TraceMap mapTraceFileByLine(String fileName, boolean createTree) {
+    public TraceMap mapTraceFileByLine(String fileName, boolean createTree, boolean keepSentences) {
 
         LogProvider.LOGGER()
                 .info("Processing " + fileName);
 
         IArray<Integer> trace ;
+
 
         try {
 
@@ -96,6 +99,10 @@ public class TraceHelper {
                     fileName);
             trace.close();
 
+            String[] sentences = null;
+
+            if(keepSentences)
+                sentences = Files.readAllLines(Paths.get(fileName)).toArray(new String[0]);
 
             LogProvider.info("New trace added size: ", trace.size());
 
@@ -104,7 +111,7 @@ public class TraceHelper {
 
             trace.close(); // Save caching
 
-            return new TraceMap(trace, fileName, createTree);
+            return new TraceMap(trace, fileName, createTree, sentences);
         } catch (IOException e) {
             e.printStackTrace();
             core.LogProvider.info("Error", e.getMessage());
@@ -113,11 +120,11 @@ public class TraceHelper {
         }
     }
 
-    public List<TraceMap> mapTraceSetByFileLine(List<String> files, boolean createTree){
+    public List<TraceMap> mapTraceSetByFileLine(List<String> files, boolean createTree, boolean keepSentences){
 
 
         return files.stream()
-                .map(t -> this.mapTraceFileByLine(t, createTree))
+                .map(t -> this.mapTraceFileByLine(t, createTree, keepSentences))
                 .collect(Collectors.toList());
 
     }
@@ -128,7 +135,7 @@ public class TraceHelper {
 
 
         return files.stream()
-                .map(t -> this.mapTraceFileByLine(t, true))
+                .map(t -> this.mapTraceFileByLine(t, true, false))
                 .collect(Collectors.toList());
 
     }

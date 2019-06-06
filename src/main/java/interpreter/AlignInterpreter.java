@@ -54,7 +54,7 @@ public class AlignInterpreter {
 
         LogProvider.info("Parsing traces");
 
-        List<TraceMap> traces = helper.mapTraceSetByFileLine(dto.files, false);
+        List<TraceMap> traces = helper.mapTraceSetByFileLine(dto.files, false, false);
         Aligner align = comparers.get(dto.method.name).getAligner(dto.method.params);
 
 

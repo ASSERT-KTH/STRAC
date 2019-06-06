@@ -14,6 +14,7 @@ import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemorySet;
 import core.models.ComparisonDto;
+import core.models.NGramSetDto;
 import core.models.TraceMap;
 import core.utils.SetHelper;
 import core.utils.TimeUtils;
@@ -149,12 +150,16 @@ public class Main {
             payload = new Gson().fromJson(new JsonReader(new InputStreamReader(System.in)), Payload.class);
         }
 
-        method = payload.method.name;
 
-        if(!comparerMap.containsKey(method)){
 
-            LogProvider.info(comparerMap.keySet());
-            throw new RuntimeException("Method not allowed " + method);
+        if(payload.method != null) {
+            method = payload.method.name;
+
+            if (method != null && !comparerMap.containsKey(method)) {
+
+                LogProvider.info(comparerMap.keySet());
+                throw new RuntimeException("Method not allowed " + method);
+            }
         }
 
 
@@ -163,11 +168,14 @@ public class Main {
         size = payload.size;
         traces = helper.mapTraceSetByFileLine(payload.files);
 
+        Generator generatpr = ServiceRegister.getProvider().getGenerator();
+        ComparisonDto dto = new ComparisonDto(traces.size(), traces.size());
+
 
         if(payload.exportBag != null){
             LogProvider.info("Exporting bag...");
 
-            FileWriter writer = new FileWriter(String.format("%s", payload.exportBag));
+            FileWriter writer = new FileWriter(String.format("%s/%s",payload.outputDir, payload.exportBag));
 
             writer.write(new Gson().toJson(helper));
 
@@ -180,7 +188,7 @@ public class Main {
             for(TraceMap tm: traces){
                 String[] chunks = tm.traceFile.split("/");
 
-                FileWriter writer = new FileWriter(String.format("%s_%s.tree.json",i++, chunks[chunks.length - 1]));
+                FileWriter writer = new FileWriter(String.format("%s/%s_%s.tree.json",payload.outputDir, i++, chunks[chunks.length - 1]));
 
                 writer.write(new Gson().toJson(tm.trace));
 
@@ -188,58 +196,75 @@ public class Main {
             }
         }
 
-        // Generator g = new StringKeyGenerator(t -> String.format("%s %s", t[0], t[1]));
-        ComparisonDto dto = new ComparisonDto(traces.size(), traces.size());
 
-        Comparer cmp = comparerMap.get(payload.method.name).getDeclaredConstructor().newInstance();
-
-        Generator generatpr = ServiceRegister.getProvider().getGenerator();
-
-        new StringKeyGenerator(t -> t[0] + " " + t[1]);
 
         if(payload.exportNgram != null){
-            LogProvider.info("Exporting bag...");
+            LogProvider.info("Exporting ngram...");
             for(int size: payload.exportNgram){
                 int i = 0;
 
                 for(TraceMap tm: traces){
-                    String[] chunks = tm.traceFile.split("/");
+                    try {
+                        String[] chunks = tm.traceFile.split("/");
 
-                    FileWriter writer = new FileWriter(String.format("%s_%s.%s.gram.json",i++, size, chunks[chunks.length - 1]));
+                        LogProvider.info("Exporting ", size, chunks[chunks.length - 1]);
 
-                    writer.write(new Gson().toJson(generatpr.getNGramSet(size, tm.trace)));
+                        FileWriter writer = new FileWriter(String.format("%s/%s.%s.gram.json", payload.outputDir, size, chunks[chunks.length - 1]));
 
-                    writer.close();
+                        IDict dict = generatpr.getNGramSet(size, tm.trace);
+
+                        NGramSetDto ngramOutDto = new NGramSetDto();
+                        ngramOutDto.set = dict;
+                        ngramOutDto.bagPath = String.format("%s/%s", payload.outputDir, payload.exportBag);
+                        ngramOutDto.keyCount = dict.size();
+                        ngramOutDto.sentenceCount = tm.trace.getSize();
+                        ngramOutDto.n = size;
+                        ngramOutDto.path = tm.traceFile;
+
+                        writer.write(new Gson().toJson(ngramOutDto));
+
+                        writer.close();
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
             }
         }
 
-        for(int i = 0; i < traces.size(); i++){
+        if(payload.method != null) {
+            // Generator g = new StringKeyGenerator(t -> String.format("%s %s", t[0], t[1]));
 
-            if(payload.printComparisson)
-                System.out.print(traces.get(i).traceFile + " ");
+            Comparer cmp = comparerMap.get(payload.method.name).getDeclaredConstructor().newInstance();
 
-            for(int j = i + 1; j < traces.size(); j++){
+            new StringKeyGenerator(t -> t[0] + " " + t[1]);
+
+            for (int i = 0; i < traces.size(); i++) {
+
+                if (payload.printComparisson)
+                    System.out.print(traces.get(i).traceFile + " ");
+
+                for (int j = i + 1; j < traces.size(); j++) {
 
 
+                    cmp.setTraces(traces.get(i), traces.get(j));
 
-                cmp.setTraces(traces.get(i), traces.get(j));
+                    double distance = reflectExecution(cmp, payload.method.params);
 
-                double distance = reflectExecution(cmp, payload.method.params);
+                    if (payload.printComparisson)
+                        System.out.print(distance + " ");
 
-                if(payload.printComparisson)
-                    System.out.print(distance + " ");
+                    dto.set(i, j, distance);
+                    dto.set(j, i, distance);
+                    dto.set(i, i, 0);
+                }
 
-                dto.set(i, j, distance);
-                dto.set(j, i, distance);
-                dto.set(i, i, 0);
+                if (payload.printComparisson)
+                    System.out.println();
             }
-
-            if(payload.printComparisson)
-                System.out.println();
         }
 
-        if(payload.exportComparisson != null){
+        if(payload.method != null && payload.exportComparisson != null){
             FileWriter writer = new FileWriter(payload.exportComparisson);
 
             writer.write(new Gson().toJson(dto));

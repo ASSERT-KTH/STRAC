@@ -171,7 +171,7 @@ public class TestDTW {
         );
 
 
-        return helper.mapTraceSetByFileLine(files, false);
+        return helper.mapTraceSetByFileLine(files, false, false);
     }
 
 

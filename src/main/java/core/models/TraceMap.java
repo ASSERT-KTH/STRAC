@@ -17,7 +17,10 @@ public class TraceMap {
 
     public String traceFileName;
 
-    public TraceMap(IReadArray<Integer> trace, String traceFile, boolean createTree){
+    public String[] originalSentences;
+
+
+    public TraceMap(IReadArray<Integer> trace, String traceFile, boolean createTree, String[] originalTraces){
 
         if(createTree)
             this.trace = SegmentTree.build(trace, 0, trace.size() - 1, ServiceRegister.getProvider().getHashCreator());
@@ -28,9 +31,10 @@ public class TraceMap {
         String[] chunks = this.traceFile.split("/");
 
         this.traceFileName = chunks[chunks.length - 1];
+        this.originalSentences = originalTraces;
     }
     public TraceMap(IReadArray<Integer> trace, String traceFile){
-        this(trace, traceFile, true);
+        this(trace, traceFile, true, null);
     }
 
 

@@ -13,10 +13,7 @@ import ngram.hash_keys.IIHashSetKeyCreator;
 import ngram.interfaces.ICompressor;
 import ngram.models.HashKey;
 
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static core.ServiceRegister.getProvider;
@@ -29,12 +26,12 @@ public abstract class Generator<T, R, H> {
 
     }
 
-    public IDict<H, Integer> getNGramSet(int n, SegmentTree<T, R> traces){
+    public IDict<H, List<Integer>> getNGramSet(int n, SegmentTree<T, R> traces){
 
         if(n < 1)
             throw new RuntimeException("The ngram size must be greater than 1");
 
-        IDict<H, Integer> result = getProvider().allocateNewDictionary();
+        IDict<H, List<Integer>> result = getProvider().allocateNewDictionary();
 
 
         for(int i = 0; i <= traces.getSize() - n; i++){ // O(n)
@@ -51,10 +48,14 @@ public abstract class Generator<T, R, H> {
                 //if(result.contains(k))
                 //    System.out.println("uhmm");
 
+                List<Integer> occurrencies = new ArrayList<>();
+
                 if(result.contains(k))
-                    result.set(k, result.get(k) + 1);
-                else
-                    result.set(k, 1);
+                    occurrencies = result.get(k);
+
+                occurrencies.add(i);
+
+                result.set(k, occurrencies);
             }
         }
 
