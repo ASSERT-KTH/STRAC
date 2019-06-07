@@ -249,14 +249,20 @@ public class Main {
 
                     cmp.setTraces(traces.get(i), traces.get(j));
 
-                    double distance = reflectExecution(cmp, payload.method.params);
+                    try {
+                        double distance = reflectExecution(cmp, payload.method.params);
 
-                    if (payload.printComparisson)
-                        System.out.print(distance + " ");
+                        if (payload.printComparisson)
+                            System.out.print(distance + " ");
 
-                    dto.set(i, j, distance);
-                    dto.set(j, i, distance);
-                    dto.set(i, i, 0);
+                        dto.set(i, j, distance);
+                        dto.set(j, i, distance);
+                        dto.set(i, i, 0);
+                    }catch(Exception  e){
+                        if (payload.printComparisson)
+                            System.out.print("unreachable");
+
+                    }
                 }
 
                 if (payload.printComparisson)

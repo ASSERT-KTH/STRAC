@@ -89,6 +89,8 @@ public class AlignInterpreter {
 
 
 
+            try{
+
             if(dto.outputAlignment){
 
                 String file1 = getRandomName();
@@ -225,6 +227,11 @@ public class AlignInterpreter {
                 trace1Alignment.dispose();
                 trace2Alignment.dispose();
                 distance.getInsertions().dispose();
+            }
+
+            }
+            catch (Exception e){
+                e.printStackTrace();
             }
 
         }

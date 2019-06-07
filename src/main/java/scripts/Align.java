@@ -11,6 +11,7 @@ import core.data_structures.IArray;
 import core.data_structures.IDict;
 import core.data_structures.ISet;
 import core.data_structures.buffered.BufferedCollection;
+import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryDict;
 import interpreter.AlignInterpreter;
 import interpreter.dto.Alignment;
@@ -38,11 +39,11 @@ public class Align {
 
             @Override
             public <T> IArray<T> allocateNewArray(String id, int size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                IArray<T> result = new BufferedCollection<>(id==null? getRandomName(): id, size, adaptor);
+                //IArray<T> result = new BufferedCollection<>(id==null? getRandomName(): id, size, adaptor);
 
-                openedArrays.add(result);
+                //openedArrays.add(result);
 
-                return result;
+                return new InMemoryArray<>();
             }
 
             @Override
