@@ -115,16 +115,24 @@ public class DWTHelper {
             expansion.set(op.getTrace1Index(), op.getTrace2Index());
 
             for(int i = -radius; i <= radius; i++) {
-                for (int j = -radius; j <= radius; j++) {
 
                     int nI = op.getTrace1Index() + i;
-                    int nJ = op.getTrace2Index() + j;
+                    int nJ = op.getTrace2Index();
 
                     //LogProvider.info("Size", expansion.size());
                     if (nI >= 0 && nJ >= 0 && nI < lenT1 && nJ < lenT2 && (!expansion.existColumn(nI) || !expansion.existRow(nI, nJ)))
                         expansion.set(nI, nJ);
 
-                }
+            }
+            for (int j = -radius; j <= radius; j++) {
+
+                int nI = op.getTrace1Index();
+                int nJ = op.getTrace2Index() + j;
+
+                //LogProvider.info("Size", expansion.size());
+                if (nI >= 0 && nJ >= 0 && nI < lenT1 && nJ < lenT2 && (!expansion.existColumn(nI) || !expansion.existRow(nI, nJ)))
+                    expansion.set(nI, nJ);
+
             }
 
         }

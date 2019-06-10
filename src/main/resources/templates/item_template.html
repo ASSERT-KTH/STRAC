@@ -1,13 +1,9 @@
-#set( $delta = 90)
-#set( $x1 = $totalWidth/2 + 200)
-#set( $firstX = $totalWidth/2- 200 )
-#set( $textHeight = $height - 6)
-#set( $textY = $y + $height - 3 + $delta)
-#set( $centered = $x - $width/2 )
-#set($newY = $y + $delta)
-
-
-<rect x="${centered}px" y="${newY}px" width="${width}" height="${height}" fill="$fill"/>
-<text fill="#000000"  font-size="${textHeight}" font-family="Verdana" x="$firstX" y="${textY}px">${text1}</text>
-<text fill="#000000" font-size="${textHeight}" font-family="Verdana" x="${x1}" y="${textY}px">${text2}</text>
-
+<div class='row'>
+    <div class='trace trace1 ${cl}'>
+        ${text1}
+    </div>
+    <div class="status ${cl}"></div>
+    <div class='trace trace2 ${cl}'>
+        ${text2}
+    </div>
+</div>

@@ -93,16 +93,16 @@ public class AlignInterpreter {
 
             if(dto.outputAlignment){
 
-                String file1 = getRandomName();
-                String file2 = getRandomName();
+                String file1 = String.format("%s/align.%s.%s", dto.outputDir, tr1.traceFileName, tr2.traceFileName);
+                String file2 = String.format("%s/align.%s.%s", dto.outputDir, tr2.traceFileName, tr1.traceFileName);
 
                 int max = distance.getInsertions().size();
 
                 IArray<Integer> trace1Alignment
-                        = ServiceRegister.getProvider().allocateNewArray(file1, max, IntegerAdapter);
+                        = ServiceRegister.getProvider().allocateNewArray(getRandomName(), max, IntegerAdapter);
 
                 IArray<Integer> trace2Alignment
-                        = ServiceRegister.getProvider().allocateNewArray(file2, max, IntegerAdapter);
+                        = ServiceRegister.getProvider().allocateNewArray(getRandomName(), max, IntegerAdapter);
 
 
                 InsertOperation i1 = new InsertOperation(0, 0);
@@ -198,8 +198,8 @@ public class AlignInterpreter {
                     try {
                         LogProvider.info("Writing align result to file");
 
-                        //trace1Alignment.writeTo(new FileWriter(file1), t -> helper.getInverseBag().get(t) + "\n");
-                        //trace2Alignment.writeTo(new FileWriter(file2), t -> helper.getInverseBag().get(t) + "\n");
+                        trace1Alignment.writeTo(new FileWriter(file1), t -> helper.getInverseBag().get(t) + "\n");
+                        trace2Alignment.writeTo(new FileWriter(file2), t -> helper.getInverseBag().get(t) + "\n");
                     }
                     catch (Exception e){
                         e.printStackTrace();
@@ -207,12 +207,12 @@ public class AlignInterpreter {
                 }
 
                 if(dto.exportHTML){//dto.exportHTML){
-                    LogProvider.info("Exporting to svg preview");
+                    LogProvider.info("Exporting to html preview");
                     exportHTML(trace1Alignment, trace2Alignment, helper,
                             tr1.traceFile,
                             tr2.traceFile,
                             total,
-                            String.format("%s_%s.svg", dto.outputDir, pair[0], pair[1]));
+                            String.format("%s/%s_%s.html", dto.outputDir, tr1.traceFileName, tr2.traceFileName));
                 }
 
                 if(dto.exportImage){
@@ -262,8 +262,51 @@ public class AlignInterpreter {
         int traceSize = 20;
         int itemWidth = 500;
 
-        writer.write(String.format("<?xml version=\"1.0\" standalone=\"no\"?>\n" +
-                "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width='%spx' height='%spx'>", width, traceSize*align1.size()));
+        writer.write(String.format("<!DOCTYPE html>\n" +
+                "  <html lang=\"en\">\n" +
+                "  <head>\n" +
+                "\t  <meta charset=\"UTF-8\">\n" +
+                "\t  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                "\t  <title>Traces alignment</title>\n" +
+                "\t  <style>\n" +
+                "\t  \t.row{\n" +
+                "\t\t\t  display: flex;\n" +
+                "\t\t\t  flex-direction: 'row';\n" +
+                "\t\t  }\n" +
+                "\t\t  .trace{\n" +
+                "\t\t\t  flex: 10\n" +
+                "\t\t  }\n" +
+                "\t\t  .status{\n" +
+                "\t\t\t  width: 10px;\n" +
+                "\t\t\t  background-color: rgb(10,10,10);\n" +
+                "\t\t\t  margin-right: 20px;\n" +
+                "\t\t\t  margin-left: 20px;\n" +
+                "\t\t  }\n" +
+                "\n" +
+                "\t\t  .status.eq{\n" +
+                "\t\t\t  background-color: green;\n" +
+                "\t\t  }\n" +
+                "\t\t  .status.diff{\n" +
+                "\t\t\t  background-color: red;\n" +
+                "\t\t  }\n" +
+                "\t\t  .status.gap{\n" +
+                "\t\t\t  background-color: rgb(200,200,200)\n" +
+                "\t\t  }\n" +
+                "\t\t  .trace1{\n" +
+                "\t\t\t  text-align: right;\n" +
+                "\t\t  }\n" +
+                "\t\t  .trace2{\n" +
+                "\t\t\t  text-align: left;\n" +
+                "\t\t  }\n" +
+                "\n" +
+                "\t\t  .trace.gap{\n" +
+                "\t\t\t  color:transparent;\n" +
+                "\t\t  }\n" +
+                "\n" +
+                "\t  </style>\n" +
+                "  </head>\n" +
+                "  <body>\n" +
+                "\t<div class='div-container'>"));
 
 
         align1.reset();
@@ -271,15 +314,15 @@ public class AlignInterpreter {
 
         for(int i = 0; i < align1.size(); i++){
 
-            String cl = "#e74c3c";
+            String cl = "diff";
 
             int t1 = align1.read(i);
             int t2 = align2.read(i);
 
             if(t1 == t2)
-                cl = "#2ecc71";
+                cl = "eq";
             else if(t1 == - 1 || t2 == -1){
-                cl = "#ecf0f1";
+                cl = "gap";
             }
 
             String text1 = helper.getInverseBag().get(t1);
@@ -290,24 +333,21 @@ public class AlignInterpreter {
 
             writer.write(
                     getTemplate("item_template.html",
-                            new KeyValuePair("width", itemWidth),
-                            new KeyValuePair("height", traceSize),
-                            new KeyValuePair("x", width/2),
-                            new KeyValuePair("y", traceSize*i),
                             new KeyValuePair("text1", text1),
                             new KeyValuePair("text2", text2),
-                            new KeyValuePair("totalWidth", width),
-                            new KeyValuePair("fill", cl))
+                            new KeyValuePair("cl", cl))
             );
         }
 
-        writer.write(getTemplate("info_template.html",
+        /*writer.write(getTemplate("info_template.html",
                 new KeyValuePair("file1", trace1Name),
                 new KeyValuePair("file2", trace2Name),
-                new KeyValuePair("distance", distance)));
+                new KeyValuePair("distance", distance)));*/
 
         // Write tail
-        writer.write("</svg>");
+        writer.write("</div>\n" +
+                "  </body>\n" +
+                "  </html>");
 
         writer.close();
 
