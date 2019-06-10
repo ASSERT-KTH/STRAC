@@ -2,6 +2,8 @@
 ### NGram tools
 
 
+**We are implementing distance measures based on [A survey of Binary Similarity Measures](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.352.6123&rep=rep1&type=pdf) paper**
+
 #### Use in code
 
 1 - Register collection allocator

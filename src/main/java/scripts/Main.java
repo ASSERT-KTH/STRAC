@@ -202,7 +202,6 @@ public class Main {
             LogProvider.info("Exporting ngram...");
             for(int size: payload.exportNgram){
                 int i = 0;
-
                 for(TraceMap tm: traces){
                     try {
                         String[] chunks = tm.traceFile.split("/");
@@ -244,6 +243,8 @@ public class Main {
                 if (payload.printComparisson)
                     System.out.print(traces.get(i).traceFile + " ");
 
+                dto.traces.add(traces.get(i).traceFile);
+
                 for (int j = i + 1; j < traces.size(); j++) {
 
 
@@ -271,7 +272,8 @@ public class Main {
         }
 
         if(payload.method != null && payload.exportComparisson != null){
-            FileWriter writer = new FileWriter(payload.exportComparisson);
+
+            FileWriter writer = new FileWriter(String.format("%s/%s", payload.outputDir, payload.exportComparisson));
 
             writer.write(new Gson().toJson(dto));
 

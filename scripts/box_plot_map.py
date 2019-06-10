@@ -28,7 +28,7 @@ def process(file):
 
     red_square = dict(markerfacecolor='r', marker='s')
     fig5, ax5 = plt.subplots()
-    ax5.set_title('Horizontal Boxes')
+    ax5.set_title('Distance distribution DTW output comparing n executions of the same script')
 
     quartile1, medians, quartile3 = np.percentile(values, [25, 50, 75], axis=1)
     ax5.violinplot(values, showmedians=False, showmeans=False )
