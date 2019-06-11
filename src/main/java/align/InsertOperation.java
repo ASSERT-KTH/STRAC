@@ -9,18 +9,18 @@ import java.util.Arrays;
 
 public class InsertOperation implements Serializable {
 
-    private long i;
+    private int i;
 
-    private long j;
+    private int j;
 
     private int valueInCost;
 
-    public InsertOperation(long trace1Index, long trace2Index){
+    public InsertOperation(int trace1Index, int trace2Index){
         this.i = trace1Index;
         this.j = trace2Index;
     }
 
-    public long getTrace1Index(){
+    public int getTrace1Index(){
         return i;
     }
 
@@ -32,7 +32,7 @@ public class InsertOperation implements Serializable {
         this.valueInCost = value;
     }
 
-    public long getTrace2Index(){
+    public int getTrace2Index(){
         return j;
     }
 

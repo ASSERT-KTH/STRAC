@@ -1,8 +1,10 @@
 package scripts;
 
+import align.IAlignComparer;
 import align.implementations.DTW;
 import align.implementations.FastDTW;
 import align.implementations.IImplementationInfo;
+import align.implementations.LinearMemoryDTW;
 import com.google.gson.Gson;
 import core.IServiceProvider;
 import core.LogProvider;
@@ -80,9 +82,10 @@ public class Align {
         });
 
         comparers = new HashMap<>();
-        comparers.put("DTW", (objs) -> new DTW((x, y) -> x == y? 2: -1));
+        comparers.put("DTW", (objs) -> new DTW((x, y) -> x == y? 0: 2));
+        comparers.put("Linear", (objs) -> new LinearMemoryDTW((x, y) -> x == y? 0: 2));
         comparers.put("FastDTW", (objs) -> new FastDTW(((Double)objs[0]).intValue()
-                , (x, y) -> x == y? 2: -1));
+                , (x, y) -> x == y? 0: 2));
 
         ClassLoader classLoader = Main.class.getClassLoader();
         File file = new File(classLoader.getResource("templates").getFile());

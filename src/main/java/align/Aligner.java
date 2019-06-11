@@ -9,7 +9,7 @@ public abstract class Aligner {
     public abstract String getName();
 
     protected int getGapSymbol(){
-        return -1;
+        return 1;
     }
 
     public abstract AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2);// Try to provide linked list arrays

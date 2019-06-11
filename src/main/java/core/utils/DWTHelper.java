@@ -33,8 +33,8 @@ public class DWTHelper {
         for(int i = 0; i < ops.size(); i++){
 
             InsertOperation current = ops.get(i);
-            long nI = current.getTrace1Index();
-            long nJ = current.getTrace2Index();
+            int nI = current.getTrace1Index();
+            int nJ = current.getTrace2Index();
 
             result.add(new InsertOperation(nI*2, nJ*2));
             result.add(new InsertOperation(nI*2, nJ*2 + 1));
@@ -81,8 +81,8 @@ public class DWTHelper {
                 for(int i = -radius; i <= radius; i++){
 
                     for(int j = -radius; j <= radius; j++) {
-                        long nI = op.getTrace1Index() + i;
-                        long nJ = op.getTrace2Index() + j;
+                        int nI = op.getTrace1Index() + i;
+                        int nJ = op.getTrace2Index() + j;
 
 
                         if (nI >= 0 && nJ >= 0 && !existsCell(nI, nJ, result))
@@ -116,8 +116,8 @@ public class DWTHelper {
 
             for(int i = -radius; i <= radius; i++) {
 
-                    long nI = op.getTrace1Index() + i;
-                    long nJ = op.getTrace2Index();
+                    int nI = op.getTrace1Index() + i;
+                    int nJ = op.getTrace2Index();
 
                     //LogProvider.info("Size", expansion.size());
                     if (nI >= 0 && nJ >= 0 && nI < lenT1 && nJ < lenT2 && (!expansion.existColumn(nI) || !expansion.existRow(nI, nJ)))
@@ -126,8 +126,8 @@ public class DWTHelper {
             }
             for (int j = -radius; j <= radius; j++) {
 
-                long nI = op.getTrace1Index();
-                long nJ = op.getTrace2Index() + j;
+                int nI = op.getTrace1Index();
+                int nJ = op.getTrace2Index() + j;
 
                 //LogProvider.info("Size", expansion.size());
                 if (nI >= 0 && nJ >= 0 && nI < lenT1 && nJ < lenT2 && (!expansion.existColumn(nI) || !expansion.existRow(nI, nJ)))
@@ -139,8 +139,8 @@ public class DWTHelper {
 
         utl.time("Scaling");
 
-        for(long i: expansion.getColumns()){
-            for(long j: expansion.getRow(i)){
+        for(int i: expansion.getColumns()){
+            for(int j: expansion.getRow(i)){
 
                 grown.set(i*2, j*2);
                 grown.set(i*2, j*2 + 1);

@@ -189,12 +189,14 @@ public class AlignInterpreter {
                 LogProvider.info("DTW Distance", distance.getDistance());
                 LogProvider.info("Distance", total);
 
-                resultDto.set(pair[0], pair[1], total);
-                resultDto.setFunctioNMap(pair[0], pair[1], distance.getDistance());
+                if(!Double.isNaN(total)) {
+                    resultDto.set(pair[0], pair[1], total);
+                    resultDto.setFunctioNMap(pair[0], pair[1], distance.getDistance());
+                    resultDto.results.add(total);
+                }
 
                 resultDto.fileMap.put(pair[0], tr1.traceFile);
                 resultDto.fileMap.put(pair[1], tr2.traceFile);
-                resultDto.results.add(total);
                 resultDto.method = dto.method;
 
                 // Write file

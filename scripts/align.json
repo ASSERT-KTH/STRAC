@@ -1,12 +1,12 @@
 {
-  "files": ["/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/1",
-    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/2"],
+  "files": ["/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/7",
+    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/8"],
   "pairs": [
 
   ],
   "method":
   {
-    "name": "DTW",
+    "name": "Linear",
     "params": []
   },
   "comparison": {

@@ -33,8 +33,10 @@ public class DTW extends Aligner {
     @Override
     public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2) {
 
-        if(4*(trace1.size() + 1)*(trace2.size() + 1)> 1 << 30){
-            throw new RuntimeException("array too large");
+        long need = 4*(trace1.size() + 1)*(trace2.size() + 1);
+
+        if(need > 1 << 30){
+            throw new RuntimeException("Array too large. We need " + (need/4/1e9) + " GB space to store traditional DTW cost matrix");
         }
 
         int maxI = (int)trace1.size();
@@ -55,9 +57,9 @@ public class DTW extends Aligner {
 
         for(int i = 1; i < maxI + 1; i++){
             for(int j = 1; j < maxJ + 1; j++){
-                Integer max = Math.max(
+                Integer max = Math.min(
                     result.getDefault(0,i - 1,j - 1) + this.comparer.compare(trace1.read(i - 1), trace2.read(j - 1)),
-                    Math.max(
+                    Math.min(
                             result.getDefault(0,i - 1,j) + this.getGapSymbol(),
                             result.getDefault(0,i,j - 1) + this.getGapSymbol()
                     )
@@ -68,7 +70,7 @@ public class DTW extends Aligner {
         }
 
         IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray
-                (null, 1000000, InsertOperation.OperationAdapter);
+                (null, maxI + maxJ + 2, InsertOperation.OperationAdapter);
 
 
         int i = (int)maxI;
@@ -95,14 +97,14 @@ public class DTW extends Aligner {
             else
                 downCost = Double.NEGATIVE_INFINITY;
 
-            if ((diagCost>=leftCost) && (diagCost>=downCost))
+            if ((diagCost<=leftCost) && (diagCost<=downCost))
             {
                 i--;
                 j--;
             }
-            else if ((leftCost>diagCost) && (leftCost>downCost))
+            else if ((leftCost<diagCost) && (leftCost<downCost))
                 i--;
-            else if ((downCost>diagCost) && (downCost>leftCost))
+            else if ((downCost<diagCost) && (downCost<leftCost))
                 j--;
             else if (i <= j)
                 j--;

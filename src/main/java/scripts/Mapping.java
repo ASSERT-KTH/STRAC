@@ -42,8 +42,6 @@ public class Mapping {
     public static void setup(){
         ServiceRegister.registerProvider(new IServiceProvider() {
 
-
-
             @Override
             public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
                 return new InMemoryArray<T>((int)size);
@@ -128,40 +126,18 @@ public class Mapping {
         String payloadPath = args[0];
 
         payload = new Gson().fromJson(new JsonReader(new FileReader(payloadPath)), Payload.class);
-        PostgreInterface.setup(payload.dbHost, payload.dbPort, payload.dbName, payload.user, payload.password, false);
 
-
-        // Create session
-        String sessionName = payload.sessionName;
-        String dateString = payload.sessionDate;
-
-        PostgreInterface.getInstance()
-                .executeQuery(String.format("INSERT INTO public.\"Session\" VALUES('%s', false, '%s') ON CONFLICT DO NOTHING", sessionName, dateString));
 
 
         TraceHelper helper = new TraceHelper();
 
-        List<TraceMap> traces = helper.mapTraceSetByFileLine(payload.files, false, true);
-
-
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        List<TraceMap> traces = helper.mapTraceSetByFileLine(payload.files, false, false);
 
         for(TraceMap tr: traces){
+            FileWriter wr = new FileWriter(String.format("/Users/javier/Documents/%s.json", tr.traceFileName));
 
-            LogProvider.info("Uploading file", tr.traceFile);
-
-            PreparedStatement ts = PostgreInterface.getInstance()
-                    .connection.prepareStatement("INSERT INTO public.\"File\" VALUES(?, ?, ?, ?, ?) ON CONFLICT DO NOTHING");
-            ts.setString(1, tr.traceFileName);
-            ts.setString(2, sessionName);
-            ts.setDate(3,  new Date(format.parse(dateString).getTime()));
-            ts.setArray(4, PostgreInterface.getInstance().connection.createArrayOf("integer",
-                    tr.plainTrace.getPlain()));
-            ts.setArray(5, PostgreInterface.getInstance().connection
-            .createArrayOf("text", tr.originalSentences));
-
-
-            ts.executeUpdate();
+            wr.write(new Gson().toJson(tr.plainTrace));
+            wr.close();
         }
 
     }
