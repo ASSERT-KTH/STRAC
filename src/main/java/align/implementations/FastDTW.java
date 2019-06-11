@@ -38,6 +38,7 @@ public class FastDTW extends Aligner {
     @Override
     public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2) {
         int minTimeSize = 2 + this.radius;
+        LogProvider.info("Starting...", trace1.size(), trace2.size());
 
         if(trace1.size() <= minTimeSize || trace2.size() <= minTimeSize){
             return this.standard.align(trace1, trace2); // O(n)
@@ -46,11 +47,12 @@ public class FastDTW extends Aligner {
 
             TimeUtils utl = new TimeUtils();
 
-            int halfSize1 = trace1.size() - trace1.size()%2;
-            int halfSize2 = trace2.size() - trace2.size()%2;
+            long halfSize1 = (trace1.size() - trace1.size()%2)/2;
+            long halfSize2 = (trace2.size() - trace2.size()%2)/2;
 
             IArray<Integer> reduced1 = ServiceRegister.getProvider().allocateNewArray
                     (null, halfSize1, HashingHelper.IntegerAdapter);
+
             ArrayHelper.reduceByHalf(trace1, reduced1,
                     ArrayHelper::getMostFequentRepresentation); // O(n)
 

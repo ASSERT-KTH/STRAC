@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DWTHelper {
 
-    public static boolean existsCell(int i, int j, List<InsertOperation> ops){
+    public static boolean existsCell(long i, long j, List<InsertOperation> ops){
 
         for(InsertOperation op: ops){
             if(op.getTrace1Index() == i && op.getTrace2Index() == j)
@@ -33,8 +33,8 @@ public class DWTHelper {
         for(int i = 0; i < ops.size(); i++){
 
             InsertOperation current = ops.get(i);
-            int nI = current.getTrace1Index();
-            int nJ = current.getTrace2Index();
+            long nI = current.getTrace1Index();
+            long nJ = current.getTrace2Index();
 
             result.add(new InsertOperation(nI*2, nJ*2));
             result.add(new InsertOperation(nI*2, nJ*2 + 1));
@@ -81,8 +81,8 @@ public class DWTHelper {
                 for(int i = -radius; i <= radius; i++){
 
                     for(int j = -radius; j <= radius; j++) {
-                        int nI = op.getTrace1Index() + i;
-                        int nJ = op.getTrace2Index() + j;
+                        long nI = op.getTrace1Index() + i;
+                        long nJ = op.getTrace2Index() + j;
 
 
                         if (nI >= 0 && nJ >= 0 && !existsCell(nI, nJ, result))
@@ -100,7 +100,7 @@ public class DWTHelper {
     }
 
     public static WindowedDTW.EmptyMap
-    expandWindow(IArray<InsertOperation> ops, int radius, int lenT1, int lenT2){
+    expandWindow(IArray<InsertOperation> ops, int radius, long lenT1, long lenT2){
 
         WindowedDTW.EmptyMap grown = new WindowedDTW.EmptyMap();
         WindowedDTW.EmptyMap expansion = new WindowedDTW.EmptyMap();
@@ -116,8 +116,8 @@ public class DWTHelper {
 
             for(int i = -radius; i <= radius; i++) {
 
-                    int nI = op.getTrace1Index() + i;
-                    int nJ = op.getTrace2Index();
+                    long nI = op.getTrace1Index() + i;
+                    long nJ = op.getTrace2Index();
 
                     //LogProvider.info("Size", expansion.size());
                     if (nI >= 0 && nJ >= 0 && nI < lenT1 && nJ < lenT2 && (!expansion.existColumn(nI) || !expansion.existRow(nI, nJ)))
@@ -126,8 +126,8 @@ public class DWTHelper {
             }
             for (int j = -radius; j <= radius; j++) {
 
-                int nI = op.getTrace1Index();
-                int nJ = op.getTrace2Index() + j;
+                long nI = op.getTrace1Index();
+                long nJ = op.getTrace2Index() + j;
 
                 //LogProvider.info("Size", expansion.size());
                 if (nI >= 0 && nJ >= 0 && nI < lenT1 && nJ < lenT2 && (!expansion.existColumn(nI) || !expansion.existRow(nI, nJ)))
@@ -139,8 +139,8 @@ public class DWTHelper {
 
         utl.time("Scaling");
 
-        for(int i: expansion.getColumns()){
-            for(int j: expansion.getRow(i)){
+        for(long i: expansion.getColumns()){
+            for(long j: expansion.getRow(i)){
 
                 grown.set(i*2, j*2);
                 grown.set(i*2, j*2 + 1);

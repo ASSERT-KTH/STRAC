@@ -2,6 +2,7 @@ package core;
 
 import core.data_structures.IArray;
 import core.data_structures.IDict;
+import core.data_structures.IMultidimensionalArray;
 import core.data_structures.ISet;
 import core.data_structures.buffered.BufferedCollection;
 import ngram.Generator;
@@ -13,7 +14,9 @@ import java.math.BigInteger;
 
 public interface IServiceProvider {
 
-    <T> IArray<T> allocateNewArray(String id, int size, BufferedCollection.ITypeAdaptor<T> adaptor);
+    <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor);
+
+    <T> IMultidimensionalArray<T> allocateMuldimensionalArray(BufferedCollection.ITypeAdaptor<T> adaptor, int ... dimensions);
 
     <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary();
 

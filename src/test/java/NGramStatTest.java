@@ -5,6 +5,7 @@ import core.ServiceRegister;
 import core.TraceHelper;
 import core.data_structures.IArray;
 import core.data_structures.IDict;
+import core.data_structures.IMultidimensionalArray;
 import core.data_structures.ISet;
 import core.data_structures.buffered.BufferedCollection;
 import core.data_structures.memory.InMemoryArray;
@@ -38,8 +39,13 @@ public class NGramStatTest {
 
 
             @Override
-            public <T> IArray<T> allocateNewArray(String id, int size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                return new InMemoryArray<>();
+            public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
+                return new InMemoryArray<>((int)size);
+            }
+
+            @Override
+            public <T> IMultidimensionalArray<T> allocateMuldimensionalArray(BufferedCollection.ITypeAdaptor<T> adaptor, int... dimensions) {
+                return null;
             }
 
             @Override

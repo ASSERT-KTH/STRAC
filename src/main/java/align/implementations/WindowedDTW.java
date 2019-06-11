@@ -44,8 +44,8 @@ public class WindowedDTW extends Aligner {
         D.set(0, 0, 0);
 
 
-        for(int i : map.getColumns()){
-            for(int j: map.getRow(i)){
+        for(long i : map.getColumns()){
+            for(long j: map.getRow(i)){
 
                 int dt = comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
                 int diag = D.getOrDefault(i - 1, j - 1, 0);
@@ -76,10 +76,10 @@ public class WindowedDTW extends Aligner {
         }*/
 
 
-        int i = trace1.size();
-        int j = trace2.size();
+        long i = trace1.size();
+        long j = trace2.size();
 
-        IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray(null, 1000000, InsertOperation.OperationAdapter);
+        IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray(null, trace1.size()+trace2.size(), InsertOperation.OperationAdapter);
 
 
         while ((i > 0) || (j > 0)) // 0,0 item
@@ -142,7 +142,7 @@ public class WindowedDTW extends Aligner {
     }
 
 
-    public EmptyMap createWindow(int maxI, int maxJ){
+    public EmptyMap createWindow(long maxI, long maxJ){
 
         EmptyMap map = new EmptyMap();
 
@@ -157,7 +157,7 @@ public class WindowedDTW extends Aligner {
 
 
     public static class EmptyMap{
-        Map<Integer, Set<Integer>> map;
+        Map<Long, Set<Long>> map;
 
 
         public EmptyMap(){
@@ -165,16 +165,16 @@ public class WindowedDTW extends Aligner {
 
         }
 
-        public boolean existColumn(int i)
+        public boolean existColumn(long i)
         {
             return this.map.containsKey(i);
         }
 
-        public boolean existRow(int i, int j){
+        public boolean existRow(long i, long j){
             return this.map.get(i).contains(j);
         }
 
-        public void set(int i, int j){
+        public void set(long i, long j){
 
             if(i < 0 || j < 0)
                 throw new RuntimeException("Invalid indexes " + i + " " + j);
@@ -185,18 +185,18 @@ public class WindowedDTW extends Aligner {
             this.map.get(i).add(j);
         }
 
-        public Iterable<Integer> getColumns(){
+        public Iterable<Long> getColumns(){
             return this.map.keySet();
         }
 
-        public Iterable<Integer> getRow(int column){
+        public Iterable<Long> getRow(long column){
             return this.map.get(column);
         }
     }
 
     public static class WindowMap<T>{
 
-        Map<Integer, Map<Integer, T>> map;
+        Map<Long, Map<Long, T>> map;
 
 
         public WindowMap(){
@@ -204,16 +204,16 @@ public class WindowedDTW extends Aligner {
 
         }
 
-        public boolean existColumn(int i)
+        public boolean existColumn(long i)
         {
             return this.map.containsKey(i);
         }
 
-        public boolean existRow(int i, int j){
+        public boolean existRow(long i, long j){
             return this.map.get(i).containsKey(j);
         }
 
-        public void set(int i, int j, T value){
+        public void set(long i, long j, T value){
 
             if(i < 0 || j < 0)
                 throw new RuntimeException("Invalid indexes " + i + " " + j);
@@ -224,12 +224,12 @@ public class WindowedDTW extends Aligner {
             this.map.get(i).put(j, value);
         }
 
-        public T get(int i, int j){
+        public T get(long i, long j){
 
             return this.map.get(i).get(j);
         }
 
-        public T getOrDefault(int i, int j, T def){
+        public T getOrDefault(long i, long j, T def){
 
             if(this.existColumn(i) && this.existRow(i, j))
                 return this.map.get(i).get(j);
@@ -237,11 +237,11 @@ public class WindowedDTW extends Aligner {
             return def;
         }
 
-        public Iterable<Integer> getColumns(){
+        public Iterable<Long> getColumns(){
             return this.map.keySet();
         }
 
-        public Iterable<Integer> getRow(int column){
+        public Iterable<Long> getRow(int column){
             return this.map.get(column).keySet();
         }
 

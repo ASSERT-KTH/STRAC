@@ -4,7 +4,7 @@ public interface IArray<T> extends IReadArray<T> {
 
     void add(T value);
 
-    void add(int position, T value);
+    void add(long position, T value);
 
 
 }

@@ -8,7 +8,7 @@ public class NGramSetDto {
 
     public int keyCount;
 
-    public int sentenceCount;
+    public long sentenceCount;
 
     public String bagPath;
 

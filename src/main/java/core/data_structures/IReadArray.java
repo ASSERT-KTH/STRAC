@@ -6,15 +6,15 @@ import java.sql.Array;
 
 public interface IReadArray<T> extends Iterable<T>{
 
-    T read(int position);
+    T read(long position);
 
     void close();
 
     void dispose();
 
-    IArray<T> subArray(int index, int size);
+    IArray<T> subArray(long index, long size);
 
-    int size();
+    long size();
 
     void reset();
 

@@ -14,33 +14,28 @@ import java.util.List;
 
 public class InMemoryArray<T> implements IArray<T> {
 
-    List<T> items;
-
-    public InMemoryArray(List<T> items){
-        this.items = items;
-    }
-
-    public InMemoryArray(){
-        this.items = new ArrayList<>();
-    }
-
+    Object[] items;
+    int position;
 
     public InMemoryArray(int size){
-        this.items = new ArrayList<>(size);
-    }
 
-    public InMemoryArray(T... array){
-        items = Arrays.asList(array);
+
+        if(size > 1 << 30){
+            throw new RuntimeException("Too large array " + (size));
+        }
+
+        this.items = new Object[size];
+        this.position = 0;
     }
 
     @Override
-    public T read(int position) {
-        return items.get(position);
+    public T read(long position) {
+        return (T)items[(int)position];
     }
 
     @Override
-    public int size() {
-        return items.size();
+    public long size() {
+        return position;
     }
 
     @Override
@@ -50,7 +45,8 @@ public class InMemoryArray<T> implements IArray<T> {
 
     @Override
     public T[] getPlain() {
-        return (T[])items.toArray();
+
+        return (T[])items;
     }
 
     @Override
@@ -64,13 +60,15 @@ public class InMemoryArray<T> implements IArray<T> {
     }
 
     @Override
-    public void add(int position, T value) {
-        items.set(position, value);
+    public void add(long position, T value) {
+
+        items[(int)position] = value;
     }
 
     @Override
     public void add(T value) {
-        items.add(value);
+
+        items[position++]=value;
     }
 
     @Override
@@ -84,13 +82,29 @@ public class InMemoryArray<T> implements IArray<T> {
     }
 
     @Override
-    public IArray<T> subArray(int index, int size) {
-        return new InMemoryArray<T>(items.subList(index, size));
+    public IArray<T> subArray(long index, long size) {
+        return null;
     }
 
     @NotNull
     @Override
     public Iterator<T> iterator() {
-        return this.items.iterator();
+
+        return new Iterator<>();
+    }
+
+    class Iterator<T> implements java.util.Iterator<T> {
+
+        int _position = 0;
+
+        @Override
+        public boolean hasNext() {
+            return _position < position;
+        }
+
+        @Override
+        public T next() {
+            return (T)items[_position++];
+        }
     }
 }

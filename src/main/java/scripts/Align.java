@@ -9,10 +9,13 @@ import core.LogProvider;
 import core.ServiceRegister;
 import core.data_structures.IArray;
 import core.data_structures.IDict;
+import core.data_structures.IMultidimensionalArray;
 import core.data_structures.ISet;
 import core.data_structures.buffered.BufferedCollection;
+import core.data_structures.buffered.MultiDimensionalCollection;
 import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryDict;
+import core.data_structures.memory.InMemoryMultidimensional;
 import interpreter.AlignInterpreter;
 import interpreter.dto.Alignment;
 import ngram.Generator;
@@ -38,12 +41,21 @@ public class Align {
 
 
             @Override
-            public <T> IArray<T> allocateNewArray(String id, int size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                //IArray<T> result = new BufferedCollection<>(id==null? getRandomName(): id, size, adaptor);
+            public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
+                IArray<T> result = new BufferedCollection<>(id==null? getRandomName(): id, size, adaptor);
 
-                //openedArrays.add(result);
+                openedArrays.add(result);
 
-                return new InMemoryArray<>();
+                return result;
+            }
+
+            @Override
+            public <T> IMultidimensionalArray<T> allocateMuldimensionalArray(BufferedCollection.ITypeAdaptor<T> adaptor, int... dimensions) {
+                MultiDimensionalCollection<T> result = new MultiDimensionalCollection<T>(getRandomName(),adaptor, dimensions);
+
+                openedArrays.add(result);
+
+                return result;
             }
 
             @Override
@@ -68,7 +80,7 @@ public class Align {
         });
 
         comparers = new HashMap<>();
-        comparers.put("DTW", (objs) -> new DTW((x, y) -> x == y? 1: -1));
+        comparers.put("DTW", (objs) -> new DTW((x, y) -> x == y? 2: -1));
         comparers.put("FastDTW", (objs) -> new FastDTW(((Double)objs[0]).intValue()
                 , (x, y) -> x == y? 2: -1));
 

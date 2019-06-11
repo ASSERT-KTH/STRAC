@@ -9,19 +9,19 @@ import java.util.Arrays;
 
 public class InsertOperation implements Serializable {
 
-    private int trace1Index;
+    private long i;
 
-    private int trace2Index;
+    private long j;
 
     private int valueInCost;
 
-    public InsertOperation(int trace1Index, int trace2Index){
-        this.trace1Index = trace1Index;
-        this.trace2Index = trace2Index;
+    public InsertOperation(long trace1Index, long trace2Index){
+        this.i = trace1Index;
+        this.j = trace2Index;
     }
 
-    public int getTrace1Index(){
-        return trace1Index;
+    public long getTrace1Index(){
+        return i;
     }
 
     public int getValueInCost(){
@@ -32,14 +32,14 @@ public class InsertOperation implements Serializable {
         this.valueInCost = value;
     }
 
-    public int getTrace2Index(){
-        return trace2Index;
+    public long getTrace2Index(){
+        return j;
     }
 
 
     @Override
     public String toString() {
-        return String.format("%s %s", this.trace1Index, this.trace2Index);
+        return String.format("%s %s", this.i, this.j);
     }
 
     public static BufferedCollection.ITypeAdaptor<InsertOperation> OperationAdapter = new BufferedCollection.ITypeAdaptor<InsertOperation>() {

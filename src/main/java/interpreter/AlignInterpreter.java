@@ -96,7 +96,7 @@ public class AlignInterpreter {
                 String file1 = String.format("%s/align.%s.%s", dto.outputDir, tr1.traceFileName, tr2.traceFileName);
                 String file2 = String.format("%s/align.%s.%s", dto.outputDir, tr2.traceFileName, tr1.traceFileName);
 
-                int max = distance.getInsertions().size();
+                long max = distance.getInsertions().size();
 
                 IArray<Integer> trace1Alignment
                         = ServiceRegister.getProvider().allocateNewArray(getRandomName(), max, IntegerAdapter);
@@ -110,13 +110,19 @@ public class AlignInterpreter {
                 tr1.plainTrace.close();
                 tr2.plainTrace.close();
 
-                for(int i= distance.getInsertions().size() - 1; i >0 ; i--){
+                for(long i= distance.getInsertions().size() - 1; i >0 ; i--){
 
                     InsertOperation i2 = distance.getInsertions().read(i);
                     //LogProvider.info(i2);
 
                     InsertOperation s = i2;
-                    int[] direction = new int[] {
+
+                    if(i2 == null){
+                        LogProvider.info("Null operation", i2);
+                        break;
+                    }
+
+                    long[] direction = new long[] {
                             i2.getTrace1Index() - i1.getTrace1Index(),
                             i2.getTrace2Index() - i1.getTrace2Index()
                     };

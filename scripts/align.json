@@ -1,17 +1,13 @@
 {
   "files": ["/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/1",
-    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/2",
-    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/3",
-    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/4",
-    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/5",
-    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/6"],
+    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/2"],
   "pairs": [
 
   ],
   "method":
   {
-    "name": "FastDTW",
-    "params": [30]
+    "name": "DTW",
+    "params": []
   },
   "comparison": {
     "eq": 0,

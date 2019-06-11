@@ -21,7 +21,7 @@ public class BufferedCollection<T> implements IArray<T> {
     ITypeAdaptor<T> adaptor;
     long _size;
 
-    public BufferedCollection(String fileName, int size,  ITypeAdaptor<T> adaptor) {
+    public BufferedCollection(String fileName, long size,  ITypeAdaptor<T> adaptor) {
         aFile = null;
         this.filename = fileName;
         this.adaptor = adaptor;
@@ -74,12 +74,12 @@ public class BufferedCollection<T> implements IArray<T> {
     }
 
     @Override
-    public void add(int position, T value) {
+    public void add(long position, T value) {
 
         position = position*adaptor.size();
 
         int previous = buffer.position();
-        buffer.position(position);
+        buffer.position((int)position);
 
         byte[] bytes = adaptor.toBytes(value);
         buffer.put(bytes);
@@ -89,7 +89,7 @@ public class BufferedCollection<T> implements IArray<T> {
     }
 
     @Override
-    public T read(int position) {
+    public T read(long position) {
 
 
         position = position*adaptor.size();
@@ -98,7 +98,7 @@ public class BufferedCollection<T> implements IArray<T> {
 
 
         byte[] chunk = new byte[adaptor.size()];
-        buffer.position(position);
+        buffer.position((int)position);
         buffer.get(chunk);
         T value = adaptor.fromBytes(chunk);
 
@@ -124,7 +124,7 @@ public class BufferedCollection<T> implements IArray<T> {
     }
 
     @Override
-    public IArray<T> subArray(int index, int size) {
+    public IArray<T> subArray(long index, long size) {
 
         BufferedCollection<T> subArray = new BufferedCollection<>(getRandomName(), size*adaptor.size(), adaptor);
 
@@ -133,8 +133,8 @@ public class BufferedCollection<T> implements IArray<T> {
     }
 
     @Override
-    public int size() {
-        return (int)_size;
+    public long size() {
+        return _size;
     }
 
     @Override

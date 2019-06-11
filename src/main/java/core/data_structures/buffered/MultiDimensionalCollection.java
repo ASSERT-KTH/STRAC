@@ -1,6 +1,8 @@
 package core.data_structures.buffered;
 
-public class MultiDimensionalCollection<T> extends BufferedCollection<T> {
+import core.data_structures.IMultidimensionalArray;
+
+public class MultiDimensionalCollection<T> extends BufferedCollection<T> implements IMultidimensionalArray<T> {
 
 
     int[] dimensions;
@@ -15,33 +17,28 @@ public class MultiDimensionalCollection<T> extends BufferedCollection<T> {
         return super.read(getPosition(index));
     }
 
+    @Override
+    public T getDefault(T def, int... indexes) {
+        return get(indexes);
+    }
+
     public void set(T value, int...index){
         super.add(getPosition(index), value);
     }
 
-    int getPosition(int...index){
-
-        int result = 0;
-
-        int cumul = 1;
-        int i = 0;
-
-        for(i = index.length - 1; i > 0; i--){
-            result += index[i]*cumul;
-            cumul *= dimensions[i];
-        }
-
-        result += index[i]*cumul;
-
-        return result;
+    @Override
+    public long size(int dimension) {
+        return 0;
     }
 
-    static int multiply(int[] dimensions){
-        int result = 1;
+    int getPosition(int...index){
 
-        for(int i : dimensions)
-            result *= i;
 
-        return result;
+
+        return dimensions[1]*index[0] + index[1];
+    }
+
+    static long multiply(int[] dimensions){
+        return dimensions[0]*dimensions[1];
     }
 }

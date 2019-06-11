@@ -12,13 +12,6 @@ public class ListHashKey extends HashKey {
 
     IArray<Integer> items;
 
-    public ListHashKey(IArray<Integer> items){
-        this.items = items;
-    }
-
-    public ListHashKey(List<Integer> items){
-        this.items = new InMemoryArray(items);
-    }
 
     @Override
     public int hashCode() {

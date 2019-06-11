@@ -10,15 +10,15 @@ public class SegmentTree<T, THash> {
     public SegmentTree<T, THash> left;
     public SegmentTree<T, THash> right;
 
-    public int st;
-    public int nd;
+    public long st;
+    public long nd;
 
     public THash hash;
 
     private T value;
 
 
-    public SegmentTree(T value, int st, int nd, SegmentTree<T, THash> left, SegmentTree<T, THash> right){
+    public SegmentTree(T value, long st, long nd, SegmentTree<T, THash> left, SegmentTree<T, THash> right){
         this.st = st;
         this.nd = nd;
 
@@ -28,14 +28,14 @@ public class SegmentTree<T, THash> {
         this.value = value;
     }
 
-    public SegmentTree(T value, int st, int nd){
+    public SegmentTree(T value, long st, long nd){
         this.st = st;
         this.nd = nd;
 
         this.value = value;
     }
 
-    public SegmentTree(int st, int nd, SegmentTree<T, THash> left, SegmentTree<T, THash> right){
+    public SegmentTree(long st, long nd, SegmentTree<T, THash> left, SegmentTree<T, THash> right){
         this.st = st;
         this.nd = nd;
 
@@ -47,11 +47,11 @@ public class SegmentTree<T, THash> {
         return st == nd;
     }
 
-    public int getSize(){
+    public long getSize(){
         return nd - st + 1;
     }
 
-    public THash query(int start, int end, IHashCreator<T, THash> hashCreator){
+    public THash query(long start, long end, IHashCreator<T, THash> hashCreator){
 
         if(start < this.st || end > this.nd)
             return null;
@@ -60,7 +60,7 @@ public class SegmentTree<T, THash> {
             return this.hash;
 
 
-        int nodeMid = (this.st + this.nd)/2;
+        long nodeMid = (this.st + this.nd)/2;
 
         if(start > nodeMid){
             return this.right.query(start, end, hashCreator);
@@ -84,7 +84,7 @@ public class SegmentTree<T, THash> {
     }
 
 
-    public static  <T, THash> SegmentTree<T, THash> build(IReadArray<T> stream, int start, int end, IHashCreator<T, THash> hashCreator){
+    public static  <T, THash> SegmentTree<T, THash> build(IReadArray<T> stream, long start, long end, IHashCreator<T, THash> hashCreator){
 
         if(stream.size() == 0)
             return null;
@@ -104,7 +104,7 @@ public class SegmentTree<T, THash> {
             return result;
         }
         else{
-            int mid = (start + end)/2;
+            long mid = (start + end)/2;
 
             SegmentTree<T, THash> left = build(stream, start, mid, hashCreator);
             SegmentTree<T, THash> right = build(stream, mid + 1, end, hashCreator);
