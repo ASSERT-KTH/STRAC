@@ -44,20 +44,20 @@ public class Align {
 
             @Override
             public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                IArray<T> result = new BufferedCollection<>(id==null? getRandomName(): id, size, adaptor);
+                //IArray<T> result = new BufferedCollection<>(id==null? getRandomName(): id, size, adaptor);
 
-                openedArrays.add(result);
+                //openedArrays.add(result);
 
-                return result;
+                return new InMemoryArray<T>((int)size);
             }
 
             @Override
             public <T> IMultidimensionalArray<T> allocateMuldimensionalArray(BufferedCollection.ITypeAdaptor<T> adaptor, int... dimensions) {
-                MultiDimensionalCollection<T> result = new MultiDimensionalCollection<T>(getRandomName(),adaptor, dimensions);
+                //MultiDimensionalCollection<T> result = new MultiDimensionalCollection<T>(getRandomName(),adaptor, dimensions);
 
-                openedArrays.add(result);
+                //openedArrays.add(result);
 
-                return result;
+                return new InMemoryMultidimensional<>(adaptor, dimensions[0], dimensions[1]);
             }
 
             @Override
@@ -82,10 +82,7 @@ public class Align {
         });
 
         comparers = new HashMap<>();
-        comparers.put("DTW", (objs) -> new DTW((x, y) -> x == y? 0: 2));
-        comparers.put("Linear", (objs) -> new LinearMemoryDTW((x, y) -> x == y? 0: 2));
-        comparers.put("FastDTW", (objs) -> new FastDTW(((Double)objs[0]).intValue()
-                , (x, y) -> x == y? 0: 2));
+
 
         ClassLoader classLoader = Main.class.getClassLoader();
         File file = new File(classLoader.getResource("templates").getFile());
@@ -107,7 +104,13 @@ public class Align {
 
         setup();
 
+
         Alignment dto = new Gson().fromJson(new FileReader(args[0]), Alignment.class);
+
+        comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        comparers.put("Linear", (objs) -> new LinearMemoryDTW(dto.comparison.gap,(x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        comparers.put("FastDTW", (objs) -> new FastDTW(((Double)objs[0]).intValue()
+                , dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
 
         //PostgreInterface.setup(dto.dbHost, dto.dbPort, dto.dbName, dto.user, dto.password, false);
 

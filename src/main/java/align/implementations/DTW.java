@@ -26,7 +26,8 @@ public class DTW extends Aligner {
         return "DTW";
     }
 
-    public DTW(ICellComparer comparer){
+    public DTW(int gap, ICellComparer comparer){
+        super(gap);
         this.comparer = comparer;
     }
 
@@ -85,17 +86,17 @@ public class DTW extends Aligner {
             if ((i>0) && (j>0))
                 diagCost = result.getDefault(0,i-1,j-1) + comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
             else
-                diagCost = Double.NEGATIVE_INFINITY;
+                diagCost = Double.POSITIVE_INFINITY;
 
             if (i > 0)
                 leftCost = result.getDefault(0,i-1,j) + getGapSymbol();
             else
-                leftCost = Double.NEGATIVE_INFINITY;
+                leftCost = Double.POSITIVE_INFINITY;
 
             if (j > 0)
                 downCost = result.getDefault(0,i,j-1) + getGapSymbol();
             else
-                downCost = Double.NEGATIVE_INFINITY;
+                downCost = Double.POSITIVE_INFINITY;
 
             if ((diagCost<=leftCost) && (diagCost<=downCost))
             {

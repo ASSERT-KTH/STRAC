@@ -98,7 +98,7 @@ public class TestDTW {
         );
 
 
-        Aligner al = new FastDTW( 4, (a, b) -> a == b? 2: -1);
+        Aligner al = new FastDTW( 4, 1, (a, b) -> a == b? 2: -1);
 
         AlignDistance distance =  al.align(traces.get(0).plainTrace, traces.get(1).plainTrace);
 

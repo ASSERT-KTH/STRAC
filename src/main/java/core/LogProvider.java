@@ -29,6 +29,13 @@ public class LogProvider {
         return _logger;
     }
 
+    public static void progress(Object... msgs){
+        String progress = String.join(" ", Arrays.stream(msgs).map(i -> String.valueOf(i)).collect(Collectors.toList()));
+
+        System.out.print(String.format("\r%s", progress));
+
+    }
+
     public static void info(Object ... msgs){
         LOGGER().log(Level.INFO, String.join(" ", Arrays.stream(msgs).map(i -> String.valueOf(i)).collect(Collectors.toList())));
     }

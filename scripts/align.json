@@ -1,22 +1,23 @@
 {
-  "files": ["/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/7",
-    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/8"],
+  "files": ["/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/2",
+    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/3",
+    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/1"],
   "pairs": [
 
   ],
   "method":
   {
-    "name": "Linear",
-    "params": []
+    "name": "FastDTW",
+    "params": [10]
   },
   "comparison": {
     "eq": 0,
     "diff": 2,
-    "gap": 0.5
+    "gap": 1
   },
   "outputDir": "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/tool_result",
   "outputAlignment": true,
   "outputAlignmentMap": "map.json",
   "exportHTML": true,
-  "exportImage": false
+  "exportImage": true
 }

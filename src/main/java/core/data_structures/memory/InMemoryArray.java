@@ -53,8 +53,11 @@ public class InMemoryArray<T> implements IArray<T> {
     public void writeTo(Writer wr, IMapAdaptor<T> adaptor) throws IOException {
         this.reset();
 
-        for(T item: this)
-            wr.write(adaptor.getValue(item));
+        for(T item: this){
+
+            String val = adaptor.getValue(item);
+            wr.write(val);
+        }
 
         wr.close();
     }

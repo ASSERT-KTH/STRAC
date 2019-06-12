@@ -22,12 +22,13 @@ public class FastDTW extends Aligner {
     private WindowedDTW windowed;
 
 
-    public FastDTW(int radius, ICellComparer comparer){
+    public FastDTW(int radius, int gap, ICellComparer comparer){
+        super(gap);
         this.radius = radius;
         this.comparer = comparer;
 
-        this.standard = new DTW(comparer);
-        this.windowed = new WindowedDTW(comparer);
+        this.standard = new DTW(gap,comparer);
+        this.windowed = new WindowedDTW(gap,comparer);
     }
 
     @Override
@@ -47,8 +48,8 @@ public class FastDTW extends Aligner {
 
             TimeUtils utl = new TimeUtils();
 
-            long halfSize1 = (trace1.size() - trace1.size()%2)/2;
-            long halfSize2 = (trace2.size() - trace2.size()%2)/2;
+            long halfSize1 = trace1.size()/2;
+            long halfSize2 = trace2.size()/2;
 
             IArray<Integer> reduced1 = ServiceRegister.getProvider().allocateNewArray
                     (null, halfSize1, HashingHelper.IntegerAdapter);
@@ -64,7 +65,7 @@ public class FastDTW extends Aligner {
 
             AlignDistance distance = this.align(reduced1, reduced2); //O(n/2)
 
-            LogProvider.info("Growing to",  trace1.size(), trace2.size() , "from", reduced1.size(), reduced2.size());
+            LogProvider.info("Growing to",  trace1.size(), trace2.size() , "from", halfSize1 + 1, halfSize2 + 1);
 
 
             utl.reset();
@@ -73,7 +74,7 @@ public class FastDTW extends Aligner {
             utl.time("Disposing");
             utl.reset();
 
-            WindowedDTW.EmptyMap window = DWTHelper.expandWindow(distance.getInsertions(), radius, trace1.size(),trace2.size()); // O(n)
+            WindowedDTW.EmptyMap window = DWTHelper.expandWindow(distance.getInsertions(), radius, halfSize1,halfSize2); // O(n)
 
 
             utl.time("Expanding total");

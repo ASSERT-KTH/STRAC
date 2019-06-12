@@ -21,8 +21,8 @@ public class Alignment extends BaseDto {
     public String outputAlignmentMap;
 
     public class Comparison{
-        public double diff;
-        public double eq;
-        public double gap;
+        public int diff;
+        public int eq;
+        public int gap;
     }
 }

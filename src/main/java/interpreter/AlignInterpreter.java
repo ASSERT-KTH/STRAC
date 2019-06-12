@@ -105,12 +105,13 @@ public class AlignInterpreter {
                         = ServiceRegister.getProvider().allocateNewArray(getRandomName(), max, IntegerAdapter);
 
 
-                InsertOperation i1 = new InsertOperation(0, 0);
+                InsertOperation i1 = new InsertOperation((int)tr1.plainTrace.size(),
+                        (int)tr2.plainTrace.size());
 
                 tr1.plainTrace.close();
                 tr2.plainTrace.close();
 
-                for(long i= distance.getInsertions().size() - 1; i >0 ; i--){
+                for(long i= distance.getInsertions().size() - 1; i >= 0 ; i--){
 
                     InsertOperation i2 = distance.getInsertions().read(i);
                     //LogProvider.info(i2);
@@ -132,6 +133,7 @@ public class AlignInterpreter {
                     }
 
                     try {
+
                         if (direction[0] > 0 && direction[1] > 0) {
                             trace1Alignment.add(tr1.plainTrace.read(s.getTrace1Index()));
                             trace2Alignment.add(tr2.plainTrace.read(s.getTrace2Index()));
@@ -148,8 +150,8 @@ public class AlignInterpreter {
                         }
                     }
                     catch (Exception e){
-                        e.printStackTrace();
-                        throw new RuntimeException(e.getMessage());
+                        //e.printStackTrace();
+                        //throw new RuntimeException(e.getMessage());
                     }
 
                     i1 = i2;
@@ -178,7 +180,7 @@ public class AlignInterpreter {
                     }
                     catch (Exception e){
                         e.printStackTrace();
-                        throw new RuntimeException(e.getMessage());
+                        //throw new RuntimeException(e.getMessage());
                     }
 
                 }
@@ -402,7 +404,7 @@ public class AlignInterpreter {
 
         int scale = 1;
         File writer = new File(fileName);
-        int pieceSize =40*scale;
+        int pieceSize =8*scale;
 
         int width = (int)Math.ceil(Math.sqrt(trace1.size())) + 1;
 
@@ -426,12 +428,26 @@ public class AlignInterpreter {
                 color = "#ecf0f1";
             }
 
+
             col = i%width;
             row = i/width;
 
             g.setColor(Color.decode(color));
-            g.drawRect(col*pieceSize, row*pieceSize, pieceSize, pieceSize);
             g.fillRect(col*pieceSize, row*pieceSize, pieceSize, pieceSize);
+
+            if(t1 == -1){
+                g.setColor(Color.decode("#0000ff"));
+                g.fillRect(col*pieceSize, row*pieceSize, pieceSize, pieceSize/2);
+            }
+            else if(t2 == -1){
+                g.setColor(Color.decode("#0000ff"));
+                g.fillRect(col*pieceSize, row*pieceSize + pieceSize/2, pieceSize, pieceSize/2);
+            }
+
+
+            g.setColor(Color.decode("#000000"));
+            g.drawRect(col*pieceSize, row*pieceSize, pieceSize - 1, pieceSize  - 1);
+
         }
 
         ImageIO.write(img, "png", writer);

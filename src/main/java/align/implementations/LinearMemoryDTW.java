@@ -16,7 +16,8 @@ public class LinearMemoryDTW extends Aligner {
 
     ICellComparer comparer;
 
-    public LinearMemoryDTW(ICellComparer comparer){
+    public LinearMemoryDTW(int gap, ICellComparer comparer){
+        super(gap);
         this.comparer = comparer;
     }
 
@@ -50,6 +51,8 @@ public class LinearMemoryDTW extends Aligner {
 
                 //ops.add(new InsertOperation(y, x));
                 D.removeCol(i - 1, j - 1);
+
+                LogProvider.progress((i*trace2.size() + j*1.0)/(trace1.size()*trace2.size()), "%");
             }
 
             D.removeRow(i - 1);
