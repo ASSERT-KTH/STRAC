@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import static core.utils.HashingHelper.getRandomName;
+
 public class NGramTest {
 
     Random r = new Random();
@@ -34,7 +36,8 @@ public class NGramTest {
 
             @Override
             public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                return new InMemoryArray<>((int)size);
+
+                return new InMemoryArray<T>(getRandomName(), (int)size);
             }
 
             @Override

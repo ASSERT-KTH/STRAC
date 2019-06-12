@@ -10,9 +10,9 @@ import ngram.interfaces.ICompressor;
 import java.math.BigInteger;
 import java.util.List;
 
-public class StringKeyGenerator extends Generator<Integer, List<BigInteger>, String> {
+public class StringKeyGenerator extends Generator<Integer, List<Long>, String> {
 
-    public StringKeyGenerator(IIHashSetKeyCreator<List<BigInteger>, String> creator, IHashCreator<Integer, List<BigInteger>> hashCreator) {
+    public StringKeyGenerator(IIHashSetKeyCreator<List<Long>, String> creator, IHashCreator<Integer, List<Long>> hashCreator) {
         super(creator, hashCreator);
     }
     /*@Override

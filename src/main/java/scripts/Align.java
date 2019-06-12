@@ -48,7 +48,7 @@ public class Align {
 
                 //openedArrays.add(result);
 
-                return new InMemoryArray<T>((int)size);
+                return new InMemoryArray<T>(getRandomName(), (int)size);
             }
 
             @Override

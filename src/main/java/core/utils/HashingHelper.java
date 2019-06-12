@@ -7,10 +7,7 @@ import core.data_structures.buffered.BufferedCollection;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class HashingHelper {
 
@@ -40,34 +37,37 @@ public class HashingHelper {
 
     }
 
+    public static Map<String, List<Long>> cache = new HashMap<>();
 
-    public static List<BigInteger> hashList(IReadArray<Integer> items, int from, int to){
+    public static List<Long> hashList(IReadArray<Integer> items, int from, int to){
 
-        BigInteger prime1 = new BigInteger("1000000007");
-        BigInteger prime2 = new BigInteger("100002593");
+
+        long prime1 = 1000000007;
+        long prime2 = 100002593;
 
         // These modules for example (also primes)
-        BigInteger module1 = new BigInteger("1011013823");
-        BigInteger module2 = new BigInteger("1217513831");
+        long module1 = 1011013823;
+        long module2 = 1217513831;
 
-        BigInteger hash1 = new BigInteger("0");
-        BigInteger hash2 = new BigInteger("0");
+        long hash1 = 0;
+        long hash2 = 0;
+
+        List<Long> result = new ArrayList<>();
 
 
         for(int i = from; i < to; i++){
-            BigInteger val = new BigInteger("" + items.read(i));
+            int val= items.read(i);
 
-            hash1 = hash1.multiply(prime1).add(val).mod(module1);
-            hash1 = hash1.multiply(prime2).add(val).mod(module2);
+            hash1 = (hash1*prime1 + val)%module1;
+            hash2 = (hash2*prime2 + val)%module2;
 
         }
 
-        List<BigInteger> result = new ArrayList<>();
         result.add(hash1);
         result.add(hash2);
 
-        return result;
 
+        return result;
     }
 
     public static int hashList1(IReadArray<Integer> items){

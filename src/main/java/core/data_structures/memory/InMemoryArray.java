@@ -17,7 +17,7 @@ public class InMemoryArray<T> implements IArray<T> {
     Object[] items;
     int position;
 
-    public InMemoryArray(int size){
+    public InMemoryArray(String id, int size){
 
 
         if(size > 1 << 30){
@@ -26,6 +26,8 @@ public class InMemoryArray<T> implements IArray<T> {
 
         this.items = new Object[size];
         this.position = 0;
+
+        this.id = id;
     }
 
     @Override
@@ -60,6 +62,13 @@ public class InMemoryArray<T> implements IArray<T> {
         }
 
         wr.close();
+    }
+
+    String id;
+
+    @Override
+    public String getUniqueId() {
+        return id;
     }
 
     @Override

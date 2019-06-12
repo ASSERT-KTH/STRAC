@@ -37,6 +37,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static core.utils.HashingHelper.getRandomName;
+
 public class Mapping {
 
     public static void setup(){
@@ -44,7 +46,7 @@ public class Mapping {
 
             @Override
             public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                return new InMemoryArray<T>((int)size);
+                return new InMemoryArray<T>(getRandomName(), (int)size);
             }
 
             @Override

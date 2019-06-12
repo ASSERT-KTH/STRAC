@@ -21,4 +21,6 @@ public interface IReadArray<T> extends Iterable<T>{
     T[] getPlain();
 
     void writeTo(Writer wr, IMapAdaptor<T> adaptor) throws IOException;
+
+    String getUniqueId();
 }

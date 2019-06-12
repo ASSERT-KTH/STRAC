@@ -157,6 +157,11 @@ public class BufferedCollection<T> implements IArray<T> {
         wr.close();
     }
 
+    @Override
+    public String getUniqueId() {
+        return filename;
+    }
+
     @NotNull
     @Override
     public Iterator<T> iterator() {

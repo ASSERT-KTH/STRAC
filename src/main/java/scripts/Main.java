@@ -34,6 +34,8 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static core.utils.HashingHelper.getRandomName;
+
 public class Main {
 
     public static void setup(){
@@ -43,7 +45,7 @@ public class Main {
 
             @Override
             public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                return new InMemoryArray<T>((int)size);
+                return new InMemoryArray<T>(getRandomName(), (int)size);
             }
 
             @Override
@@ -206,33 +208,34 @@ public class Main {
 
         if(payload.exportNgram != null){
             LogProvider.info("Exporting ngram...");
-            for(int size: payload.exportNgram){
-                int i = 0;
-                for(TraceMap tm: traces){
-                    try {
-                        String[] chunks = tm.traceFile.split("/");
+            for(TraceMap tm: traces){
+                for(int size: payload.exportNgram){
+                    int i = 0;
 
-                        LogProvider.info("Exporting ", size, chunks[chunks.length - 1]);
+                        try {
+                            String[] chunks = tm.traceFile.split("/");
 
-                        FileWriter writer = new FileWriter(String.format("%s/%s.%s.gram.json", payload.outputDir, size, chunks[chunks.length - 1]));
+                            LogProvider.info("Exporting ", size, chunks[chunks.length - 1]);
 
-                        IDict dict = generatpr.getNGramSet(size, tm.plainTrace);
+                            FileWriter writer = new FileWriter(String.format("%s/%s.%s.gram.json", payload.outputDir, size, chunks[chunks.length - 1]));
 
-                        NGramSetDto ngramOutDto = new NGramSetDto();
-                        ngramOutDto.set = dict;
-                        ngramOutDto.bagPath = String.format("%s/%s", payload.outputDir, payload.exportBag);
-                        ngramOutDto.keyCount = dict.size();
-                        ngramOutDto.sentenceCount = tm.plainTrace.size();
-                        ngramOutDto.n = size;
-                        ngramOutDto.path = tm.traceFile;
+                            IDict dict = generatpr.getNGramSet(size, tm.plainTrace);
 
-                        writer.write(new Gson().toJson(ngramOutDto));
+                            NGramSetDto ngramOutDto = new NGramSetDto();
+                            ngramOutDto.set = dict;
+                            ngramOutDto.bagPath = String.format("%s/%s", payload.outputDir, payload.exportBag);
+                            ngramOutDto.keyCount = dict.size();
+                            ngramOutDto.sentenceCount = tm.plainTrace.size();
+                            ngramOutDto.n = size;
+                            ngramOutDto.path = tm.traceFile;
 
-                        writer.close();
-                    }
-                    catch (Exception e){
-                        e.printStackTrace();
-                    }
+                            writer.write(new Gson().toJson(ngramOutDto));
+
+                            writer.close();
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
                 }
             }
         }

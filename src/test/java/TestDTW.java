@@ -24,6 +24,8 @@ import java.io.File;
 import java.math.BigInteger;
 import java.util.*;
 
+import static core.utils.HashingHelper.getRandomName;
+
 public class TestDTW {
 
     Random r = new Random();
@@ -34,7 +36,7 @@ public class TestDTW {
 
             @Override
             public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                return new InMemoryArray<>((int)size);
+                return new InMemoryArray<T>(getRandomName(), (int)size);
             }
 
             @Override
