@@ -57,47 +57,7 @@ public class Mapping {
                 return new InMemoryDict<TKey, TValue>();
             }
 
-            @Override
-            public IHashCreator<Integer, BigInteger[]> getHashCreator() {
-                return new IHashCreator<Integer, BigInteger[]>() {
-                    @Override
-                    public BigInteger[] getHash(BigInteger[] left, BigInteger[] right) {
 
-
-                        BigInteger prime1 = new BigInteger(String.valueOf(1000000000 + 7));
-                        BigInteger prime2 = new BigInteger(String.valueOf(100002593));
-
-                        // These modules for example (also primes)
-                        BigInteger module1 = new BigInteger(String.valueOf(1011013823));
-                        BigInteger module2 = new BigInteger(String.valueOf(1011013823));
-
-                        BigInteger hash1 = new BigInteger("0");
-                        BigInteger hash2 = new BigInteger("0");
-
-
-                        for(BigInteger val: left){
-                            hash1 = hash1.multiply(prime1).add(val).mod(module1);
-                            hash2 = hash2.multiply(prime2).add(val).mod(module2);
-                        }
-
-                        for(BigInteger val: right){
-                            hash1 = hash1.multiply(prime1).add(val).mod(module1);
-                            hash2 = hash2.multiply(prime2).add(val).mod(module2);
-                        }
-
-
-                        return new BigInteger[]{hash1, hash2};
-                    }
-
-                    @Override
-                    public BigInteger[] getHash(Integer left) {
-                        return new BigInteger[] {
-                                new BigInteger(String.valueOf(left)),
-                                new BigInteger(String.valueOf(left))
-                        };
-                    }
-                };
-            }
 
             @Override
             public <T> ISet<T> allocateNewSet() {
@@ -108,7 +68,7 @@ public class Mapping {
             @Override
             public Generator getGenerator() {
 
-                return new StringKeyGenerator(t -> t[0] + " " + t[1]);
+                return null;
             }
         });
     }

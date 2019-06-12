@@ -25,7 +25,7 @@ import java.util.List;
 
 public class SegmentTreeTest extends BaseTest {
 
-
+/*
     @Before
     public void setup(){
         ServiceRegister.registerProvider(new IServiceProvider() {
@@ -43,11 +43,6 @@ public class SegmentTreeTest extends BaseTest {
             @Override
             public <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary() {
                 return new InMemoryDict<>();
-            }
-
-            @Override
-            public IHashCreator<Integer, BigInteger[]> getHashCreator() {
-                return null;
             }
 
             @Override
@@ -194,6 +189,6 @@ public class SegmentTreeTest extends BaseTest {
 
         utl.time("Querying");
 
-    }
+    }*/
 
 }

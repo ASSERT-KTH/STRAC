@@ -6,10 +6,7 @@ import core.IServiceProvider;
 import core.LogProvider;
 import core.ServiceRegister;
 import core.TraceHelper;
-import core.data_structures.IArray;
-import core.data_structures.IDict;
-import core.data_structures.IMultidimensionalArray;
-import core.data_structures.ISet;
+import core.data_structures.*;
 import core.data_structures.buffered.BufferedCollection;
 import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryDict;
@@ -17,6 +14,7 @@ import core.data_structures.memory.InMemorySet;
 import core.models.ComparisonDto;
 import core.models.NGramSetDto;
 import core.models.TraceMap;
+import core.utils.HashingHelper;
 import core.utils.SetHelper;
 import core.utils.TimeUtils;
 import interpreter.dto.Payload;
@@ -25,6 +23,7 @@ import ngram.generators.IdemGenerator;
 import ngram.generators.StringKeyGenerator;
 import ngram.generators.comparers.*;
 import ngram.hash_keys.IHashCreator;
+import ngram.hash_keys.IIHashSetKeyCreator;
 import ngram.interfaces.ISetComparer;
 
 import java.io.*;
@@ -33,6 +32,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -57,8 +57,30 @@ public class Main {
             }
 
             @Override
-            public IHashCreator<Integer, BigInteger[]> getHashCreator() {
-                return new IHashCreator<Integer, BigInteger[]>() {
+            public <T> ISet<T> allocateNewSet() {
+                return new InMemorySet<>(new HashSet<>());
+            }
+
+
+            @Override
+            public Generator getGenerator() {
+
+                return new StringKeyGenerator(t -> t.stream().map(String::valueOf).collect(Collectors.joining(","))
+                        , HashingHelper::hashList);
+            }
+        });
+
+        comparerMap.put("Overall", OverallComparer.class);
+        comparerMap.put("Jaccard", JaccardComparer.class);
+        comparerMap.put("Dice", DiceComparer.class);
+        comparerMap.put("Min", MinComparer.class);
+        comparerMap.put("Max", MaxComparer.class);
+        comparerMap.put("Frequency", FrequencyComparer.class);
+        comparerMap.put("Extractor", GramsExtractor.class);
+    }
+
+    /*
+    * /*return new IHashCreator<Integer, BigInteger[]>() {
                     @Override
                     public BigInteger[] getHash(BigInteger[] left, BigInteger[] right) {
 
@@ -95,30 +117,8 @@ public class Main {
                                 new BigInteger(String.valueOf(left))
                         };
                     }
-                };
-            }
+                }*/;
 
-            @Override
-            public <T> ISet<T> allocateNewSet() {
-                return new InMemorySet<>(new HashSet<>());
-            }
-
-
-            @Override
-            public Generator getGenerator() {
-
-                return new StringKeyGenerator(t -> t[0] + " " + t[1]);
-            }
-        });
-
-        comparerMap.put("Overall", OverallComparer.class);
-        comparerMap.put("Jaccard", JaccardComparer.class);
-        comparerMap.put("Dice", DiceComparer.class);
-        comparerMap.put("Min", MinComparer.class);
-        comparerMap.put("Max", MaxComparer.class);
-        comparerMap.put("Frequency", FrequencyComparer.class);
-        comparerMap.put("Extractor", GramsExtractor.class);
-    }
 
     public static<T> T[] subArray(T[] array, int beg, int end) {
         return Arrays.copyOfRange(array, beg, end + 1);
@@ -189,7 +189,7 @@ public class Main {
         }
 
         if(payload.exportSegmentTrees){
-            LogProvider.info("Saving trees");
+            /*LogProvider.info("Saving trees");
             int i = 0;
             for(TraceMap tm: traces){
                 String[] chunks = tm.traceFile.split("/");
@@ -199,7 +199,7 @@ public class Main {
                 writer.write(new Gson().toJson(tm.trace));
 
                 writer.close();
-            }
+            }*/
         }
 
 
@@ -216,13 +216,13 @@ public class Main {
 
                         FileWriter writer = new FileWriter(String.format("%s/%s.%s.gram.json", payload.outputDir, size, chunks[chunks.length - 1]));
 
-                        IDict dict = generatpr.getNGramSet(size, tm.trace);
+                        IDict dict = generatpr.getNGramSet(size, tm.plainTrace);
 
                         NGramSetDto ngramOutDto = new NGramSetDto();
                         ngramOutDto.set = dict;
                         ngramOutDto.bagPath = String.format("%s/%s", payload.outputDir, payload.exportBag);
                         ngramOutDto.keyCount = dict.size();
-                        ngramOutDto.sentenceCount = tm.trace.getSize();
+                        ngramOutDto.sentenceCount = tm.plainTrace.size();
                         ngramOutDto.n = size;
                         ngramOutDto.path = tm.traceFile;
 
@@ -241,8 +241,6 @@ public class Main {
             // Generator g = new StringKeyGenerator(t -> String.format("%s %s", t[0], t[1]));
 
             Comparer cmp = comparerMap.get(payload.method.name).getDeclaredConstructor().newInstance();
-
-            new StringKeyGenerator(t -> t[0] + " " + t[1]);
 
             for (int i = 0; i < traces.size(); i++) {
 
@@ -268,6 +266,8 @@ public class Main {
                     }catch(Exception  e){
                         if (payload.printComparisson)
                             System.out.print("unreachable");
+
+                        throw new RuntimeException(e);
 
                     }
                 }

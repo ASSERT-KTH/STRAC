@@ -1,19 +1,23 @@
 {
-  "files": ["/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/2",
-    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/3",
-    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/1"],
+  "files": ["/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/1.n",
+    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/2.n",
+    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/3.n",
+    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/4.n",
+    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/5.n",
+    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/6.n"
+  ],
   "pairs": [
 
   ],
   "method":
   {
     "name": "FastDTW",
-    "params": [10]
+    "params": [2]
   },
   "comparison": {
     "eq": 0,
     "diff": 2,
-    "gap": 1
+    "gap": 2
   },
   "outputDir": "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/tool_result",
   "outputAlignment": true,

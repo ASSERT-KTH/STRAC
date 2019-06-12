@@ -79,7 +79,7 @@ public class SegmentTree<T, THash> {
             if(h2 == null)
                 return h1;
 
-            return hashCreator.getHash(h1, h2);
+            return null;
         }
     }
 
@@ -96,7 +96,7 @@ public class SegmentTree<T, THash> {
 
             SegmentTree<T, THash> result = new SegmentTree<>(value, start, end);
 
-            THash h = hashCreator.getHash(value);
+            THash h = null;
 
             result.hash = h;
 
@@ -112,7 +112,7 @@ public class SegmentTree<T, THash> {
             // Calculate hash here
 
             SegmentTree<T, THash> result =  new SegmentTree<T, THash>(start, end, left, right);
-            THash h = hashCreator.getHash(left.hash, right.hash);
+            THash h = null;
             result.hash = h;
 
             return result;

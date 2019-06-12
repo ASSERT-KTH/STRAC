@@ -48,11 +48,6 @@ public class TestDTW {
             }
 
             @Override
-            public IHashCreator<Integer, BigInteger[]> getHashCreator() {
-                return null;
-            }
-
-            @Override
             public <T> ISet<T> allocateNewSet() {
                 return new InMemorySet<>(new HashSet<>());
             }

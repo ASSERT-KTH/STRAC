@@ -20,13 +20,13 @@ import static core.ServiceRegister.getProvider;
 
 public abstract class Generator<T, R, H> {
 
-    private R getNGramAt(int n, int index, SegmentTree<T, R> traces){
+    private R getNGramAt(int n, int index, IReadArray<T> traces){
 
-        return traces.query(index, n + index - 1, getProvider().getHashCreator());
+        return this.hashCreator.getHash(traces, index, index + n);
 
     }
 
-    public IDict<H, List<Integer>> getNGramSet(int n, SegmentTree<T, R> traces){
+    public IDict<H, List<Integer>> getNGramSet(int n, IReadArray<T> traces){
 
         if(n < 1)
             throw new RuntimeException("The ngram size must be greater than 1");
@@ -34,7 +34,8 @@ public abstract class Generator<T, R, H> {
         IDict<H, List<Integer>> result = getProvider().allocateNewDictionary();
 
 
-        for(int i = 0; i <= traces.getSize() - n; i++){ // O(n)
+        for(int i = 0; i <= traces.size() - n; i++){ // O(n)
+
             R gram = this.getNGramAt(n, i, traces);
 
             if(gram == null){
@@ -64,9 +65,13 @@ public abstract class Generator<T, R, H> {
 
     IIHashSetKeyCreator<R, H> _creator;
 
-    public Generator(IIHashSetKeyCreator<R, H> creator){
+    IHashCreator<T, R> hashCreator;
+
+    public Generator(IIHashSetKeyCreator<R, H> creator, IHashCreator<T, R> hashCreator){
 
         _creator = creator;
+
+        this.hashCreator = hashCreator;
     }
 
 }

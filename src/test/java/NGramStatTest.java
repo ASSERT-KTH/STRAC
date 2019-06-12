@@ -30,7 +30,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 public class NGramStatTest {
-
+/*
     public List<TraceMap> traces;
 
     @Before
@@ -51,48 +51,6 @@ public class NGramStatTest {
             @Override
             public <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary() {
                 return new InMemoryDict<>();
-            }
-
-            @Override
-            public IHashCreator<Integer, BigInteger[]> getHashCreator() {
-                return new IHashCreator<Integer, BigInteger[]>() {
-                    @Override
-                    public BigInteger[] getHash(BigInteger[] left, BigInteger[] right) {
-
-
-                        BigInteger prime1 = new BigInteger(String.valueOf(1000000000 + 7));
-                        BigInteger prime2 = new BigInteger(String.valueOf(100002593));
-
-                        // These modules for example (also primes)
-                        BigInteger module1 = new BigInteger(String.valueOf(1011013823));
-                        BigInteger module2 = new BigInteger(String.valueOf(1011013823));
-
-                        BigInteger hash1 = new BigInteger("0");
-                        BigInteger hash2 = new BigInteger("0");
-
-
-                        for(BigInteger val: left){
-                            hash1 = hash1.multiply(prime1).add(val).mod(module1);
-                            hash2 = hash2.multiply(prime2).add(val).mod(module2);
-                        }
-
-                        for(BigInteger val: right){
-                            hash1 = hash1.multiply(prime1).add(val).mod(module1);
-                            hash2 = hash2.multiply(prime2).add(val).mod(module2);
-                        }
-
-
-                        return new BigInteger[]{hash1, hash2};
-                    }
-
-                    @Override
-                    public BigInteger[] getHash(Integer left) {
-                        return new BigInteger[] {
-                                new BigInteger(String.valueOf(left)),
-                                new BigInteger(String.valueOf(left))
-                        };
-                    }
-                };
             }
 
             @Override
@@ -547,5 +505,5 @@ public class NGramStatTest {
             result[i] = r.nextInt(30000);
 
         return result;
-    }
+    }*/
 }

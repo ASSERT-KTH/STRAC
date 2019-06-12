@@ -9,8 +9,6 @@ import java.util.List;
 
 public class TraceMap {
 
-    public SegmentTree<Integer, BigInteger[]> trace;
-
     public IReadArray<Integer> plainTrace;
 
     public String traceFile;
@@ -22,8 +20,6 @@ public class TraceMap {
 
     public TraceMap(IReadArray<Integer> trace, String traceFile, boolean createTree, String[] originalTraces){
 
-        if(createTree)
-            this.trace = SegmentTree.build(trace, 0, trace.size() - 1, ServiceRegister.getProvider().getHashCreator());
 
         this.plainTrace = trace;
         this.traceFile = traceFile;

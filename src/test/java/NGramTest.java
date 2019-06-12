@@ -47,10 +47,6 @@ public class NGramTest {
                 return new InMemoryDict<>();
             }
 
-            @Override
-            public <T, R> IHashCreator<T, R> getHashCreator() {
-                return null;
-            }
 
             @Override
             public <T> ISet<T> allocateNewSet() {
