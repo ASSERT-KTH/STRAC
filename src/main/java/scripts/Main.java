@@ -32,6 +32,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static core.utils.HashingHelper.getRandomName;
@@ -208,22 +211,29 @@ public class Main {
 
         if(payload.exportNgram != null){
             LogProvider.info("Exporting ngram...");
+
+            ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(traces.size());
+
             for(TraceMap tm: traces){
-                for(int size: payload.exportNgram){
-                    int i = 0;
+
+                Payload finalPayload = payload;
+
+                executor.submit(() -> {
+                    for(int size: finalPayload.exportNgram){
+                        int i = 0;
 
                         try {
                             String[] chunks = tm.traceFile.split("/");
 
-                            LogProvider.info("Exporting ", size, chunks[chunks.length - 1]);
+                            LogProvider.info("Exporting...", size, chunks[chunks.length - 1]);
 
-                            FileWriter writer = new FileWriter(String.format("%s/%s.%s.gram.json", payload.outputDir, size, chunks[chunks.length - 1]));
+                            FileWriter writer = new FileWriter(String.format("%s/%s.%s.gram.json", finalPayload.outputDir, size, chunks[chunks.length - 1]));
 
                             IDict dict = generatpr.getNGramSet(size, tm.plainTrace);
 
                             NGramSetDto ngramOutDto = new NGramSetDto();
                             ngramOutDto.set = dict;
-                            ngramOutDto.bagPath = String.format("%s/%s", payload.outputDir, payload.exportBag);
+                            ngramOutDto.bagPath = String.format("%s/%s", finalPayload.outputDir, finalPayload.exportBag);
                             ngramOutDto.keyCount = dict.size();
                             ngramOutDto.sentenceCount = tm.plainTrace.size();
                             ngramOutDto.n = size;
@@ -236,7 +246,20 @@ public class Main {
                         catch (Exception e){
                             e.printStackTrace();
                         }
-                }
+                    }
+
+                    return null;
+                });
+
+
+            }
+
+
+            executor.shutdown();
+            try {
+                executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            } catch (InterruptedException e) {
+
             }
         }
 
