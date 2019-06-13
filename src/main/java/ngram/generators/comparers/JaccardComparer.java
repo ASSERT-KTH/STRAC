@@ -19,7 +19,7 @@ public class JaccardComparer extends Comparer{
 
         //LogProvider.info("Set1 size", s1.size(), "Set2 size", s2.size());
 
-        return s1.intersect(s2).size()*1.0;
+        return 1 - s1.intersect(s2).size()*1.0/s1.union(s2).size();
     }
 
 }

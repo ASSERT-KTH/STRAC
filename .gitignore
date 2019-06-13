@@ -1,3 +1,6 @@
 scripts
 ngrams
 reports
+
+*.interp
+*.tokens
