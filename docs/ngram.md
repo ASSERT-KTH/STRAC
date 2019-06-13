@@ -4,6 +4,48 @@
 
 **We are implementing distance measures based on [A survey of Binary Similarity Measures](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.352.6123&rep=rep1&type=pdf) paper**
 
+#### Sets operations DSL (seti language)
+
+This DSL provides a ligthweight method to make numeric and sets operations over sets. Seti's semantic is really simple.Seti has only two global variables (s1, s2), mapping to set1 and set2 to be operated and any numeric operation. 
+Besides that seti provide basic Math numeric methods (listed below). Every expression in seti returns a double.
+
+#### Built in math method
+ -  ```pow(a, b)``` Calculates a power b
+ - ```sqrt(a)``` Calculates square root of a
+ - ```log(number)```
+ - ```max(a, b, ...)``` Calculates max number between the arguments
+ - ```min(a, b, ...)``` Calculates min number between the arguments
+ - ```abs(a)``` Calculates the absolute value of a
+ - ```acos(a)```
+ - ```atan(a)```
+ - ```asin(a)```
+ - ```sum(a, b, ...)``` Calculates the sum of all arguments
+ - ```mul(a, b, ...)``` Calculates the multiplication of all arguments
+##### Seti grammar
+```
+
+set: 's1' | 's2'
+
+setOperation -> set (('U' | '&' | '<') set)*;
+
+setLength  -> | setOperation |;
+
+expression -> factor (('+' | '-') expression)*;
+
+factor	   ->	operand (('*' | '/') factor)*;
+
+operand	   ->	REAL | setLength | '(' expression ')' | funcall;
+
+funcall    ->   name expression+;
+
+program	   -> expression;
+```
+
+#### Similarities and distances using seti
+
+- Jaccard distance ``` |s1 & s2|/| s1 U s2 | ```
+- Dice distance ``` |s1 & s2|/(| s1 | + | s2 |) ```
+
 #### Use in code
 
 1 - Register collection allocator

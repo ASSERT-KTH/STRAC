@@ -10,12 +10,35 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.*;
 
 import java.nio.ByteBuffer;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SetiParser extends setiBaseVisitor<Double> {
 
     Context context;
+
+    static Map<String, IFunctionCall> builtIn = new HashMap<>();
+
+    static{
+        builtIn.put("abs", t -> Math.abs(t[0]));
+        builtIn.put("sqrt", t -> Math.sqrt(t[0]));
+        builtIn.put("pow", t -> Math.pow(t[0], t[1]));
+        builtIn.put("log", t -> Math.log(t[0]));
+        builtIn.put("acos", t -> Math.acos(t[0]));
+        builtIn.put("asin", t -> Math.asin(t[0]));
+        builtIn.put("atan", t -> Math.atan(t[0]));
+
+        builtIn.put("max", t -> Arrays.stream(t).min((o1, o2) -> o2.intValue() - o1.intValue()).get());
+        builtIn.put("min", t -> Arrays.stream(t).max((o1, o2) -> o2.intValue() - o1.intValue()).get());
+        builtIn.put("mul", t -> {
+            double result = 1;
+
+            for(double d: t)
+                result *= d;
+
+            return result;
+        });
+    }
 
     public static setiParser.ProgramContext createParseTree(String expression){
 
@@ -30,6 +53,19 @@ public class SetiParser extends setiBaseVisitor<Double> {
 
     public SetiParser(Context context){
         this.context = context;
+    }
+
+    @Override
+    public Double visitFuncall(setiParser.FuncallContext ctx) {
+
+        if(!builtIn.containsKey(ctx.FUNCTION().getText()))
+            throw new RuntimeException("Math function not supported");
+
+        Double[] values = ctx.expression().stream().map(
+                this::visit
+        ).collect(Collectors.toList()).toArray(new Double[0]);
+
+        return builtIn.get(ctx.FUNCTION().getText()).call(values);
     }
 
     @Override
@@ -93,6 +129,11 @@ public class SetiParser extends setiBaseVisitor<Double> {
             return visit(ctx.length);
         }
 
+        if(ctx.fun != null){
+            return visit(ctx.fun);
+        }
+
+
         throw new RuntimeException("Invalid exception");
     }
 
@@ -127,5 +168,9 @@ public class SetiParser extends setiBaseVisitor<Double> {
 
             return left;
         }
+    }
+
+    public interface IFunctionCall{
+        double call(Double...parameters);
     }
 }

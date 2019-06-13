@@ -92,6 +92,18 @@ public class setiBaseListener implements setiListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterFuncall(setiParser.FuncallContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFuncall(setiParser.FuncallContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterProgram(setiParser.ProgramContext ctx) { }
 	/**
 	 * {@inheritDoc}

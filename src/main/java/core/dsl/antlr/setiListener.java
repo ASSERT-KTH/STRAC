@@ -72,6 +72,16 @@ public interface setiListener extends ParseTreeListener {
 	 */
 	void exitOperand(setiParser.OperandContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link setiParser#funcall}.
+	 * @param ctx the parse tree
+	 */
+	void enterFuncall(setiParser.FuncallContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link setiParser#funcall}.
+	 * @param ctx the parse tree
+	 */
+	void exitFuncall(setiParser.FuncallContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link setiParser#program}.
 	 * @param ctx the parse tree
 	 */

@@ -31,8 +31,9 @@ expression
 
 factor	:	left=operand (op=(ASTER | DIV) right=factor)*;
 
-operand	:	number=REAL | length=setLength | LPAR exp=expression RPAR;
+operand	:	number=REAL | length=setLength | LPAR exp=expression RPAR | fun=funcall;
 
+funcall: FUNCTION LPAR (expression (',' expression)*) RPAR ;
 
 program	: expression COMMENT? EOF;
 
@@ -49,6 +50,8 @@ RPAR	:	')';
 PIPE	:	'|';
 DOT	:	'.';
 
+
+FUNCTION : 'max' | 'min' | 'sum' | 'mul' | 'sqrt' | 'pow' | 'abs' | 'asin' | 'atan' | 'acos' | 'log';
 
 S1	:	's1';
 S2	:	's2';

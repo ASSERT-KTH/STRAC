@@ -63,5 +63,12 @@ public class setiBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements s
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitFuncall(setiParser.FuncallContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitProgram(setiParser.ProgramContext ctx) { return visitChildren(ctx); }
 }

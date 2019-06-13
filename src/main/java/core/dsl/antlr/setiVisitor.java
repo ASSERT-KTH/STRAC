@@ -51,6 +51,12 @@ public interface setiVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitOperand(setiParser.OperandContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link setiParser#funcall}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFuncall(setiParser.FuncallContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link setiParser#program}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
