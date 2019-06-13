@@ -165,7 +165,7 @@ public class DWTHelper {
     public static WindowedDTW.EmptyMap
     expandWindow(IArray<InsertOperation> ops, int radius, long lenT1, long lenT2){
 
-        ops.add(new InsertOperation((int)lenT1, (int)lenT2));
+        //ops.set(0,new InsertOperation((int)lenT1, (int)lenT2));
 
         WindowedDTW.EmptyMap grown = new WindowedDTW.EmptyMap();
         WindowedDTW.EmptyMap expansion = new WindowedDTW.EmptyMap();

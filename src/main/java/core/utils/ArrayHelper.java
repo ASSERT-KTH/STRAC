@@ -43,7 +43,7 @@ public class ArrayHelper {
         for(int i = 0; i < target.size() - target.size()%2; i += 2){
 
             //result.add(target.read( i + r.nextInt(1 << 30)%2));
-            result.add(target.read( i));
+            result.set(i/2,target.read( i));
         }
 
     }

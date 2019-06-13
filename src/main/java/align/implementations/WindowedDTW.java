@@ -130,6 +130,7 @@ public class WindowedDTW extends Aligner {
         IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray(null, trace1.size()+trace2.size() + 2, InsertOperation.OperationAdapter);
 
 
+        long position = 0;
 
         while ((i > 0) || (j > 0)) // 0,0 item
         {
@@ -167,7 +168,7 @@ public class WindowedDTW extends Aligner {
                 i--;
 
             //LogProvider.info(i, j);
-            ops.add(new InsertOperation(i, j));
+            ops.set(position++,new InsertOperation(i, j));
         }
 
 

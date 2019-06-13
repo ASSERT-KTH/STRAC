@@ -111,6 +111,7 @@ public class AlignInterpreter {
                 tr1.plainTrace.close();
                 tr2.plainTrace.close();
 
+                long position = 0;
                 for(long i= distance.getInsertions().size() - 1; i >= 0 ; i--){
 
                     InsertOperation i2 = distance.getInsertions().read(i);
@@ -135,19 +136,21 @@ public class AlignInterpreter {
                     try {
 
                         if (direction[0] > 0 && direction[1] > 0) {
-                            trace1Alignment.add(tr1.plainTrace.read(s.getTrace1Index()));
-                            trace2Alignment.add(tr2.plainTrace.read(s.getTrace2Index()));
+                            trace1Alignment.set(position,tr1.plainTrace.read(s.getTrace1Index()));
+                            trace2Alignment.set(position,tr2.plainTrace.read(s.getTrace2Index()));
 
                         }
                         if (direction[0] == 0) {
-                            trace1Alignment.add(-1);
-                            trace2Alignment.add(tr2.plainTrace.read(s.getTrace2Index()));
+                            trace1Alignment.set(position,1);
+                            trace2Alignment.set(position,tr2.plainTrace.read(s.getTrace2Index()));
                         }
 
                         if (direction[1] == 0) {
-                            trace2Alignment.add(-1);
-                            trace1Alignment.add(tr1.plainTrace.read(s.getTrace1Index()));
+                            trace2Alignment.set(position,-1);
+                            trace1Alignment.set(position, tr1.plainTrace.read(s.getTrace1Index()));
                         }
+
+                        position++;
                     }
                     catch (Exception e){
                         //e.printStackTrace();

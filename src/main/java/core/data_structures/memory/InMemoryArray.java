@@ -72,16 +72,11 @@ public class InMemoryArray<T> implements IArray<T> {
     }
 
     @Override
-    public void add(long position, T value) {
+    public void set(long position, T value) {
 
         items[(int)position] = value;
     }
 
-    @Override
-    public void add(T value) {
-
-        items[position++]=value;
-    }
 
     @Override
     public void close() {
@@ -91,11 +86,6 @@ public class InMemoryArray<T> implements IArray<T> {
     @Override
     public void dispose() {
 
-    }
-
-    @Override
-    public IArray<T> subArray(long index, long size) {
-        return null;
     }
 
     @NotNull

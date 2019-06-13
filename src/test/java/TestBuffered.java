@@ -30,13 +30,13 @@ public class TestBuffered {
     @Test
     public void testCreateOne(){
 
-        BufferedCollection<Integer> coll = new BufferedCollection<>("test.buff", 4, adaptor);
+        BufferedCollection<Integer> coll = new BufferedCollection<>("test.buff", 4, Integer.MAX_VALUE /2, adaptor);
 
 
-        coll.add(10);
-        coll.add(11);
-        coll.add(12);
-        coll.add(13);
+        coll.set(0,10);
+        coll.set(1,11);
+        coll.set(2, 12);
+        coll.set(3, 13);
 
         coll.close();
     }
@@ -45,7 +45,7 @@ public class TestBuffered {
     @Test
     public void testLoadAndRetrieve(){
 
-        BufferedCollection<Integer> coll = new BufferedCollection<>("test.buff", adaptor);
+        BufferedCollection<Integer> coll = new BufferedCollection<>("test.buff", 4, Integer.MAX_VALUE/2, adaptor);
 
 
         LogProvider.info(coll.size());
@@ -63,11 +63,11 @@ public class TestBuffered {
     public void testCreateLarge(){
 
         // 1M byte file
-        BufferedCollection<Integer> coll = new BufferedCollection<>("large.buff", 10000000 ,adaptor);
+        BufferedCollection<Integer> coll = new BufferedCollection<>("large.buff", 10000000, Integer.MAX_VALUE/2 ,adaptor);
 
 
-        for(int i = 0; i< 1000000; i++)
-            coll.add(10);
+        for(int i = 0; i< 10000000; i++)
+            coll.set(i, 10);
 
         coll.close();
 
@@ -108,11 +108,11 @@ public class TestBuffered {
 
     @Test
     public void testJson(){
-        BufferedCollection<InsertOperation> bi = new BufferedCollection<InsertOperation>("json.buff", 3, InsertOperation.OperationAdapter);
+        BufferedCollection<InsertOperation> bi = new BufferedCollection<InsertOperation>("json.buff", 3, Integer.MAX_VALUE/2, InsertOperation.OperationAdapter);
 
-        bi.add(new InsertOperation(0, 10));
-        bi.add(new InsertOperation(2, 10));
-        bi.add(new InsertOperation(5, 10));
+        bi.set(0,new InsertOperation(0, 10));
+        bi.set(1, new InsertOperation(2, 10));
+        bi.set(2, new InsertOperation(5, 10));
 
         bi.close();
 
@@ -121,7 +121,7 @@ public class TestBuffered {
 
     @Test
     public void testReadJson(){
-        BufferedCollection<InsertOperation> bi = new BufferedCollection<InsertOperation>("json.buff", 3, InsertOperation.OperationAdapter);
+        BufferedCollection<InsertOperation> bi = new BufferedCollection<InsertOperation>("json.buff", 3,Integer.MAX_VALUE/2,  InsertOperation.OperationAdapter);
 
         LogProvider.info(bi.read(0));
         bi.close();

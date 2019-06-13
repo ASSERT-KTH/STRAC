@@ -2,9 +2,5 @@ package core.data_structures;
 
 public interface IArray<T> extends IReadArray<T> {
 
-    void add(T value);
-
-    void add(long position, T value);
-
-
+    void set(long position, T value);
 }

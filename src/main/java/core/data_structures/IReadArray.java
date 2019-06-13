@@ -12,8 +12,6 @@ public interface IReadArray<T> extends Iterable<T>{
 
     void dispose();
 
-    IArray<T> subArray(long index, long size);
-
     long size();
 
     void reset();

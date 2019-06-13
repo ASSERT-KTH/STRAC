@@ -67,6 +67,7 @@ public class TraceHelper {
                 (null,
                 (int)patch.count(), HashingHelper.IntegerAdapter);
 
+        long position = 0;
 
         for (Iterator<String> it = sentences.iterator(); it.hasNext(); ) {
             String sentence = it.next();
@@ -77,7 +78,7 @@ public class TraceHelper {
 
             }
 
-            result.add(bag.get(sentence));
+            result.set(position++,bag.get(sentence));
         }
 
         return result;

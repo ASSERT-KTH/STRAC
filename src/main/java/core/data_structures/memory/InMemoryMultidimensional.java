@@ -41,7 +41,7 @@ public class InMemoryMultidimensional<T> implements IMultidimensionalArray<T> {
 
     @Override
     public void set(T value, int... indexes) {
-        this.data.add(maxJ*indexes[0] + indexes[1], value);
+        this.data.set(maxJ*indexes[0] + indexes[1], value);
     }
 
     @Override

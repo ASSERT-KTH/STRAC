@@ -6,6 +6,7 @@ import core.data_structures.IMapAdaptor;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Iterator;
@@ -15,17 +16,23 @@ import static core.utils.HashingHelper.getRandomName;
 public class BufferedCollection<T> implements IArray<T> {
 
     RandomAccessFile aFile;
-    MappedByteBuffer buffer;
+
+    MappedByteBuffer[] _buffers;
+
     String filename;
     FileChannel inChannel;
     ITypeAdaptor<T> adaptor;
-    long _size;
 
-    public BufferedCollection(String fileName, long size,  ITypeAdaptor<T> adaptor) {
+    long _size;
+    int segment_size;
+
+    public BufferedCollection(String fileName, long dataSize, int segmentSize,  ITypeAdaptor<T> adaptor) {
         aFile = null;
         this.filename = fileName;
         this.adaptor = adaptor;
-        _size = 0;
+
+        _size = dataSize*adaptor.size();
+        this.segment_size = segmentSize;
 
         try {
             aFile = new RandomAccessFile
@@ -36,56 +43,41 @@ public class BufferedCollection<T> implements IArray<T> {
         }
 
         inChannel = aFile.getChannel();
-        buffer = null;
+        _buffers = new MappedByteBuffer[(int)(Math.max(1,_size/segmentSize))];
+
 
         try {
-            if(inChannel.size() > 0)
-                _size = inChannel.size()/adaptor.size();
 
-            long realSize = size > 0? size*adaptor.size() : inChannel.size();
+            int bufIdx = 0;
 
-            buffer = inChannel.map(FileChannel.MapMode.READ_WRITE, 0, realSize);
-
+            for (long offset = 0 ; offset < _size ; offset += segmentSize)
+            {
+                long remainingFileSize = _size - offset;
+                long thisSegmentSize = Math.min(2L * segmentSize, remainingFileSize);
+                _buffers[bufIdx++] = inChannel.map(FileChannel.MapMode.READ_WRITE, offset, thisSegmentSize);
+            }
 
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }
-
-
-        buffer.load();
-
-
-    }
-
-    public BufferedCollection(String fileName, ITypeAdaptor<T> adaptor){
-        this(fileName, 0, adaptor);
-    }
-
-
-
-    @Override
-    public void add(T value) {
-
-       // throw new RuntimeException("Method not allowed");
-        byte[] data = adaptor.toBytes(value);
-
-        _size++;
-        buffer.put(data);
     }
 
     @Override
-    public void add(long position, T value) {
-
+    public void set(long position, T value) {
         position = position*adaptor.size();
 
-        int previous = buffer.position();
-        buffer.position((int)position);
+        ByteBuffer buf = buffer(position);
 
         byte[] bytes = adaptor.toBytes(value);
-        buffer.put(bytes);
+        buf.put(bytes);
+    }
 
-        buffer.position(previous);
+    private ByteBuffer buffer(long index){
+        ByteBuffer buf =  _buffers[(int)(index/segment_size)];
 
+        buf.position((int)(index%segment_size));
+
+        return buf;
     }
 
     @Override
@@ -94,22 +86,20 @@ public class BufferedCollection<T> implements IArray<T> {
 
         position = position*adaptor.size();
 
-        int previous = buffer.position();
+        ByteBuffer buf = buffer(position);
+
 
 
         byte[] chunk = new byte[adaptor.size()];
-        buffer.position((int)position);
-        buffer.get(chunk);
+        buf.get(chunk);
         T value = adaptor.fromBytes(chunk);
-
-        buffer.position(previous);
 
         return value;
     }
 
     @Override
     public void close() {
-        buffer.clear(); // do something with the data and clear/compact it.
+        //buffer.clear(); // do something with the data and clear/compact it.
         try {
             inChannel.close();
             aFile.close();
@@ -123,23 +113,15 @@ public class BufferedCollection<T> implements IArray<T> {
         new File(this.filename).delete();
     }
 
-    @Override
-    public IArray<T> subArray(long index, long size) {
-
-        BufferedCollection<T> subArray = new BufferedCollection<>(getRandomName(), size*adaptor.size(), adaptor);
-
-
-        return null;
-    }
 
     @Override
     public long size() {
-        return _size;
+        return _size/adaptor.size();
     }
 
     @Override
     public void reset() {
-        buffer.position(0);
+       // buffer.position(0);
     }
 
     @Override
@@ -150,7 +132,10 @@ public class BufferedCollection<T> implements IArray<T> {
     @Override
     public void writeTo(Writer wr, IMapAdaptor<T> adaptor) throws IOException {
         this.reset();
-        buffer.force();
+
+        for(MappedByteBuffer buff: _buffers)
+            buff.force();
+
         for(T item: this)
             wr.write(adaptor.getValue(item));
 

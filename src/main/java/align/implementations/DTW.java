@@ -77,6 +77,8 @@ public class DTW extends Aligner {
         int i = (int)maxI;
         int j = (int)maxJ;
 
+        long position = 0;
+
         while ((i>0) || (j>0))
         {
             final double diagCost;
@@ -112,7 +114,7 @@ public class DTW extends Aligner {
             else
                 i--;
 
-            ops.add(new InsertOperation(i, j));
+            ops.set(position++,new InsertOperation(i, j));
         }
 
         /*for(int in = 0; in < maxI + 1; in++) {
