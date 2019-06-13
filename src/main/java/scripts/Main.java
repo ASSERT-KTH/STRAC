@@ -76,14 +76,6 @@ public class Main {
 
     }
 
-
-    public static<T> T[] subArray(T[] array, int beg, int end) {
-        return Arrays.copyOfRange(array, beg, end + 1);
-    }
-
-    static int size;
-    static List<TraceMap> traces;
-
     public static void main(String[] args) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
 
         setup();
