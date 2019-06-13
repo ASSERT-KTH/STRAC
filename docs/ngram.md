@@ -7,7 +7,7 @@
 #### Sets operations DSL (seti language)
 
 This DSL provides a ligthweight method to make numeric and sets operations over sets. Seti's semantic is really simple.Seti has only two global variables (s1, s2), mapping to set1 and set2 to be operated and any numeric operation. 
-Besides that seti provide basic Math numeric methods (listed below). Every expression in seti returns a double.
+Besides that seti provide basic Math numeric methods (listed below). Every expression in seti returns a double. Seti support three basic sets operations: Union **U**, Intersection **&** and Difference **<**
 
 #### Built in math method
  -  ```pow(a, b)``` Calculates a power b
@@ -36,7 +36,7 @@ factor	   ->	operand (('*' | '/') factor)*;
 
 operand	   ->	REAL | setLength | '(' expression ')' | funcall;
 
-funcall    ->   name expression+;
+funcall    ->   name '(' expression (',' expression)*')';
 
 program	   -> expression;
 ```
@@ -99,21 +99,21 @@ return 1 - 1.0*s1.intersect(s2).size()/(s1.union(s2).size());
 ```json
 {
   "files": [
-
-    "file1",
-    "file2"
+    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/2.n",
+    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/3.n"
   ],
 
-  "method": {
-    "name": "Jaccard",
-    "params": [1000],
-    "names": ["size"]
-  },
+  "comparisonExpression": "|s1 & s2|/|s1 U s2|",
+  "n": 10,
   "exportComparisson": "out.json",
   "printComparisson": true,
-  "exportSegmentTrees": true,
+  "exportSegmentTrees": false,
   "exportBag": "bag.json",
-  "exportNgram": [10, 30, 1000, 200000]
+  "exportNgram":[],
+  "sessionName": "test1",
+  "sessionDate": "2019-06-05",
+  "outputDir": "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/tool_result"
+
 }
 
 ```
