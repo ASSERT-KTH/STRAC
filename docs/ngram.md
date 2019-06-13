@@ -6,7 +6,7 @@
 
 #### Sets operations DSL (seti language)
 
-This DSL provides a ligthweight method to make numeric and sets operations over sets. Seti's semantic is really simple.Seti has only two global variables (s1, s2), mapping to set1 and set2 to be operated and any numeric operation. 
+This DSL provides a ligthweight method to make numeric and sets operations. Seti's semantic is really simple. Seti has only two global variables (s1, s2), mapping to set1 and set2 to be operated and any numeric operation. 
 Besides that seti provide basic Math numeric methods (listed below). Every expression in seti returns a double. Seti support three basic sets operations: Union **U**, Intersection **&** and Difference **<**
 
 #### Built in math method
