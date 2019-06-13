@@ -39,4 +39,20 @@ public class TestDSL {
 
     }
 
+
+    @Test
+    public void testJaccard(){
+
+        ISet s1 = new InMemorySet<>(new HashSet<>(List.of(1, 2, 3 , 4, 5)));
+        ISet s2= new InMemorySet<>(new HashSet<>(List.of(1, 7)));
+
+        Context setContext = new Context(s1, s2);
+
+        setiParser.ProgramContext context = SetiParser.createParseTree("| s1 & s2|/|s1 U s2|");
+
+        SetiParser p = new SetiParser(setContext);
+
+        LogProvider.info(p.visitProgram(context));
+
+    }
 }

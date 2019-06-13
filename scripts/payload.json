@@ -1,21 +1,16 @@
 {
   "files": [
     "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/2.n",
-    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/3.n",
-    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/4.n",
-    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/5.n",
-    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/6.n",
-    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/1.n"
+    "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/3.n"
   ],
-  "method": {
-    "name": "Jaccard",
-    "params": [100]
-  },
+
+  "comparisonExpression": "|s1 & s2|/|s1 U s2|",
+  "n": 1000,
   "exportComparisson": "out.json",
   "printComparisson": true,
   "exportSegmentTrees": false,
   "exportBag": "bag.json",
-  "exportNgram":[2, 3, 4, 5, 6, 7, 8, 9, 20, 50, 200, 300, 400, 500, 1000, 2000, 3000, 4000, 10000, 20000, 45000, 50000, 70000,80000, 100000,200000, 220000,250000,300000,400000,450000,500000,550000],
+  "exportNgram":[],
   "sessionName": "test1",
   "sessionDate": "2019-06-05",
   "outputDir": "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/tool_result"

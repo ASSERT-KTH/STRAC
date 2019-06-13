@@ -163,20 +163,9 @@ public class Main {
 
 
 
-        if(payload.method != null) {
-            method = payload.method.name;
-
-            if (method != null && !comparerMap.containsKey(method)) {
-
-                LogProvider.info(comparerMap.keySet());
-                throw new RuntimeException("Method not allowed " + method);
-            }
-        }
-
-
         TraceHelper helper = new TraceHelper();
 
-        size = payload.size;
+        size = payload.n;
         traces = helper.mapTraceSetByFileLine(payload.files);
 
         Generator generatpr = ServiceRegister.getProvider().getGenerator();
@@ -263,10 +252,10 @@ public class Main {
             }
         }
 
-        if(payload.method != null) {
+        if(payload.comparisonExpression != null) {
             // Generator g = new StringKeyGenerator(t -> String.format("%s %s", t[0], t[1]));
 
-            Comparer cmp = comparerMap.get(payload.method.name).getDeclaredConstructor().newInstance();
+            DSLExpressionComparer cmp = new DSLExpressionComparer(payload.comparisonExpression);
 
             for (int i = 0; i < traces.size(); i++) {
 
@@ -281,7 +270,7 @@ public class Main {
                     cmp.setTraces(traces.get(i), traces.get(j));
 
                     try {
-                        double distance = reflectExecution(cmp, payload.method.params);
+                        double distance = cmp.compare(payload.n);
 
                         if (payload.printComparisson)
                             System.out.print(distance + " ");
@@ -303,7 +292,7 @@ public class Main {
             }
         }
 
-        if(payload.method != null && payload.exportComparisson != null){
+        if(payload.comparisonExpression != null && payload.exportComparisson != null){
 
             FileWriter writer = new FileWriter(String.format("%s/%s", payload.outputDir, payload.exportComparisson));
 

@@ -7,9 +7,9 @@ public class Payload extends BaseDto {
 
     public List<String> files;
 
-    public int size;
+    public int n;
 
-    public MethodInfo method;
+    public String comparisonExpression;
 
     public String exportComparisson;
 
