@@ -44,20 +44,22 @@ public class Align {
 
             @Override
             public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                //IArray<T> result = new BufferedCollection<>(id==null? getRandomName(): id, size, adaptor);
+                IArray<T> result = new BufferedCollection<>(id==null? getRandomName(): id, size, Integer.MAX_VALUE/2, adaptor);
 
-                //openedArrays.add(result);
+                openedArrays.add(result);
 
-                return new InMemoryArray<T>(getRandomName(), (int)size);
+                return result;
+                //return new InMemoryArray<T>(getRandomName(), (int)size);
             }
 
             @Override
             public <T> IMultidimensionalArray<T> allocateMuldimensionalArray(BufferedCollection.ITypeAdaptor<T> adaptor, int... dimensions) {
-                //MultiDimensionalCollection<T> result = new MultiDimensionalCollection<T>(getRandomName(),adaptor, dimensions);
+                MultiDimensionalCollection<T> result = new MultiDimensionalCollection<T>(getRandomName(),adaptor, dimensions);
+                openedArrays.add(result);
 
-                //openedArrays.add(result);
+                return result;
 
-                return new InMemoryMultidimensional<>(adaptor, dimensions[0], dimensions[1]);
+                //return new InMemoryMultidimensional<>(adaptor, dimensions[0], dimensions[1]);
             }
 
             @Override

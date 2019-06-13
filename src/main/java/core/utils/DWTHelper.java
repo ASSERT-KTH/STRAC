@@ -178,6 +178,9 @@ public class DWTHelper {
         utl.reset();
         for(InsertOperation op: ops){
 
+            if(op == null)
+                break;
+
             if(op.getTrace1Index() >= 0 && op.getTrace2Index() >= 0)
                 expansion.set(op.getTrace1Index(), op.getTrace2Index());
 

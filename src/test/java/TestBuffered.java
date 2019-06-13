@@ -42,6 +42,34 @@ public class TestBuffered {
     }
 
 
+
+    @Test
+    public void testComplexDataStructure(){
+
+        BufferedCollection<InsertOperation> coll = new BufferedCollection<>("operations.buff", 4, Integer.MAX_VALUE /2, InsertOperation.OperationAdapter);
+
+
+        coll.set(0,new InsertOperation(1, 2));
+        coll.set(1,new InsertOperation(3, 4));
+        coll.set(2, new InsertOperation(5, 12));
+        coll.set(3, new InsertOperation(1239, 412));
+
+        coll.close();
+    }
+
+
+    @Test
+    public void testReadComplex(){
+
+        BufferedCollection<InsertOperation> coll = new BufferedCollection<>("operations.buff", 4, Integer.MAX_VALUE /2, InsertOperation.OperationAdapter);
+
+        for(InsertOperation op: coll)
+            LogProvider.info(op);
+
+        coll.close();
+    }
+
+
     @Test
     public void testLoadAndRetrieve(){
 

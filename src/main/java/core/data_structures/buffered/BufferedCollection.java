@@ -150,7 +150,7 @@ public class BufferedCollection<T> implements IArray<T> {
     @NotNull
     @Override
     public Iterator<T> iterator() {
-        return new BufferedIterator<>(this);
+        return new BufferedIterator();
     }
 
     public interface ITypeAdaptor<T>{
@@ -162,24 +162,23 @@ public class BufferedCollection<T> implements IArray<T> {
         int size();
     }
 
-    public class BufferedIterator<T> implements Iterator<T>{
+    public class BufferedIterator implements Iterator<T>{
 
         int index = 0;
 
-        BufferedCollection<T> collection;
 
-        public BufferedIterator(BufferedCollection<T> collection){
-            this.collection = collection;
+        public BufferedIterator(){
+
         }
 
         @Override
         public boolean hasNext() {
-            return index < this.collection.size();
+            return index < size();
         }
 
         @Override
         public T next() {
-            return collection.read(index++);
+            return read(index++);
         }
     }
 }
