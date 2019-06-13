@@ -4,10 +4,13 @@ import core.data_structures.buffered.BufferedCollection;
 import core.data_structures.buffered.MultiDimensionalCollection;
 import org.apache.velocity.runtime.log.Log;
 import org.junit.Assert;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import java.nio.ByteBuffer;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestBuffered {
 
     static BufferedCollection.ITypeAdaptor<Integer> adaptor = new BufferedCollection.ITypeAdaptor<Integer>() {
@@ -28,7 +31,7 @@ public class TestBuffered {
     };
 
     @Test
-    public void testCreateOne(){
+    public void test01CreateOne(){
 
         BufferedCollection<Integer> coll = new BufferedCollection<>("test.buff", 4, Integer.MAX_VALUE /2, adaptor);
 
@@ -44,7 +47,7 @@ public class TestBuffered {
 
 
     @Test
-    public void testComplexDataStructure(){
+    public void test02ComplexDataStructure(){
 
         BufferedCollection<InsertOperation> coll = new BufferedCollection<>("operations.buff", 4, Integer.MAX_VALUE /2, InsertOperation.OperationAdapter);
 
@@ -59,7 +62,7 @@ public class TestBuffered {
 
 
     @Test
-    public void testReadComplex(){
+    public void test03ReadComplexDataStructure(){
 
         BufferedCollection<InsertOperation> coll = new BufferedCollection<>("operations.buff", 4, Integer.MAX_VALUE /2, InsertOperation.OperationAdapter);
 
@@ -71,7 +74,7 @@ public class TestBuffered {
 
 
     @Test
-    public void testLoadAndRetrieve(){
+    public void test04LoadAndRetrieve(){
 
         BufferedCollection<Integer> coll = new BufferedCollection<>("test.buff", 4, Integer.MAX_VALUE/2, adaptor);
 
@@ -88,7 +91,7 @@ public class TestBuffered {
 
 
     @Test
-    public void testCreateLarge(){
+    public void test05CreateLarge(){
 
         // 1M byte file
         BufferedCollection<Integer> coll = new BufferedCollection<>("large.buff", 10000000, Integer.MAX_VALUE/2 ,adaptor);
@@ -102,7 +105,7 @@ public class TestBuffered {
     }
 
     @Test
-    public void testMultidimensional(){
+    public void test06Multidimensional(){
         MultiDimensionalCollection<Integer> bi = new MultiDimensionalCollection<>("bidimensional.buff", adaptor, 10, 10);
 
         for(int i = 0; i < 10; i++){
@@ -115,7 +118,7 @@ public class TestBuffered {
 
 
     @Test
-    public void testReadMultidimensional(){
+    public void test07ReadMultidimensional(){
         MultiDimensionalCollection<Integer> bi = new MultiDimensionalCollection<>("bidimensional.buff", adaptor, 10, 10);
 
         for(int i = 0; i < 10; i++){
@@ -135,7 +138,7 @@ public class TestBuffered {
 
 
     @Test
-    public void testJson(){
+    public void test08Json(){
         BufferedCollection<InsertOperation> bi = new BufferedCollection<InsertOperation>("json.buff", 3, Integer.MAX_VALUE/2, InsertOperation.OperationAdapter);
 
         bi.set(0,new InsertOperation(0, 10));
@@ -148,7 +151,7 @@ public class TestBuffered {
 
 
     @Test
-    public void testReadJson(){
+    public void test09ReadJson(){
         BufferedCollection<InsertOperation> bi = new BufferedCollection<InsertOperation>("json.buff", 3,Integer.MAX_VALUE/2,  InsertOperation.OperationAdapter);
 
         LogProvider.info(bi.read(0));
