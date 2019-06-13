@@ -45,6 +45,10 @@ program	   -> expression;
 
 - Jaccard distance ``` |s1 & s2|/| s1 U s2 | ```
 - Dice distance ``` |s1 & s2|/(| s1 | + | s2 |) ```
+- CZE distance ``` |s1 & s2|/(| s1 | + | s2 |) ```
+- 3W Jaccard ``` (3*|s1 & s2|)/(3*|s1 & s2| + | s1 < s2 | + |s2 < s1|) ```
+- Hamming ```| s1 < s2 | + |s2 < s1| ```
+- Ample ```(|s1 & s2|*(2*(|s1 < s2| + |s2 < s1|)))/((|s2 < s1|)*(|s1 & s2| + |s1 < s2|))```
 
 #### Use in code
 

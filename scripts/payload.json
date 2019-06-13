@@ -4,7 +4,7 @@
     "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/bck/3.n"
   ],
 
-  "comparisonExpression": "|s1 & s2|/|s1 U s2|",
+  "comparisonExpression": "(|s1 & s2|*(2*(|s1 < s2| + |s2 < s1|)))/((|s2 < s1|)*(|s1 & s2| + |s1 < s2|))",
   "n": 10,
   "exportComparisson": "out.json",
   "printComparisson": true,
