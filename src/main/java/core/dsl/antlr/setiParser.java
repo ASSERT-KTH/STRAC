@@ -22,7 +22,7 @@ public class setiParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		AND=1, UNION=2, LESS=3, PLUS=4, MINUS=5, DIV=6, ASTER=7, LPAR=8, RPAR=9, 
-		PIPE=10, DOT=11, S1=12, S2=13, REAL=14, WS=15;
+		PIPE=10, DOT=11, S1=12, S2=13, REAL=14, WS=15, COMMENT=16;
 	public static final int
 		RULE_set = 0, RULE_setOperation = 1, RULE_setLength = 2, RULE_expression = 3, 
 		RULE_factor = 4, RULE_operand = 5, RULE_program = 6;
@@ -37,7 +37,7 @@ public class setiParser extends Parser {
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
 		null, "AND", "UNION", "LESS", "PLUS", "MINUS", "DIV", "ASTER", "LPAR", 
-		"RPAR", "PIPE", "DOT", "S1", "S2", "REAL", "WS"
+		"RPAR", "PIPE", "DOT", "S1", "S2", "REAL", "WS", "COMMENT"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -546,6 +546,7 @@ public class setiParser extends Parser {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public TerminalNode EOF() { return getToken(setiParser.EOF, 0); }
+		public TerminalNode COMMENT() { return getToken(setiParser.COMMENT, 0); }
 		public ProgramContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -568,12 +569,23 @@ public class setiParser extends Parser {
 	public final ProgramContext program() throws RecognitionException {
 		ProgramContext _localctx = new ProgramContext(_ctx, getState());
 		enterRule(_localctx, 12, RULE_program);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(52);
 			expression();
-			setState(53);
+			setState(54);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			if (_la==COMMENT) {
+				{
+				setState(53);
+				match(COMMENT);
+				}
+			}
+
+			setState(56);
 			match(EOF);
 			}
 		}
@@ -589,21 +601,22 @@ public class setiParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\21:\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\22=\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3\2\3\3\3\3\3\3\7\3\26"+
 		"\n\3\f\3\16\3\31\13\3\3\4\3\4\3\4\3\4\3\5\3\5\3\5\7\5\"\n\5\f\5\16\5%"+
 		"\13\5\3\6\3\6\3\6\7\6*\n\6\f\6\16\6-\13\6\3\7\3\7\3\7\3\7\3\7\3\7\5\7"+
-		"\65\n\7\3\b\3\b\3\b\3\b\2\2\t\2\4\6\b\n\f\16\2\6\3\2\16\17\3\2\3\5\3\2"+
-		"\6\7\3\2\b\t\2\67\2\20\3\2\2\2\4\22\3\2\2\2\6\32\3\2\2\2\b\36\3\2\2\2"+
-		"\n&\3\2\2\2\f\64\3\2\2\2\16\66\3\2\2\2\20\21\t\2\2\2\21\3\3\2\2\2\22\27"+
-		"\5\2\2\2\23\24\t\3\2\2\24\26\5\2\2\2\25\23\3\2\2\2\26\31\3\2\2\2\27\25"+
-		"\3\2\2\2\27\30\3\2\2\2\30\5\3\2\2\2\31\27\3\2\2\2\32\33\7\f\2\2\33\34"+
-		"\5\4\3\2\34\35\7\f\2\2\35\7\3\2\2\2\36#\5\n\6\2\37 \t\4\2\2 \"\5\b\5\2"+
-		"!\37\3\2\2\2\"%\3\2\2\2#!\3\2\2\2#$\3\2\2\2$\t\3\2\2\2%#\3\2\2\2&+\5\f"+
-		"\7\2\'(\t\5\2\2(*\5\n\6\2)\'\3\2\2\2*-\3\2\2\2+)\3\2\2\2+,\3\2\2\2,\13"+
-		"\3\2\2\2-+\3\2\2\2.\65\7\20\2\2/\65\5\6\4\2\60\61\7\n\2\2\61\62\5\b\5"+
-		"\2\62\63\7\13\2\2\63\65\3\2\2\2\64.\3\2\2\2\64/\3\2\2\2\64\60\3\2\2\2"+
-		"\65\r\3\2\2\2\66\67\5\b\5\2\678\7\2\2\38\17\3\2\2\2\6\27#+\64";
+		"\65\n\7\3\b\3\b\5\b9\n\b\3\b\3\b\3\b\2\2\t\2\4\6\b\n\f\16\2\6\3\2\16\17"+
+		"\3\2\3\5\3\2\6\7\3\2\b\t\2;\2\20\3\2\2\2\4\22\3\2\2\2\6\32\3\2\2\2\b\36"+
+		"\3\2\2\2\n&\3\2\2\2\f\64\3\2\2\2\16\66\3\2\2\2\20\21\t\2\2\2\21\3\3\2"+
+		"\2\2\22\27\5\2\2\2\23\24\t\3\2\2\24\26\5\2\2\2\25\23\3\2\2\2\26\31\3\2"+
+		"\2\2\27\25\3\2\2\2\27\30\3\2\2\2\30\5\3\2\2\2\31\27\3\2\2\2\32\33\7\f"+
+		"\2\2\33\34\5\4\3\2\34\35\7\f\2\2\35\7\3\2\2\2\36#\5\n\6\2\37 \t\4\2\2"+
+		" \"\5\b\5\2!\37\3\2\2\2\"%\3\2\2\2#!\3\2\2\2#$\3\2\2\2$\t\3\2\2\2%#\3"+
+		"\2\2\2&+\5\f\7\2\'(\t\5\2\2(*\5\n\6\2)\'\3\2\2\2*-\3\2\2\2+)\3\2\2\2+"+
+		",\3\2\2\2,\13\3\2\2\2-+\3\2\2\2.\65\7\20\2\2/\65\5\6\4\2\60\61\7\n\2\2"+
+		"\61\62\5\b\5\2\62\63\7\13\2\2\63\65\3\2\2\2\64.\3\2\2\2\64/\3\2\2\2\64"+
+		"\60\3\2\2\2\65\r\3\2\2\2\668\5\b\5\2\679\7\22\2\28\67\3\2\2\289\3\2\2"+
+		"\29:\3\2\2\2:;\7\2\2\3;\17\3\2\2\2\7\27#+\648";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

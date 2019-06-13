@@ -34,7 +34,7 @@ factor	:	left=operand (op=(ASTER | DIV) right=factor)*;
 operand	:	number=REAL | length=setLength | LPAR exp=expression RPAR;
 
 
-program	: expression EOF;
+program	: expression COMMENT? EOF;
 
 
 AND	:	'&';
@@ -60,4 +60,4 @@ fragment DIGIT
 
 WS	:	(' '|'\n'|'\r' |'\t')+ -> skip;
 
-
+COMMENT	:	'%' (.)*? -> skip;

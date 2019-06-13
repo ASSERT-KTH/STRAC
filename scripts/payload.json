@@ -5,7 +5,7 @@
   ],
 
   "comparisonExpression": "|s1 & s2|/|s1 U s2|",
-  "n": 1000,
+  "n": 10,
   "exportComparisson": "out.json",
   "printComparisson": true,
   "exportSegmentTrees": false,
