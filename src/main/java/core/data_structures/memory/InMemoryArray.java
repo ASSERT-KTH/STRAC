@@ -37,7 +37,7 @@ public class InMemoryArray<T> implements IArray<T> {
 
     @Override
     public long size() {
-        return position;
+        return items.length;
     }
 
     @Override

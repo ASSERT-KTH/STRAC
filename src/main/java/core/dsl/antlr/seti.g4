@@ -43,7 +43,7 @@ UNION	:	'U';
 LESS	:	'<';
 PLUS	:	 '+';
 MINUS	:	'-';
-DIV	:	'/';
+DIV	    :	'/';
 ASTER	:	'*';
 LPAR	:	'(';
 RPAR	:	')';

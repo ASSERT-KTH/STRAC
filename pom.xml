@@ -25,7 +25,6 @@
             </resource>
         </resources>
     </build>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.velocity</groupId>
