@@ -37,7 +37,7 @@ public class DTW extends Aligner {
         long need = 4*(trace1.size() + 1)*(trace2.size() + 1);
 
         if(need > 1 << 30){
-            throw new RuntimeException("Array too large. We need " + (need/4/1e9) + " GB space to store traditional DTW cost matrix");
+            LogProvider.info("Warning", "Array too large. We need " + (need/1e9) + " GB space to store traditional DTW cost matrix");
         }
 
         int maxI = (int)trace1.size();
@@ -46,15 +46,16 @@ public class DTW extends Aligner {
         IMultidimensionalArray<Integer> result =
                 ServiceRegister.getProvider().allocateMuldimensionalArray(HashingHelper.IntegerAdapter, maxI + 1, maxJ + 1);
 
+        for(int j = 1; j < maxJ + 1; j++)
+            result.set(result.getDefault(0,0, j - 1) + this.getGapSymbol(), 0, j);
+
         for(int i = 1; i < maxI + 1; i++) {
             Integer val = result.getDefault(0, i - 1, 0) + this.getGapSymbol();
 
-            LogProvider.info(val, i);
+            //LogProvider.info(val, i);
             result.set(val, i, 0);
         }
 
-        for(int j = 1; j < maxJ + 1; j++)
-            result.set(result.getDefault(0,0, j - 1) + this.getGapSymbol(), 0, j);
 
         for(int i = 1; i < maxI + 1; i++){
             for(int j = 1; j < maxJ + 1; j++){

@@ -31,14 +31,14 @@ public class MultiDimensionalCollection<T> extends BufferedCollection<T> impleme
         return 0;
     }
 
-    int getPosition(int...index){
+    long getPosition(int...index){
 
 
 
-        return dimensions[1]*index[0] + index[1];
+        return (long)dimensions[1]*index[0] + index[1];
     }
 
     static long multiply(int[] dimensions){
-        return dimensions[0]*dimensions[1];
+        return (long)dimensions[0]*dimensions[1];
     }
 }

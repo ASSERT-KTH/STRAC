@@ -117,6 +117,20 @@ public class TestBuffered {
     }
 
 
+
+    @Test
+    public void test10Multidimensional(){
+        MultiDimensionalCollection<Integer> bi = new MultiDimensionalCollection<>("bidimensional.buff", adaptor, Integer.MAX_VALUE/2, Integer.MAX_VALUE/2 + 100);
+
+        for(int i = 0; i < Integer.MAX_VALUE/2; i++){
+            for(int j = 0; j < Integer.MAX_VALUE/2 + 100; j++)
+                bi.set(i*(Integer.MAX_VALUE/2 + 100) + j, i, j);
+        }
+
+        bi.close();
+    }
+
+
     @Test
     public void test07ReadMultidimensional(){
         MultiDimensionalCollection<Integer> bi = new MultiDimensionalCollection<>("bidimensional.buff", adaptor, 10, 10);

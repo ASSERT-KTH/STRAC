@@ -9,12 +9,12 @@
   ],
 
   "comparisonExpression": "(|s1 & s2|/|s1 U s2|)",
-  "n": 1,
+  "n": 11,
   "exportComparisson": "out.json",
   "printComparisson": true,
   "exportSegmentTrees": false,
   "exportBag": "bag.json",
-  "exportNgram":[1],
+  "exportNgram":[1, 2, 3, 4, 5],
   "sessionName": "test1",
   "sessionDate": "2019-06-05",
   "outputDir": "/Users/javier/Documents/Develop/scripts/logs/from_sandboxes/tool_result"

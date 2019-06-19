@@ -43,7 +43,13 @@ public class BufferedCollection<T> implements IArray<T> {
         }
 
         inChannel = aFile.getChannel();
-        _buffers = new MappedByteBuffer[(int)(Math.max(1,_size/segmentSize))];
+
+        int buffSize = (int)(_size/segmentSize);
+
+        if(_size%segmentSize != 0)
+            buffSize++;
+
+        _buffers = new MappedByteBuffer[buffSize];
 
 
         try {
@@ -53,7 +59,7 @@ public class BufferedCollection<T> implements IArray<T> {
             for (long offset = 0 ; offset < _size ; offset += segmentSize)
             {
                 long remainingFileSize = _size - offset;
-                long thisSegmentSize = Math.min(2L * segmentSize, remainingFileSize);
+                long thisSegmentSize = Math.min(segmentSize, remainingFileSize);
                 _buffers[bufIdx++] = inChannel.map(FileChannel.MapMode.READ_WRITE, offset, thisSegmentSize);
             }
 
@@ -73,11 +79,19 @@ public class BufferedCollection<T> implements IArray<T> {
     }
 
     private ByteBuffer buffer(long index){
-        ByteBuffer buf =  _buffers[(int)(index/segment_size)];
 
-        buf.position((int)(index%segment_size));
 
-        return buf;
+
+        try {
+            ByteBuffer buf =  _buffers[(int)(index/segment_size)];
+
+            buf.position((int) (index % segment_size));
+            return buf;
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
