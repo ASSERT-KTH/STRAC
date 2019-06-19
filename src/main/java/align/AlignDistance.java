@@ -9,11 +9,14 @@ public class AlignDistance {
 
     IArray<InsertOperation> operations;
 
+    public long operationsCount;
+
     double distance;
 
-    public AlignDistance(double distance, IArray<InsertOperation> ops){
+    public AlignDistance(double distance, IArray<InsertOperation> ops, long operationsCount){
         this.operations = ops;
         this.distance = distance;
+        this.operationsCount = operationsCount;
     }
 
 

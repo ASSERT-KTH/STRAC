@@ -195,7 +195,7 @@ public class WindowedDTW extends Aligner {
             throw new RuntimeException("Ahhh");
         }
 
-        return new AlignDistance(val, ops);
+        return new AlignDistance(val, ops, position);
     }
 
 

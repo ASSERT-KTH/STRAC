@@ -118,6 +118,8 @@ public class DTW extends Aligner {
             ops.set(position++,new InsertOperation(i, j));
         }
 
+
+
         /*for(int in = 0; in < maxI + 1; in++) {
 
             for(int jn = 0; jn < maxJ + 1; jn++){
@@ -127,6 +129,6 @@ public class DTW extends Aligner {
             System.out.println("\n");
         }*/
 
-        return new AlignDistance(result.get((int)maxI,(int)maxJ), ops);
+        return new AlignDistance(result.get((int)maxI,(int)maxJ), ops, position);
     }
 }

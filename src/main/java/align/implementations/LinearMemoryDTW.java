@@ -58,6 +58,6 @@ public class LinearMemoryDTW extends Aligner {
             D.removeRow(i - 1);
         }
 
-        return new AlignDistance(D.get((int)trace1.size(), (int)trace2.size()), ops);
+        return new AlignDistance(D.get((int)trace1.size(), (int)trace2.size()), ops, 0);
     }
 }

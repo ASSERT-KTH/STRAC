@@ -92,12 +92,17 @@ public class StressTest {
 
         Alignment dto = new Alignment();
         dto.method = new Payload.MethodInfo();
-        dto.method.name = "DTW";
+        dto.method.name = "FastDTW";
+        dto.method.params = new Object[]{
+                2.0
+        };
         dto.comparison = new Alignment.Comparison();
         dto.comparison.gap = 1;
         dto.comparison.diff = 2;
         dto.comparison.eq = 0;
         dto.pairs = new ArrayList<>();
+        dto.outputAlignment = true;
+        dto.outputDir="reports";
 
         dto.files = Arrays.asList(
                 "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.kth.se.7.bytecode.txt.st.processed.txt",
