@@ -41,6 +41,7 @@ public class AlignInterpreter {
         this.ve = engine;
         this.comparers = comparers;
     }
+    
 
     public void execute(Alignment dto) throws IOException {
 
@@ -106,14 +107,18 @@ public class AlignInterpreter {
                         = ServiceRegister.getProvider().allocateNewArray(getRandomName(), max, IntegerAdapter);
 
 
-                InsertOperation i1 = new InsertOperation((int)tr1.plainTrace.size(),
-                        (int)tr2.plainTrace.size());
+                InsertOperation i1 = new InsertOperation(0, 0);
 
                 tr1.plainTrace.close();
                 tr2.plainTrace.close();
 
-                long position = 0;
-                for(long i= distance.operationsCount - 1; i >= 0 ; i--){
+                long p1 = 0;
+                long p2 = 0;
+
+                long t1Rest = tr1.plainTrace.size();
+                long t2Rest = tr2.plainTrace.size();
+
+                for(long i= distance.operationsCount - 2; i >= 0 ; i--){
 
                     InsertOperation i2 = distance.getInsertions().read(i);
                     //LogProvider.info(i2);
@@ -137,21 +142,23 @@ public class AlignInterpreter {
                     try {
 
                         if (direction[0] > 0 && direction[1] > 0) {
-                            trace1Alignment.set(position,tr1.plainTrace.read(s.getTrace1Index()));
-                            trace2Alignment.set(position,tr2.plainTrace.read(s.getTrace2Index()));
+                            trace1Alignment.set(p1++,tr1.plainTrace.read(s.getTrace1Index() -1));
+                            trace2Alignment.set(p2++,tr2.plainTrace.read(s.getTrace2Index() - 1));
+                            t1Rest--;
+                            t2Rest--;
 
                         }
                         if (direction[0] == 0) {
-                            trace1Alignment.set(position,-1);
-                            trace2Alignment.set(position,tr2.plainTrace.read(s.getTrace2Index()));
+                            trace1Alignment.set(p1++,-1);
+                            trace2Alignment.set(p2++,tr2.plainTrace.read(s.getTrace2Index() - 1));
+                            t2Rest--;
                         }
 
                         if (direction[1] == 0) {
-                            trace2Alignment.set(position,-1);
-                            trace1Alignment.set(position, tr1.plainTrace.read(s.getTrace1Index()));
+                            trace2Alignment.set(p2++,-1);
+                            trace1Alignment.set(p1++, tr1.plainTrace.read(s.getTrace1Index() - 1));
+                            t1Rest--;
                         }
-
-                        position++;
                     }
                     catch (Exception e){
                         e.printStackTrace();
@@ -159,6 +166,16 @@ public class AlignInterpreter {
                     }
 
                     i1 = i2;
+                }
+
+                for(; t1Rest > 0; t1Rest--) {
+                    trace1Alignment.set(p1++, tr1.plainTrace.read(tr1.plainTrace.size() - t1Rest));
+                    trace2Alignment.set(p2++, -1);
+                }
+
+                for(; t2Rest > 0; t2Rest--) {
+                    trace2Alignment.set(p2++, tr2.plainTrace.read(tr2.plainTrace.size() - t2Rest));
+                    trace1Alignment.set(p1++, -1);
                 }
 
                 // Comparing the two traces

@@ -94,7 +94,42 @@ public class StressTest {
         dto.method = new Payload.MethodInfo();
         dto.method.name = "FastDTW";
         dto.method.params = new Object[]{
-                2.0
+                4.0
+        };
+        dto.comparison = new Alignment.Comparison();
+        dto.comparison.gap = 2;
+        dto.comparison.diff = 2;
+        dto.comparison.eq = 0;
+        dto.pairs = new ArrayList<>();
+        dto.outputAlignment = true;
+        dto.outputDir="reports";
+        //dto.exportImage = true;
+
+        dto.files = Arrays.asList(
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.kth.se.7.bytecode.txt.st.processed.txt",
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.bbc.com.10.bytecode.txt.st.processed.txt"
+        );
+
+        comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        comparers.put("Linear", (objs) -> new LinearMemoryDTW(dto.comparison.gap,(x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        comparers.put("FastDTW", (objs) -> new FastDTW(((Double)objs[0]).intValue()
+                , dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+
+
+        AlignInterpreter interpreter = new AlignInterpreter(comparers, null);
+
+        interpreter.execute(dto);
+
+    }
+
+    @Test
+    public void testLatexExampleAlign() throws IOException {
+
+        Alignment dto = new Alignment();
+        dto.method = new Payload.MethodInfo();
+        dto.method.name = "DTW";
+        dto.method.params = new Object[]{
+               //2.0
         };
         dto.comparison = new Alignment.Comparison();
         dto.comparison.gap = 1;
@@ -103,10 +138,11 @@ public class StressTest {
         dto.pairs = new ArrayList<>();
         dto.outputAlignment = true;
         dto.outputDir="reports";
+        //dto.exportImage = true;
 
         dto.files = Arrays.asList(
-                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.kth.se.7.bytecode.txt.st.processed.txt",
-                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.bbc.com.10.bytecode.txt.st.processed.txt"
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/test_traces/1.txt",
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/test_traces/2.txt"
         );
 
         comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));

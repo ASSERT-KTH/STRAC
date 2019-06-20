@@ -71,6 +71,7 @@ public class DTW extends Aligner {
             }
         }
 
+
         IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray
                 (null, maxI + maxJ + 2, InsertOperation.OperationAdapter);
 
@@ -119,7 +120,17 @@ public class DTW extends Aligner {
         }
 
 
+        for(int x = 0; x < maxI + 1; x++){
+            for(int y = 0 ; y < maxJ + 1; y++){
+                System.out.print(result.get(x, y) + " ");
+            }
+            System.out.println();
+        }
 
+        for(int x = 0;x < position; x++)
+            System.out.print(ops.read(x) + "-" );
+
+        System.out.println();
         /*for(int in = 0; in < maxI + 1; in++) {
 
             for(int jn = 0; jn < maxJ + 1; jn++){
