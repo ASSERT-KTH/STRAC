@@ -57,8 +57,10 @@ public class InMemoryArray<T> implements IArray<T> {
 
         for(T item: this){
 
-            String val = adaptor.getValue(item);
-            wr.write(val);
+            String value = adaptor.getValue(item);
+
+            if(value != null)
+                wr.write(value);
         }
 
         wr.close();

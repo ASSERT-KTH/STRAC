@@ -41,7 +41,7 @@ public class AlignInterpreter {
         this.ve = engine;
         this.comparers = comparers;
     }
-    
+
 
     public void execute(Alignment dto) throws IOException {
 
@@ -84,6 +84,7 @@ public class AlignInterpreter {
             distance.getInsertions().close();
 
             helper.getInverseBag().put(-1, "-");
+            helper.getInverseBag().put(0, "");
 
             //writeTraceFile(tr1.plainTrace, helper, "t1.txt");
             //writeTraceFile(tr2.plainTrace, helper, "t2.txt");
@@ -98,7 +99,7 @@ public class AlignInterpreter {
                 String file2 = String.format("%s/align.%s.%s", dto.outputDir, tr2.traceFileName, tr1.traceFileName);
 
 
-                long max = distance.operationsCount;
+                long max = distance.operationsCount + 1;
 
                 IArray<Integer> trace1Alignment
                         = ServiceRegister.getProvider().allocateNewArray(getRandomName(), max, IntegerAdapter);
@@ -118,11 +119,12 @@ public class AlignInterpreter {
                 long t1Rest = tr1.plainTrace.size();
                 long t2Rest = tr2.plainTrace.size();
 
-                for(long i= distance.operationsCount - 2; i >= 0 ; i--){
+                for(long i= distance.operationsCount - 1; i > 0 ; i--){
 
                     InsertOperation i2 = distance.getInsertions().read(i);
                     //LogProvider.info(i2);
 
+                    System.out.print(i2 + "-");
                     InsertOperation s = i2;
 
                     if(i2 == null){
@@ -142,21 +144,21 @@ public class AlignInterpreter {
                     try {
 
                         if (direction[0] > 0 && direction[1] > 0) {
-                            trace1Alignment.set(p1++,tr1.plainTrace.read(s.getTrace1Index() -1));
-                            trace2Alignment.set(p2++,tr2.plainTrace.read(s.getTrace2Index() - 1));
+                            trace1Alignment.set(p1++,tr1.plainTrace.read(s.getTrace1Index()));
+                            trace2Alignment.set(p2++,tr2.plainTrace.read(s.getTrace2Index()));
                             t1Rest--;
                             t2Rest--;
 
                         }
                         if (direction[0] == 0) {
                             trace1Alignment.set(p1++,-1);
-                            trace2Alignment.set(p2++,tr2.plainTrace.read(s.getTrace2Index() - 1));
+                            trace2Alignment.set(p2++,tr2.plainTrace.read(s.getTrace2Index()));
                             t2Rest--;
                         }
 
                         if (direction[1] == 0) {
                             trace2Alignment.set(p2++,-1);
-                            trace1Alignment.set(p1++, tr1.plainTrace.read(s.getTrace1Index() - 1));
+                            trace1Alignment.set(p1++, tr1.plainTrace.read(s.getTrace1Index()));
                             t1Rest--;
                         }
                     }
@@ -168,11 +170,16 @@ public class AlignInterpreter {
                     i1 = i2;
                 }
 
-                for(; t1Rest > 0; t1Rest--) {
-                    trace1Alignment.set(p1++, tr1.plainTrace.read(tr1.plainTrace.size() - t1Rest));
-                    trace2Alignment.set(p2++, -1);
+                while(t1Rest > 0 && t2Rest > 0){
+
+                    trace1Alignment.set(p1++, tr1.plainTrace.read(tr1.plainTrace.size() - (t1Rest--)));
+                    trace2Alignment.set(p2++, tr2.plainTrace.read(tr2.plainTrace.size() - (t2Rest--)));
                 }
 
+                for(; t1Rest > 0; t1Rest--) {
+
+                    trace2Alignment.set(p2++, -1);
+                }
                 for(; t2Rest > 0; t2Rest--) {
                     trace2Alignment.set(p2++, tr2.plainTrace.read(tr2.plainTrace.size() - t2Rest));
                     trace1Alignment.set(p1++, -1);

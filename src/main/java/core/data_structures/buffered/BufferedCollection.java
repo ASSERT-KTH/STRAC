@@ -150,8 +150,12 @@ public class BufferedCollection<T> implements IArray<T> {
         for(MappedByteBuffer buff: _buffers)
             buff.force();
 
-        for(T item: this)
-            wr.write(adaptor.getValue(item));
+        for(T item: this){
+            String value = adaptor.getValue(item);
+
+            if(value != null)
+                wr.write(value);
+        }
 
         wr.close();
     }

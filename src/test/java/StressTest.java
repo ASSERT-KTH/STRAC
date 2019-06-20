@@ -133,7 +133,7 @@ public class StressTest {
         };
         dto.comparison = new Alignment.Comparison();
         dto.comparison.gap = 1;
-        dto.comparison.diff = 2;
+        dto.comparison.diff = 3;
         dto.comparison.eq = 0;
         dto.pairs = new ArrayList<>();
         dto.outputAlignment = true;

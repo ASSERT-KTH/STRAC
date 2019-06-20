@@ -119,6 +119,11 @@ public class DTW extends Aligner {
             ops.set(position++,new InsertOperation(i, j));
         }
 
+        System.out.println(trace1.size() + " " + trace2.size());
+
+        System.out.println(-1*trace1.size()/2 + " " + trace1.size()/2);
+        System.out.println(-1*trace2.size()/2 + " " + trace2.size()/2);
+
 
         for(int x = 0; x < maxI + 1; x++){
             for(int y = 0 ; y < maxJ + 1; y++){
