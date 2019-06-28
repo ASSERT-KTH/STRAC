@@ -43,7 +43,15 @@ public class AlignInterpreter {
     }
 
 
+    public interface IOnAlign{
+        void action(AlignDistance distance, TraceMap trace1, TraceMap trace2, IArray<Integer> alignResult1, IArray<Integer> alignResult2, double calculatedEuclideanDistance);
+    }
+
     public void execute(Alignment dto) throws IOException {
+        execute(dto,  null);
+    }
+
+    public void execute(Alignment dto, IOnAlign action) throws IOException {
 
 
         TraceHelper helper = new TraceHelper();
@@ -119,12 +127,12 @@ public class AlignInterpreter {
                 long t1Rest = tr1.plainTrace.size();
                 long t2Rest = tr2.plainTrace.size();
 
-                for(long i= distance.operationsCount - 1; i > 0 ; i--){
+                for(long i= distance.operationsCount - 2; i > 0 ; i--){
 
                     InsertOperation i2 = distance.getInsertions().read(i);
                     //LogProvider.info(i2);
 
-                    System.out.print(i2 + "-");
+                    //System.out.print(i2 + "-");
                     InsertOperation s = i2;
 
                     if(i2 == null){
@@ -144,21 +152,21 @@ public class AlignInterpreter {
                     try {
 
                         if (direction[0] > 0 && direction[1] > 0) {
-                            trace1Alignment.set(p1++,tr1.plainTrace.read(s.getTrace1Index()));
-                            trace2Alignment.set(p2++,tr2.plainTrace.read(s.getTrace2Index()));
+                            trace1Alignment.set(p1++,tr1.plainTrace.read(s.getTrace1Index() - 1));
+                            trace2Alignment.set(p2++,tr2.plainTrace.read(s.getTrace2Index() - 1));
                             t1Rest--;
                             t2Rest--;
 
                         }
                         if (direction[0] == 0) {
                             trace1Alignment.set(p1++,-1);
-                            trace2Alignment.set(p2++,tr2.plainTrace.read(s.getTrace2Index()));
+                            trace2Alignment.set(p2++,tr2.plainTrace.read(s.getTrace2Index() - 1));
                             t2Rest--;
                         }
 
                         if (direction[1] == 0) {
                             trace2Alignment.set(p2++,-1);
-                            trace1Alignment.set(p1++, tr1.plainTrace.read(s.getTrace1Index()));
+                            trace1Alignment.set(p1++, tr1.plainTrace.read(s.getTrace1Index() - 1));
                             t1Rest--;
                         }
                     }
@@ -197,14 +205,11 @@ public class AlignInterpreter {
                         int t1 = trace1Alignment.read(i);
                         int t2 = trace2Alignment.read(i);
 
-                        double val = dto.comparison.diff;
+                        //double val = dto.comparison.diff;
 
-                        if(t1 == -1 || t2 == -1)
-                            val = dto.comparison.gap;
-                        else if(t1 == t2)
-                            val = dto.comparison.eq;
+                        if(t1 == t2)
+                            total++;
 
-                        total += val;
                     }
                     catch (Exception e){
                         e.printStackTrace();
@@ -214,10 +219,13 @@ public class AlignInterpreter {
                 }
 
 
-                total = total/(dto.comparison.diff*trace1Alignment.size());
+                total = total/(trace1Alignment.size());
 
                 LogProvider.info("DTW Distance", distance.getDistance());
-                LogProvider.info("Distance", total);
+                LogProvider.info("Distance (How many coincidences percent)", total);
+
+                if(action != null)
+                    action.action(distance, tr1, tr2, trace1Alignment, trace2Alignment, total);
 
                 if(!Double.isNaN(total)) {
                     resultDto.set(pair[0], pair[1], total);
@@ -283,6 +291,7 @@ public class AlignInterpreter {
         for(TraceMap map: traces){
             map.plainTrace.dispose();
         }
+
     }
 
     void exportHTML(IReadArray<Integer> align1,

@@ -131,6 +131,7 @@ public class WindowedDTW extends Aligner {
 
 
         long position = 0;
+        ops.set(position++, new InsertOperation((int)trace1.size(), (int)trace2.size()));
 
         while ((i > 0) || (j > 0)) // 0,0 item
         {

@@ -149,9 +149,12 @@ public class BufferedCollection<T> implements IArray<T> {
 
         for(MappedByteBuffer buff: _buffers)
             buff.force();
+        int position = 0;
 
         for(T item: this){
             String value = adaptor.getValue(item);
+
+            //System.out.println(String.format("\\node at (%s,%s) {%s};", (position++)*0.5 - 0.75, 2.75, value.substring(0, 1)));
 
             if(value != null)
                 wr.write(value);

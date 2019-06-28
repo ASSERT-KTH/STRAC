@@ -75,7 +75,7 @@ public class HashingHelper {
     }
 
     public static String getRandomName(){
-        return UUID.randomUUID().toString();
+        return String.format("temp_dst/%s",  UUID.randomUUID().toString());
     }
 
     public static BufferedCollection.ITypeAdaptor<Integer> IntegerAdapter = new BufferedCollection.ITypeAdaptor<Integer>() {

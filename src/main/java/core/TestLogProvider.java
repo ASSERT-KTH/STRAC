@@ -1,20 +1,18 @@
 package core;
 
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-public class LogProvider {
+public class TestLogProvider {
 
 
     private static Logger _logger;
@@ -27,10 +25,10 @@ public class LogProvider {
         resource.load(in);
         PropertyConfigurator.configure(resource);
 
-        _logger = Logger.getLogger("tool");
+        _logger = Logger.getLogger("test");
     }
 
-    static Logger LOGGER(){
+    public static Logger LOGGER(){
 
         if(_logger == null) {
             try {
@@ -43,12 +41,6 @@ public class LogProvider {
         return _logger;
     }
 
-    public static void progress(Object... msgs){
-        String progress = String.join(" ", Arrays.stream(msgs).map(i -> String.valueOf(i)).collect(Collectors.toList()));
-
-        System.out.print(String.format("\r%s", progress));
-
-    }
 
     public static void info(Object ... msgs){
         LOGGER().log(Level.INFO, String.join(" ", Arrays.stream(msgs).map(i -> String.valueOf(i)).collect(Collectors.toList())));

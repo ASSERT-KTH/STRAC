@@ -8,6 +8,7 @@ import java.util.List;
 public class AlignDistance {
 
     IArray<InsertOperation> operations;
+    public IArray<Integer> costMatrix;
 
     public long operationsCount;
 

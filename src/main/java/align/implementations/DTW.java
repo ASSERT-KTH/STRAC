@@ -81,6 +81,8 @@ public class DTW extends Aligner {
 
         long position = 0;
 
+        ops.set(position++, new InsertOperation((int)trace1.size(), (int)trace2.size()));
+
         while ((i>0) || (j>0))
         {
             final double diagCost;
@@ -118,22 +120,41 @@ public class DTW extends Aligner {
 
             ops.set(position++,new InsertOperation(i, j));
         }
-
+/*
         System.out.println(trace1.size() + " " + trace2.size());
 
         System.out.println(-1*trace1.size()/2 + " " + trace1.size()/2);
         System.out.println(-1*trace2.size()/2 + " " + trace2.size()/2);
 
 
+        double posx = -1.25;
+        double posy = 2.25;
+
         for(int x = 0; x < maxI + 1; x++){
             for(int y = 0 ; y < maxJ + 1; y++){
-                System.out.print(result.get(x, y) + " ");
+                System.out.println(String.format("\\node at (%s,%s) {%s};", posx, posy, result.get(x, y)));
+                posx += 0.5;
             }
-            System.out.println();
+            posy -= 0.5;
+            posx = -1.25;
         }
 
-        for(int x = 0;x < position; x++)
-            System.out.print(ops.read(x) + "-" );
+        System.out.println("");
+
+        System.out.print("\\draw ");
+        for(int x = 0;x < position; x++){
+            InsertOperation op1 = ops.read(x);
+
+            System.out.print(String.format("(%s, %s)",
+                    op1.getTrace2Index() * 0.5 - 1.25,
+                    -1*op1.getTrace1Index() * 0.5 + 2.25
+            ));
+
+            if(x < position - 1)
+                System.out.print(" -- ");
+        }
+
+        System.out.println(";");
 
         System.out.println();
         /*for(int in = 0; in < maxI + 1; in++) {
