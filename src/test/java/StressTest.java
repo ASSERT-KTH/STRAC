@@ -3,10 +3,8 @@ import align.implementations.DTW;
 import align.implementations.FastDTW;
 import align.implementations.IImplementationInfo;
 import align.implementations.LinearMemoryDTW;
-import core.IServiceProvider;
-import core.LogProvider;
-import core.ServiceRegister;
-import core.TestLogProvider;
+import com.google.gson.Gson;
+import core.*;
 import core.data_structures.IArray;
 import core.data_structures.IDict;
 import core.data_structures.IMultidimensionalArray;
@@ -16,6 +14,7 @@ import core.data_structures.buffered.MultiDimensionalCollection;
 import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemorySet;
+import core.models.TraceMap;
 import core.utils.HashingHelper;
 import interpreter.AlignInterpreter;
 import interpreter.NGramsInterpreter;
@@ -27,6 +26,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -160,7 +160,7 @@ public class StressTest {
         //dto.exportImage = true;
 
         dto.files = Arrays.asList(
-                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.google.com.10.bytecode.txt.st.processed.txt",
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.kth.se.10.bytecode.txt.st.processed.txt",
                 "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.github.com.10.bytecode.txt.st.processed.txt"
         );
 
@@ -215,8 +215,8 @@ public class StressTest {
         //dto.exportImage = true;
 
         dto.files = Arrays.asList(
-                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.google.com.10.bytecode.txt.st.processed.txt",
-                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.google.com.12.bytecode.txt.st.processed.txt"
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.github.com.10.bytecode.txt.st.processed.txt",
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.github.com.12.bytecode.txt.st.processed.txt"
         );
 
         comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
@@ -267,7 +267,7 @@ public class StressTest {
 
     }
 
-    //@Test
+    @Test
     public void testLatexExampleAlign() throws IOException {
 
         Alignment dto = new Alignment();
@@ -286,8 +286,8 @@ public class StressTest {
         //dto.exportImage = true;
 
         dto.files = Arrays.asList(
-                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/test_traces/1.txt",
-                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/test_traces/2.txt"
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.kth.se.10.bytecode.txt.st.processed.txt",
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.github.com.10.bytecode.txt.st.processed.txt"
         );
 
         comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
@@ -301,4 +301,41 @@ public class StressTest {
         interpreter.execute(dto);
 
     }
+
+    @Test
+    public void testLatexExample2Align() throws IOException {
+
+        Alignment dto = new Alignment();
+        dto.method = new Payload.MethodInfo();
+        dto.method.name = "DTW";
+        dto.method.params = new Object[]{
+                //2.0
+        };
+        dto.comparison = new Alignment.Comparison();
+        dto.comparison.gap = 1;
+        dto.comparison.diff = 2;
+        dto.comparison.eq = 0;
+        dto.pairs = new ArrayList<>();
+        dto.outputAlignment = true;
+        dto.outputDir="reports";
+        //dto.exportImage = true;
+
+        dto.files = Arrays.asList(
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces/youtube.com.10.bytecode.txt.st.processed.txt",
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces/2019.splashcon.org.12.bytecode.txt.st.processed.txt"
+        );
+
+
+        comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        comparers.put("Linear", (objs) -> new LinearMemoryDTW(dto.comparison.gap,(x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        comparers.put("FastDTW", (objs) -> new FastDTW(((Double)objs[0]).intValue()
+                , dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+
+
+        AlignInterpreter interpreter = new AlignInterpreter(comparers, null);
+
+        interpreter.execute(dto);
+
+    }
+
 }

@@ -44,7 +44,7 @@ public class Align {
 
             @Override
             public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                IArray<T> result = new BufferedCollection<>(id==null? getRandomName(): id, size, Integer.MAX_VALUE/2, adaptor);
+                IArray<T> result = new BufferedCollection<>(id==null? getRandomName(): id, size,  1 << 30, adaptor);
 
                 openedArrays.add(result);
 

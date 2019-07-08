@@ -46,8 +46,11 @@ public class DTW extends Aligner {
         IMultidimensionalArray<Integer> result =
                 ServiceRegister.getProvider().allocateMuldimensionalArray(HashingHelper.IntegerAdapter, maxI + 1, maxJ + 1);
 
+        LogProvider.info("Setting up first row and column...");
+
         for(int j = 1; j < maxJ + 1; j++)
             result.set(result.getDefault(0,0, j - 1) + this.getGapSymbol(), 0, j);
+
 
         for(int i = 1; i < maxI + 1; i++) {
             Integer val = result.getDefault(0, i - 1, 0) + this.getGapSymbol();
@@ -56,6 +59,9 @@ public class DTW extends Aligner {
             result.set(val, i, 0);
         }
 
+        LogProvider.info("Exploring complete space...");
+
+        double last = 0;
 
         for(int i = 1; i < maxI + 1; i++){
             for(int j = 1; j < maxJ + 1; j++){
@@ -67,8 +73,16 @@ public class DTW extends Aligner {
                     )
                 );
 
+                double progress = (i*trace2.size() + j*1.0)/(trace1.size()*trace2.size());
+
+                if(progress - last >= 0.1) {
+                    LogProvider.info(progress*100, "%");
+                    last = progress;
+                }
+
                 result.set(max, i, j);
             }
+
         }
 
 

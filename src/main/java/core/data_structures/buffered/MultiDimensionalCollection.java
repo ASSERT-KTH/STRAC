@@ -8,7 +8,7 @@ public class MultiDimensionalCollection<T> extends BufferedCollection<T> impleme
     int[] dimensions;
 
     public MultiDimensionalCollection(String fileName, ITypeAdaptor<T> adaptor, int...dimensions) {
-        super(fileName, multiply(dimensions), Integer.MAX_VALUE/2, adaptor);
+        super(fileName, multiply(dimensions), 1 << 30, adaptor);
 
         this.dimensions = dimensions;
     }
@@ -23,7 +23,12 @@ public class MultiDimensionalCollection<T> extends BufferedCollection<T> impleme
     }
 
     public void set(T value, int...index){
-        super.set(getPosition(index), value);
+        try {
+            super.set(getPosition(index), value);
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

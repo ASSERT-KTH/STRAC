@@ -153,7 +153,7 @@ public class TestBuffered {
 
     @Test
     public void test08Json(){
-        BufferedCollection<InsertOperation> bi = new BufferedCollection<InsertOperation>("json.buff", 3, Integer.MAX_VALUE/2, InsertOperation.OperationAdapter);
+        BufferedCollection<InsertOperation> bi = new BufferedCollection<InsertOperation>("json.buff", 3,  (int)((Integer.MAX_VALUE + 1l)/2), InsertOperation.OperationAdapter);
 
         bi.set(0,new InsertOperation(0, 10));
         bi.set(1, new InsertOperation(2, 10));
@@ -166,9 +166,22 @@ public class TestBuffered {
 
     @Test
     public void test09ReadJson(){
-        BufferedCollection<InsertOperation> bi = new BufferedCollection<InsertOperation>("json.buff", 3,Integer.MAX_VALUE/2,  InsertOperation.OperationAdapter);
+        BufferedCollection<InsertOperation> bi = new BufferedCollection<InsertOperation>("json.buff", 3, (int)((Integer.MAX_VALUE + 1l)/2),  InsertOperation.OperationAdapter);
 
         LogProvider.info(bi.read(0));
+        bi.close();
+
+    }
+
+
+
+    @Test
+    public void test12LargeFile(){
+        MultiDimensionalCollection<Integer> bi = new MultiDimensionalCollection<Integer>("large.buff", adaptor, 63138, 58266);
+
+
+        bi.set(10, 4607, 3993);
+
         bi.close();
 
     }

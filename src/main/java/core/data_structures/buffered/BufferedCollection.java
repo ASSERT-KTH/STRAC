@@ -75,6 +75,7 @@ public class BufferedCollection<T> implements IArray<T> {
         ByteBuffer buf = buffer(position);
 
         byte[] bytes = adaptor.toBytes(value);
+
         buf.put(bytes);
     }
 

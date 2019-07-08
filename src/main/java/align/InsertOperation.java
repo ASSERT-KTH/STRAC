@@ -63,7 +63,7 @@ public class InsertOperation implements Serializable {
 
         @Override
         public int size() {
-            return 500;
+            return 512;
         }
     };
 }

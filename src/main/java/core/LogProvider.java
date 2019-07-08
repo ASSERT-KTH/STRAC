@@ -47,7 +47,7 @@ public class LogProvider {
         String progress = String.join(" ", Arrays.stream(msgs).map(i -> String.valueOf(i)).collect(Collectors.toList()));
 
         System.out.print(String.format("\r%s", progress));
-
+        System.out.flush();
     }
 
     public static void info(Object ... msgs){
