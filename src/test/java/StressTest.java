@@ -9,15 +9,11 @@ import core.data_structures.IMultidimensionalArray;
 import core.data_structures.ISet;
 import core.data_structures.buffered.BufferedCollection;
 import core.data_structures.buffered.MultiDimensionalCollection;
-import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemorySet;
 import core.utils.HashingHelper;
 import interpreter.AlignInterpreter;
-import interpreter.NGramsInterpreter;
 import interpreter.dto.Alignment;
 import interpreter.dto.Payload;
-import ngram.Generator;
-import ngram.generators.StringKeyGenerator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,52 +34,7 @@ public class StressTest {
 
         TestLogProvider.info("Start test session", new Date());
 
-        ServiceRegister.registerProvider(new IServiceProvider() {
-
-
-            @Override
-            public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                IArray<T> result = new BufferedCollection<>(id==null? getRandomName(): id, size, Integer.MAX_VALUE/2, adaptor);
-
-                openedArrays.add(result);
-
-                return result;
-                //return new InMemoryArray<T>(getRandomName(), (int)size);
-            }
-
-            @Override
-            public <T> IMultidimensionalArray<T> allocateMuldimensionalArray(BufferedCollection.ITypeAdaptor<T> adaptor, int... dimensions) {
-                MultiDimensionalCollection<T> result = new MultiDimensionalCollection<T>(getRandomName(),adaptor, dimensions);
-                openedArrays.add(result);
-
-                return result;
-
-                //return new InMemoryMultidimensional<>(adaptor, dimensions[0], dimensions[1]);
-            }
-
-            @Override
-            public <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary() {
-
-
-
-                return new InMemoryDict<TKey, TValue>();
-            }
-
-            @Override
-            public <T> ISet<T> allocateNewSet() {
-                return new InMemorySet<>(new HashSet<>());
-            }
-
-
-
-            @Override
-            public Generator getGenerator() {
-
-                return new StringKeyGenerator(t -> t.stream().map(String::valueOf).collect(Collectors.joining(","))
-                        , HashingHelper::hashList);
-            }
-        });
-        comparers = new HashMap<>();
+        ServiceRegister.getProvider();
 
     }
 
@@ -95,10 +46,8 @@ public class StressTest {
         TestLogProvider.info("Closing test session", new Date());
         // Warming up
 
-
+        ServiceRegister.dispose();
         LogProvider.info("Disposing map files");
-        for(IArray arr: openedArrays)
-            arr.dispose();
     }
     //@Test
     public void testHugeAlignment() throws IOException {
@@ -311,7 +260,7 @@ public class StressTest {
 
         TestLogProvider.info(dto.files.get(0), dto.files.get(1), "[");
 
-        for(int i = 60; i < 61; i++){
+        for(int i = 2; i < 3; i++){
 
             dto.method.params = new Object[]{
                     i*1.0

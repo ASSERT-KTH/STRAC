@@ -8,7 +8,6 @@ import core.data_structures.ISet;
 import core.data_structures.buffered.BufferedCollection;
 import core.data_structures.buffered.MultiDimensionalCollection;
 import core.data_structures.memory.InMemoryArray;
-import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemoryMultidimensional;
 import core.data_structures.memory.InMemorySet;
 import core.models.TraceMap;
@@ -18,9 +17,6 @@ import core.utils.TimeUtils;
 import interpreter.AlignInterpreter;
 import interpreter.dto.Alignment;
 import interpreter.dto.Payload;
-import ngram.Generator;
-import ngram.generators.StringKeyGenerator;
-import ngram.hash_keys.IHashCreator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,48 +40,7 @@ public class TestDTW {
 
         TestLogProvider.info("Start test session", new Date());
 
-        ServiceRegister.registerProvider(new IServiceProvider() {
-
-
-            @Override
-            public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                IArray<T> result = new InMemoryArray<T>(null, (int)size);
-
-
-                return result;
-                //return new InMemoryArray<T>(getRandomName(), (int)size);
-            }
-
-            @Override
-            public <T> IMultidimensionalArray<T> allocateMuldimensionalArray(BufferedCollection.ITypeAdaptor<T> adaptor, int... dimensions) {
-
-                return new InMemoryMultidimensional<>(adaptor, dimensions[0], dimensions[1]);
-
-                //return new InMemoryMultidimensional<>(adaptor, dimensions[0], dimensions[1]);
-            }
-
-            @Override
-            public <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary() {
-
-
-
-                return new InMemoryDict<TKey, TValue>();
-            }
-
-            @Override
-            public <T> ISet<T> allocateNewSet() {
-                return new InMemorySet<>(new HashSet<>());
-            }
-
-
-
-            @Override
-            public Generator getGenerator() {
-
-                return new StringKeyGenerator(t -> t.stream().map(String::valueOf).collect(Collectors.joining(","))
-                        , HashingHelper::hashList);
-            }
-        });
+        ServiceRegister.getProvider();
         comparers = new HashMap<>();
 
     }

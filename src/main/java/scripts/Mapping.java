@@ -12,15 +12,10 @@ import core.data_structures.IMultidimensionalArray;
 import core.data_structures.ISet;
 import core.data_structures.buffered.BufferedCollection;
 import core.data_structures.memory.InMemoryArray;
-import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemorySet;
 import core.data_structures.postgres.PostgreInterface;
 import core.models.TraceMap;
 import interpreter.dto.Payload;
-import ngram.Generator;
-import ngram.generators.StringKeyGenerator;
-import ngram.generators.comparers.*;
-import ngram.hash_keys.IHashCreator;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -42,37 +37,7 @@ import static core.utils.HashingHelper.getRandomName;
 public class Mapping {
 
     public static void setup(){
-        ServiceRegister.registerProvider(new IServiceProvider() {
-
-            @Override
-            public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                return new InMemoryArray<T>(getRandomName(), (int)size);
-            }
-
-            @Override
-            public <T> IMultidimensionalArray<T> allocateMuldimensionalArray(BufferedCollection.ITypeAdaptor<T> adaptor, int... dimensions) {
-                return null;
-            }
-
-            @Override
-            public <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary() {
-                return new InMemoryDict<TKey, TValue>();
-            }
-
-
-
-            @Override
-            public <T> ISet<T> allocateNewSet() {
-                return new InMemorySet<>(new HashSet<>());
-            }
-
-
-            @Override
-            public Generator getGenerator() {
-
-                return null;
-            }
-        });
+        ServiceRegister.getProvider();
     }
 
     public static void main(String[] args) throws IOException, SQLException, ParseException {

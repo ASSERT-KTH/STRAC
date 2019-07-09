@@ -4,6 +4,7 @@ import align.AlignDistance;
 import align.Aligner;
 import align.ICellComparer;
 import align.InsertOperation;
+import core.IServiceProvider;
 import core.LogProvider;
 import core.ServiceRegister;
 import core.data_structures.IArray;
@@ -36,15 +37,24 @@ public class DTW extends Aligner {
 
         long need = 4*(trace1.size() + 1)*(trace2.size() + 1);
 
-        if(need > 1 << 30){
-            LogProvider.info("Warning", "Array too large. We need " + (need/1e9) + " GB space to store traditional DTW cost matrix");
-        }
-
         int maxI = (int)trace1.size();
         int maxJ = (int)trace2.size();
 
-        IMultidimensionalArray<Double> result =
-                ServiceRegister.getProvider().allocateMuldimensionalArray(HashingHelper.DoubleAdapter, maxI + 1, maxJ + 1);
+
+        IArray<InsertOperation> ops = null;
+        IMultidimensionalArray<Double> result = null;
+
+        IServiceProvider.ALLOCATION_METHOD method = IServiceProvider.ALLOCATION_METHOD.MEMORY;
+
+        if(need > 1 << 30){
+            LogProvider.info("Warning", "Array too large. We need " + (need/1e9) + "GB space to store traditional DTW cost matrix");
+            method = IServiceProvider.ALLOCATION_METHOD.EXTERNAL;
+        }
+        ops = ServiceRegister.getProvider().allocateNewArray
+                (null, maxI + maxJ + 2, InsertOperation.OperationAdapter, method);
+
+        result = ServiceRegister.getProvider().allocateMuldimensionalArray(HashingHelper.DoubleAdapter, method, maxI + 1, maxJ + 1);
+
 
         LogProvider.info("Setting up first row and column...");
 
@@ -84,8 +94,6 @@ public class DTW extends Aligner {
         }
 
 
-        IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray
-                (null, maxI + maxJ + 2, InsertOperation.OperationAdapter);
 
 
         int i = (int)maxI;

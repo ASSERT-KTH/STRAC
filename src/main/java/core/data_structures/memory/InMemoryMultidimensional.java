@@ -24,7 +24,8 @@ public class InMemoryMultidimensional<T> implements IMultidimensionalArray<T> {
         this.maxJ = maxJ;
 
 
-        data = ServiceRegister.getProvider().allocateNewArray(null, maxI *maxJ, adaptor);
+        data = ServiceRegister.getProvider().allocateNewArray(null, maxI *maxJ, adaptor,
+                ServiceRegister.getProvider().selectMethod(adaptor.size()*maxI*maxJ));
     }
 
     public T get(int... indexes) {

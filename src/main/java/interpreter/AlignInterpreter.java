@@ -110,10 +110,12 @@ public class AlignInterpreter {
                 long max = distance.operationsCount + 1;
 
                 IArray<Integer> trace1Alignment
-                        = ServiceRegister.getProvider().allocateNewArray(getRandomName(), max, IntegerAdapter);
+                        = ServiceRegister.getProvider().allocateNewArray(getRandomName(), max, IntegerAdapter,
+                        ServiceRegister.getProvider().selectMethod(Integer.SIZE*max));
 
                 IArray<Integer> trace2Alignment
-                        = ServiceRegister.getProvider().allocateNewArray(getRandomName(), max, IntegerAdapter);
+                        = ServiceRegister.getProvider().allocateNewArray(getRandomName(), max, IntegerAdapter,
+                        ServiceRegister.getProvider().selectMethod(Integer.SIZE*max));
 
 
                 InsertOperation i1 = new InsertOperation(0, 0);

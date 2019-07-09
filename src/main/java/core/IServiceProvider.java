@@ -2,23 +2,22 @@ package core;
 
 import core.data_structures.*;
 import core.data_structures.buffered.BufferedCollection;
-import ngram.Generator;
-import ngram.hash_keys.IHashCreator;
-import ngram.hash_keys.IIHashSetKeyCreator;
 
 import java.io.Serializable;
 import java.math.BigInteger;
 
 public interface IServiceProvider {
 
-    <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor);
+    enum ALLOCATION_METHOD {
+        MEMORY,
+        EXTERNAL
+    }
 
-    <T> IMultidimensionalArray<T> allocateMuldimensionalArray(BufferedCollection.ITypeAdaptor<T> adaptor, int ... dimensions);
+    ALLOCATION_METHOD selectMethod(long size);
 
-    <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary();
+    <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor, ALLOCATION_METHOD method);
+
+    <T> IMultidimensionalArray<T> allocateMuldimensionalArray(BufferedCollection.ITypeAdaptor<T> adaptor, ALLOCATION_METHOD method, int ... dimensions);
 
 
-    <T> ISet<T> allocateNewSet();
-
-    Generator getGenerator();
 }

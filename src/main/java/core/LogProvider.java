@@ -51,6 +51,6 @@ public class LogProvider {
     }
 
     public static void info(Object ... msgs){
-        //LOGGER().log(Level.INFO, String.join(" ", Arrays.stream(msgs).map(i -> String.valueOf(i)).collect(Collectors.toList())));
+        LOGGER().log(Level.INFO, String.join(" ", Arrays.stream(msgs).map(i -> String.valueOf(i)).collect(Collectors.toList())));
     }
 }

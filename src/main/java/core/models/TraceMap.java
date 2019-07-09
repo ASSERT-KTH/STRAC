@@ -2,7 +2,6 @@ package core.models;
 
 import core.ServiceRegister;
 import core.data_structures.IReadArray;
-import core.data_structures.segment_tree.SegmentTree;
 
 import java.math.BigInteger;
 import java.util.List;

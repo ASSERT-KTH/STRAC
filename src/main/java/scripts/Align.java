@@ -16,12 +16,9 @@ import core.data_structures.ISet;
 import core.data_structures.buffered.BufferedCollection;
 import core.data_structures.buffered.MultiDimensionalCollection;
 import core.data_structures.memory.InMemoryArray;
-import core.data_structures.memory.InMemoryDict;
 import core.data_structures.memory.InMemoryMultidimensional;
 import interpreter.AlignInterpreter;
 import interpreter.dto.Alignment;
-import ngram.Generator;
-import ngram.hash_keys.IHashCreator;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
@@ -39,49 +36,13 @@ public class Align {
     static List<IArray> openedArrays = new ArrayList<>();
 
     public static void setup(){
-        ServiceRegister.registerProvider(new IServiceProvider() {
 
-
-            @Override
-            public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                IArray<T> result = new BufferedCollection<>(id==null? getRandomName(): id, size,  1 << 30, adaptor);
-
-                openedArrays.add(result);
-
-                return result;
-                //return new InMemoryArray<T>(getRandomName(), (int)size);
-            }
-
-            @Override
-            public <T> IMultidimensionalArray<T> allocateMuldimensionalArray(BufferedCollection.ITypeAdaptor<T> adaptor, int... dimensions) {
-                MultiDimensionalCollection<T> result = new MultiDimensionalCollection<T>(getRandomName(),adaptor, dimensions);
-                openedArrays.add(result);
-
-                return result;
-
-                //return new InMemoryMultidimensional<>(adaptor, dimensions[0], dimensions[1]);
-            }
-
-            @Override
-            public <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary() {
-                return new InMemoryDict<TKey, TValue>();
-            }
-
-            @Override
-            public <T> ISet<T> allocateNewSet() {
-                return null;
-            }
-
-            @Override
-            public Generator getGenerator() {
-                return null;
-            }
-        });
+        ServiceRegister.getProvider();
 
         comparers = new HashMap<>();
 
 
-        ClassLoader classLoader = Main.class.getClassLoader();
+        ClassLoader classLoader = Align.class.getClassLoader();
         File file = new File(classLoader.getResource("templates").getFile());
 
         ve = new VelocityEngine();

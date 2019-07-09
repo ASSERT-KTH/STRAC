@@ -4,13 +4,16 @@ import align.AlignDistance;
 import align.Aligner;
 import align.ICellComparer;
 import align.InsertOperation;
+import core.IServiceProvider;
 import core.LogProvider;
 import core.ServiceRegister;
 import core.data_structures.IArray;
 import core.data_structures.IMultidimensionalArray;
 import core.data_structures.IReadArray;
 import core.data_structures.buffered.MultiDimensionalCollection;
+import core.data_structures.memory.InMemoryArray;
 import core.utils.DWTHelper;
+import core.utils.TimeUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
@@ -55,9 +58,13 @@ public class WindowedDTW extends Aligner {
 
         double oo = Double.MAX_VALUE/2;
 
+        IServiceProvider.ALLOCATION_METHOD method = ServiceRegister.getProvider().selectMethod(8L*(trace1.size() + 1)*(trace2.size() + 1));
 
-        IMultidimensionalArray<Double> D = ServiceRegister.getProvider().allocateMuldimensionalArray(DoubleAdapter,
+        IMultidimensionalArray<Double> D = ServiceRegister.getProvider().allocateMuldimensionalArray(DoubleAdapter, method,
                 (int)trace1.size() + 1, (int)trace2.size() + 1);
+
+        TimeUtils u = new TimeUtils();
+        u.reset();
 
         for(int  i = 0;  i < trace1.size(); i++){
             for(int j: window.iterator(i)){
@@ -88,11 +95,14 @@ public class WindowedDTW extends Aligner {
             }
         }
 
+        u.time("Cost matrix");
 
         int i = (int)trace1.size() - 1;
         int j = (int)trace2.size() - 1;
 
-        IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray(null, trace1.size()+trace2.size() + 2, InsertOperation.OperationAdapter);
+        IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray(null, trace1.size()+trace2.size() + 2, InsertOperation.OperationAdapter,
+            ServiceRegister.getProvider().selectMethod(InsertOperation.OperationAdapter.size()*(trace1.size()+trace2.size() + 2))
+        );
 
         LogProvider.info("Getting warp path");
 
@@ -146,6 +156,8 @@ public class WindowedDTW extends Aligner {
             ops.set(position++,new InsertOperation(i, j));
         }
 
+        u.time("Warp path");
+
         Double val = D.getDefault(oo, window,(int)trace1.size() - 1, (int)trace2.size() - 1);
 
         LogProvider.info("DTW distnace", val);
@@ -164,8 +176,16 @@ public class WindowedDTW extends Aligner {
         int width;
 
         public Window(long height, long width){
-            minValues = ServiceRegister.getProvider().allocateNewArray(null, height, IntegerAdapter);
-            maxValues = ServiceRegister.getProvider().allocateNewArray(null, height, IntegerAdapter);
+
+            IServiceProvider.ALLOCATION_METHOD method = ServiceRegister.getProvider().selectMethod(4*height);
+
+            minValues = ServiceRegister.getProvider()
+                .allocateNewArray(null, height, IntegerAdapter
+                    , method);
+
+            maxValues = ServiceRegister.getProvider()
+                    .allocateNewArray(null, height, IntegerAdapter
+                            , method);
 
             this.width = (int)width;
 
