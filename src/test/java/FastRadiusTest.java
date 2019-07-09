@@ -246,4 +246,21 @@ public class FastRadiusTest {
 
     }
 
+
+    @Test
+    public void testFastDTWRadius6000() throws IOException {
+
+        dto.method.params = new Object[]{
+                6000.0
+        };
+
+        AtomicLong now = new AtomicLong(System.nanoTime());
+
+        interpreter.execute(dto, (distance, tr1, tr2, al1, al2, total) -> {
+            TestLogProvider.info(6000, ",", distance.getDistance(), ",", total, ",", System.nanoTime() - now.get(), ",");
+            now.set(System.nanoTime());
+        });
+
+    }
+
 }

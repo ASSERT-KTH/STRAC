@@ -4,6 +4,9 @@ package core.data_structures.buffered;
 import align.implementations.WindowedDTW;
 import core.data_structures.IMultidimensionalArray;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,9 +16,15 @@ public class BidimensionalBufferedCollectionDouble extends BufferedCollectionDou
 
     long maxI;
     long maxJl;
+    WindowedDTW.Window window;
 
-    double[] currentRow;
-    int currentRowIndex;
+
+    private double[] lastRow;
+    private double[] currRow;
+    private int currRowIndex;
+    private int minlastCol;
+    private int minCurrCol;
+
 
     public BidimensionalBufferedCollectionDouble(String fileName, long maxI, long maxJ) {
         super(fileName, maxI*maxJ, 1 << 30);
@@ -23,18 +32,42 @@ public class BidimensionalBufferedCollectionDouble extends BufferedCollectionDou
         this.maxI = maxI;
         this.maxJl = maxJ;
 
-        this.currentRow = new double[(int)maxJ];
-        currentRowIndex = 0;
+    }
+
+
+    public BidimensionalBufferedCollectionDouble(String fileName, long maxI, long maxJ, WindowedDTW.Window window) {
+        this(fileName, maxI, maxJ);
+
+        this.window = window;
+
+
+        if (window.getLength0() > 0){
+
+            currRow = new double[window.getMax(1)-window.getMin(1)+1];
+            currRowIndex = 1;
+            minlastCol = window.getMin(currRowIndex-1);
+        }
+        else
+            currRowIndex = 0;
+
+        minCurrCol = window.getMin(currRowIndex);
+        lastRow = new double[window.getMax(0)-window.getMin(0)+1];
+
     }
 
     public Double get(int...index){
+        int col = index[1];
+        int row = index[0];
 
-        if(currentRowIndex == index[0]){
-            return currentRow[index[1]];
-        }
-
-        return super.read(getPosition(index[0], index[1]));
-    }
+        if (row == currRowIndex)
+            return currRow[col-minCurrCol];
+        else if (row == currRowIndex-1)
+            return lastRow[col-minlastCol];
+        else
+        {
+            return super.read(getPosition(row, col));
+        }  // end if
+    }  // end get(..)
 
 
     @Override
@@ -48,19 +81,25 @@ public class BidimensionalBufferedCollectionDouble extends BufferedCollectionDou
 
 
     public void set(Double value, int i, int j){
+        int col = j;
+        int row = i;
 
-        if(i == currentRowIndex)
-            currentRow[j] = value;
-        else{
-            bulkSave(currentRow, i*maxJl*8);
-            currentRowIndex = i;
-            currentRow = new double[(int)maxJl];
+        if (row == currRowIndex)
+            currRow[col-minCurrCol] = value;
+        else if (row == currRowIndex-1)
+        {
+            lastRow[col-minlastCol] = value;
+        }
+        else if (row == currRowIndex + 1) {
 
-            try {
-                super.set(getPosition(i, j), value);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            super.bulkSave(lastRow, (currRowIndex - 1)*maxJl);
+
+            lastRow = currRow;
+            minlastCol = minCurrCol;
+            minCurrCol = window.getMin(row);
+            currRowIndex++;
+            currRow = new double[window.getMax(row) - window.getMin(row) + 1];
+            currRow[col - minCurrCol] = value;
         }
     }
 

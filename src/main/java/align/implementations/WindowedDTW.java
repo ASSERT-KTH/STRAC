@@ -54,10 +54,10 @@ public class WindowedDTW extends Aligner {
         double oo = Double.MAX_VALUE/2;
 
         IServiceProvider.ALLOCATION_METHOD method =
-                ServiceRegister.getProvider().selectMethod(8L*(trace1.size() + 1)*(trace2.size() + 1));
+                ServiceRegister.getProvider().selectMethod(8L*(trace1.size())*(trace2.size()));
 
-        IMultidimensionalArray<Double> D = ServiceRegister.getProvider().allocateDoubleBidimensionalMatrix(
-                (int)trace1.size() + 1, (int)trace2.size() + 1, method);
+        IMultidimensionalArray<Double> D = ServiceRegister.getProvider().allocateDoubleBidimensionalMatrixWindow(
+                (int)trace1.size(), (int)trace2.size(), method, window);
 
         TimeUtils u = new TimeUtils();
         u.reset();
@@ -100,8 +100,8 @@ public class WindowedDTW extends Aligner {
         LogProvider.info("Visited", visited);
         u.time("Cost matrix");
 
-        int i = (int)trace1.size();
-        int j = (int)trace2.size();
+        int i = (int)trace1.size() - 1;
+        int j = (int)trace2.size() - 1;
 
         IArray<Cell> ops = ServiceRegister.getProvider().allocateWarpPath(null, trace1.size()+trace2.size() + 2,
             ServiceRegister.getProvider().selectMethod(512*(trace1.size()+trace2.size() + 2))
@@ -165,6 +165,9 @@ public class WindowedDTW extends Aligner {
         u.time("Warp path");
 
         Double val = D.getDefault(oo, window,(int)trace1.size() - 1, (int)trace2.size() - 1);
+
+        if(val == 0)
+            throw new RuntimeException("Ahhhhhhh");
 
         LogProvider.info("DTW distnace", val);
         D.dispose();
@@ -243,6 +246,10 @@ public class WindowedDTW extends Aligner {
         public void setRange(int min, int max, int row){
             minValues.set(row, min);
             maxValues.set(row, max);
+        }
+
+        public long getLength0(){
+            return minValues.size();
         }
 
         public Iterable<Integer> iterator(int row){
