@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static core.utils.HashingHelper.IntegerAdapter;
 import static core.utils.HashingHelper.getRandomName;
 
 public class AlignInterpreter {
@@ -110,11 +109,11 @@ public class AlignInterpreter {
                 long max = distance.operationsCount + 1;
 
                 IArray<Integer> trace1Alignment
-                        = ServiceRegister.getProvider().allocateNewArray(getRandomName(), max, IntegerAdapter,
+                        = ServiceRegister.getProvider().allocateIntegerArray(getRandomName(), max,
                         ServiceRegister.getProvider().selectMethod(Integer.SIZE*max));
 
                 IArray<Integer> trace2Alignment
-                        = ServiceRegister.getProvider().allocateNewArray(getRandomName(), max, IntegerAdapter,
+                        = ServiceRegister.getProvider().allocateIntegerArray(getRandomName(), max,
                         ServiceRegister.getProvider().selectMethod(Integer.SIZE*max));
 
 
@@ -214,7 +213,8 @@ public class AlignInterpreter {
 
                     }
                     catch (Exception e){
-                        //e.printStackTrace();
+                        e.printStackTrace();
+                        System.err.println(i + " ");
                         //throw new RuntimeException(e.getMessage());
                     }
 
@@ -246,7 +246,7 @@ public class AlignInterpreter {
                     try {
                         LogProvider.info("Writing align result to file");
 
-                        trace1Alignment.writeTo(new FileWriter(file1), t -> {
+                        /*trace1Alignment.writeTo(new FileWriter(file1), t -> {
                             if(t != null)
                                 return helper.getInverseBag().get(t) + "\n";
 
@@ -257,7 +257,7 @@ public class AlignInterpreter {
                                 return helper.getInverseBag().get(t) + "\n";
 
                             return "";
-                        });
+                        });*/
                     }
                     catch (Exception e){
                         e.printStackTrace();

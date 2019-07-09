@@ -53,10 +53,11 @@ public class WindowedDTW extends Aligner {
 
         double oo = Double.MAX_VALUE/2;
 
-        IServiceProvider.ALLOCATION_METHOD method = ServiceRegister.getProvider().selectMethod(8L*(trace1.size() + 1)*(trace2.size() + 1));
+        IServiceProvider.ALLOCATION_METHOD method =
+                ServiceRegister.getProvider().selectMethod(8L*(trace1.size() + 1)*(trace2.size() + 1));
 
-        IMultidimensionalArray<Double> D = ServiceRegister.getProvider().allocateMuldimensionalArray(DoubleAdapter, method,
-                (int)trace1.size() + 1, (int)trace2.size() + 1);
+        IMultidimensionalArray<Double> D = ServiceRegister.getProvider().allocateDoubleBidimensionalMatrix(
+                (int)trace1.size() + 1, (int)trace2.size() + 1, method);
 
         TimeUtils u = new TimeUtils();
         u.reset();
@@ -68,7 +69,7 @@ public class WindowedDTW extends Aligner {
             int min = window.getMin(i);
             int max = window.getMax(i);
 
-            for(int j = min; j <= max; j++){
+            for(int j = min; j < max; j++){
 
                 visited++;
                 if ((i == 0) && (j == 0))
@@ -102,8 +103,8 @@ public class WindowedDTW extends Aligner {
         int i = (int)trace1.size();
         int j = (int)trace2.size();
 
-        IArray<Cell> ops = ServiceRegister.getProvider().allocateNewArray(null, trace1.size()+trace2.size() + 2, Cell.OperationAdapter,
-            ServiceRegister.getProvider().selectMethod(Cell.OperationAdapter.size()*(trace1.size()+trace2.size() + 2))
+        IArray<Cell> ops = ServiceRegister.getProvider().allocateWarpPath(null, trace1.size()+trace2.size() + 2,
+            ServiceRegister.getProvider().selectMethod(512*(trace1.size()+trace2.size() + 2))
         );
 
         LogProvider.info("Getting warp path");
@@ -185,11 +186,11 @@ public class WindowedDTW extends Aligner {
             IServiceProvider.ALLOCATION_METHOD method = ServiceRegister.getProvider().selectMethod(4*height);
 
             minValues = ServiceRegister.getProvider()
-                .allocateNewArray(null, height, IntegerAdapter
+                .allocateIntegerArray(null, height
                     , method);
 
             maxValues = ServiceRegister.getProvider()
-                    .allocateNewArray(null, height, IntegerAdapter
+                    .allocateIntegerArray(null, height
                             , method);
 
             this.width = (int)width;

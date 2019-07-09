@@ -51,17 +51,17 @@ public class FastDTW extends Aligner {
             long halfSize1 = trace1.size()/2;
             long halfSize2 = trace2.size()/2;
 
-            IArray<Integer> reduced1 = ServiceRegister.getProvider().allocateNewArray
-                    (null, halfSize1, HashingHelper.IntegerAdapter,
-                            ServiceRegister.getProvider().selectMethod(HashingHelper.IntegerAdapter.size()*halfSize1)
+            IArray<Integer> reduced1 = ServiceRegister.getProvider().allocateIntegerArray
+                    (null, halfSize1,
+                            ServiceRegister.getProvider().selectMethod(4*halfSize1)
                             );
 
             ArrayHelper.reduceByHalf(trace1, reduced1,
                     ArrayHelper::getMostFequentRepresentation); // O(n)
 
-            IArray<Integer> reduced2 = ServiceRegister.getProvider().allocateNewArray(
-                    null, halfSize2, HashingHelper.IntegerAdapter,
-                    ServiceRegister.getProvider().selectMethod(HashingHelper.IntegerAdapter.size()*halfSize2));
+            IArray<Integer> reduced2 = ServiceRegister.getProvider().allocateIntegerArray(
+                    null, halfSize2,
+                    ServiceRegister.getProvider().selectMethod(4*halfSize2));
 
             ArrayHelper.reduceByHalf(trace2, reduced2,
                     ArrayHelper::getMostFequentRepresentation); // O(n)

@@ -1,10 +1,7 @@
 package core;
 
+import align.Cell;
 import core.data_structures.*;
-import core.data_structures.buffered.BufferedCollection;
-
-import java.io.Serializable;
-import java.math.BigInteger;
 
 public interface IServiceProvider {
 
@@ -15,9 +12,13 @@ public interface IServiceProvider {
 
     ALLOCATION_METHOD selectMethod(long size);
 
-    <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor, ALLOCATION_METHOD method);
+    IArray<Integer> allocateIntegerArray(String id, long size, ALLOCATION_METHOD method);
 
-    <T> IMultidimensionalArray<T> allocateMuldimensionalArray(BufferedCollection.ITypeAdaptor<T> adaptor, ALLOCATION_METHOD method, int ... dimensions);
+    IArray<Cell> allocateWarpPath(String id, long size, ALLOCATION_METHOD method);
+
+    IArray<Long> allocateLonArray(String id, long size, ALLOCATION_METHOD method);
+
+    IMultidimensionalArray<Double> allocateDoubleBidimensionalMatrix(long maxI, long maxJ, ALLOCATION_METHOD method);
 
 
 }

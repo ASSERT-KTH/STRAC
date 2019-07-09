@@ -3,24 +3,24 @@ package core.data_structures.buffered;
 import align.implementations.WindowedDTW;
 import core.data_structures.IMultidimensionalArray;
 
-public class MultiDimensionalCollection<T> extends BufferedCollection<T> implements IMultidimensionalArray<T> {
+public class BiDimensionalCollectionInteger extends BufferedCollectionInteger implements IMultidimensionalArray<Integer> {
 
 
     int[] dimensions;
 
-    public MultiDimensionalCollection(String fileName, ITypeAdaptor<T> adaptor, int...dimensions) {
-        super(fileName, multiply(dimensions), 1 << 30, adaptor);
+    public BiDimensionalCollectionInteger(String fileName, long maxI, long maxJ) {
+        super(fileName, maxI*maxJ, 1 << 30);
 
         this.dimensions = dimensions;
     }
 
-    public T get(int...index){
+    public Integer get(int...index){
         return super.read(getPosition(index));
     }
 
 
     @Override
-    public T getDefault(T def, WindowedDTW.Window w, int... indexes) {
+    public Integer getDefault(Integer def, WindowedDTW.Window w, int... indexes) {
 
         if(!w.isInRange(indexes[0], indexes[1]))
             return def;
@@ -28,9 +28,9 @@ public class MultiDimensionalCollection<T> extends BufferedCollection<T> impleme
         return get(indexes);
     }
 
-    public void set(T value, int...index){
+    public void set(Integer value, int i, int j){
         try {
-            super.set(getPosition(index), value);
+            super.set(dimensions[1]*i + j, value);
         }
         catch (Exception e){
             throw new RuntimeException(e);

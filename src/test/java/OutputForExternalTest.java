@@ -1,33 +1,15 @@
-import align.implementations.DTW;
-import align.implementations.FastDTW;
-import align.implementations.LinearMemoryDTW;
 import com.google.gson.Gson;
-import core.IServiceProvider;
 import core.ServiceRegister;
 import core.TestLogProvider;
 import core.TraceHelper;
-import core.data_structures.IArray;
-import core.data_structures.IDict;
-import core.data_structures.IMultidimensionalArray;
-import core.data_structures.ISet;
-import core.data_structures.buffered.BufferedCollection;
-import core.data_structures.buffered.MultiDimensionalCollection;
-import core.data_structures.memory.InMemoryArray;
-import core.data_structures.memory.InMemoryMultidimensional;
-import core.data_structures.memory.InMemorySet;
 import core.models.TraceMap;
-import core.utils.HashingHelper;
 import interpreter.dto.Alignment;
-import interpreter.dto.Payload;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static core.utils.HashingHelper.getRandomName;
 
 public class OutputForExternalTest {
 

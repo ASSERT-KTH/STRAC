@@ -1,19 +1,18 @@
 package core.data_structures.buffered;
 
-import core.ServiceRegister;
 import core.data_structures.IArray;
 import core.data_structures.IMapAdaptor;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.HashMap;
 import java.util.Iterator;
 
-import static core.utils.HashingHelper.getRandomName;
-
-public class BufferedCollection<T> implements IArray<T> {
+public class BufferedCollectionDouble implements IArray<Double> {
 
     RandomAccessFile aFile;
 
@@ -21,17 +20,17 @@ public class BufferedCollection<T> implements IArray<T> {
 
     String filename;
     FileChannel inChannel;
-    ITypeAdaptor<T> adaptor;
 
     long _size;
+
     int segment_size;
 
-    public BufferedCollection(String fileName, long dataSize, int segmentSize,  ITypeAdaptor<T> adaptor) {
+    public BufferedCollectionDouble(String fileName, long dataSize, int segmentSize) {
         aFile = null;
         this.filename = fileName;
-        this.adaptor = adaptor;
 
-        _size = dataSize*adaptor.size();
+        _size = dataSize*8;
+
         this.segment_size = segmentSize;
 
         try {
@@ -69,14 +68,13 @@ public class BufferedCollection<T> implements IArray<T> {
     }
 
     @Override
-    public void set(long position, T value) {
-        position = position*adaptor.size();
+    public void set(long position, Double value) {
+
+        position = position * 8;
 
         ByteBuffer buf = buffer(position);
 
-        byte[] bytes = adaptor.toBytes(value);
-
-        buf.put(bytes);
+        buf.putDouble(value);
     }
 
     private ByteBuffer buffer(long index){
@@ -96,20 +94,13 @@ public class BufferedCollection<T> implements IArray<T> {
     }
 
     @Override
-    public T read(long position) {
+    public Double read(long position) {
 
-
-        position = position*adaptor.size();
+        position = position*8;
 
         ByteBuffer buf = buffer(position);
 
-
-
-        byte[] chunk = new byte[adaptor.size()];
-        buf.get(chunk);
-        T value = adaptor.fromBytes(chunk);
-
-        return value;
+        return buf.getDouble();
     }
 
     @Override
@@ -131,28 +122,42 @@ public class BufferedCollection<T> implements IArray<T> {
 
     @Override
     public long size() {
-        return _size/adaptor.size();
+        return _size/4;
     }
 
     @Override
     public void reset() {
-       // buffer.position(0);
+        // buffer.position(0);
     }
 
     @Override
-    public T[] getPlain() {
+    public Double[] getPlain() {
         return null;
     }
 
+    public void bulkSave(double[] value, long position){
+
+        final int doubleSize = 8;  // 8 byes in a double
+
+        ByteBuffer buf = ByteBuffer.allocate(doubleSize*value.length);
+
+
+        for(double val: value)
+            buf.putDouble(val);
+
+        ByteBuffer buff = buffer(position);
+        buff.put(buf);
+    }
+
     @Override
-    public void writeTo(Writer wr, IMapAdaptor<T> adaptor) throws IOException {
+    public void writeTo(Writer wr, IMapAdaptor<Double> adaptor) throws IOException {
         this.reset();
 
         for(MappedByteBuffer buff: _buffers)
             buff.force();
         int position = 0;
 
-        for(T item: this){
+        for(Double item: this){
             String value = adaptor.getValue(item);
 
             //System.out.println(String.format("\\node at (%s,%s) {%s};", (position++)*0.5 - 0.75, 2.75, value.substring(0, 1)));
@@ -171,22 +176,12 @@ public class BufferedCollection<T> implements IArray<T> {
 
     @NotNull
     @Override
-    public Iterator<T> iterator() {
-        return new BufferedIterator();
+    public Iterator<Double> iterator() {
+        return new BufferedCollectionDouble.BufferedIterator();
     }
 
-    public interface ITypeAdaptor<T>{
 
-        T fromBytes(byte[] chunk);
-
-        byte[] toBytes(T i);
-
-        int size();
-
-        Class<T> clazz();
-    }
-
-    public class BufferedIterator implements Iterator<T>{
+    public class BufferedIterator implements Iterator<Double>{
 
         int index = 0;
 
@@ -201,7 +196,7 @@ public class BufferedCollection<T> implements IArray<T> {
         }
 
         @Override
-        public T next() {
+        public Double next() {
             return read(index++);
         }
     }

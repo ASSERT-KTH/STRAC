@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static core.utils.HashingHelper.IntegerAdapter;
-
 public class TraceHelper {
 
     private Map<String, Integer> bag;
@@ -66,10 +64,10 @@ public class TraceHelper {
 
         int count = (int)patch.count();
 
-        IArray<Integer> result = ServiceRegister.getProvider().allocateNewArray
-                (null,
-                count, IntegerAdapter,
-                        ServiceRegister.getProvider().selectMethod(IntegerAdapter.size()*count
+        IArray<Integer> result = ServiceRegister.getProvider().allocateIntegerArray(
+                null,
+                count,
+                        ServiceRegister.getProvider().selectMethod(4*count
                         ));
 
         long position = 0;

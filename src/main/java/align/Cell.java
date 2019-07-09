@@ -1,7 +1,7 @@
 package align;
 
 import com.google.gson.Gson;
-import core.data_structures.buffered.BufferedCollection;
+import core.data_structures.buffered.BufferedCollectionInteger;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -41,7 +41,7 @@ public class Cell implements Serializable {
         return String.format("%s %s", this.i, this.j);
     }
 
-    public static BufferedCollection.ITypeAdaptor<Cell> OperationAdapter = new BufferedCollection.ITypeAdaptor<Cell>() {
+    /*public static BufferedCollectionInteger.ITypeAdaptor<Cell> OperationAdapter = new BufferedCollectionInteger.ITypeAdaptor<Cell>() {
         @Override
         public Cell fromBytes(byte[] chunk) {
 
@@ -69,5 +69,5 @@ public class Cell implements Serializable {
         public Class<Cell> clazz() {
             return Cell.class;
         }
-    };
+    };*/
 }

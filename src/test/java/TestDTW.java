@@ -3,6 +3,7 @@ import align.implementations.*;
 import core.*;
 import core.data_structures.IArray;
 import core.data_structures.memory.InMemoryArray;
+import core.data_structures.memory.InMemoryWarpPath;
 import core.utils.DWTHelper;
 import interpreter.AlignInterpreter;
 import interpreter.dto.Alignment;
@@ -161,7 +162,7 @@ public class TestDTW {
     public void testExpand(){
 
 
-        IArray<Cell> ops = new InMemoryArray<>(null, 5);
+        IArray<Cell> ops = new InMemoryWarpPath(null, 5);
 
         ops.set(4, new Cell(2 ,2));
         ops.set(3, new Cell(2 ,1));

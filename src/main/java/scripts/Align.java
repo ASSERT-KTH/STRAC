@@ -1,22 +1,13 @@
 package scripts;
 
-import align.IAlignComparer;
 import align.implementations.DTW;
 import align.implementations.FastDTW;
 import align.implementations.IImplementationInfo;
 import align.implementations.LinearMemoryDTW;
 import com.google.gson.Gson;
-import core.IServiceProvider;
 import core.LogProvider;
 import core.ServiceRegister;
 import core.data_structures.IArray;
-import core.data_structures.IDict;
-import core.data_structures.IMultidimensionalArray;
-import core.data_structures.ISet;
-import core.data_structures.buffered.BufferedCollection;
-import core.data_structures.buffered.MultiDimensionalCollection;
-import core.data_structures.memory.InMemoryArray;
-import core.data_structures.memory.InMemoryMultidimensional;
 import interpreter.AlignInterpreter;
 import interpreter.dto.Alignment;
 import org.apache.velocity.app.VelocityEngine;
@@ -28,8 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static core.utils.HashingHelper.getRandomName;
 
 public class Align {
 

@@ -1,24 +1,21 @@
 import align.Cell;
 import core.LogProvider;
-import core.data_structures.buffered.BufferedCollection;
-import core.data_structures.buffered.MultiDimensionalCollection;
+import core.data_structures.buffered.BufferedCollectionInteger;
 import core.utils.HashingHelper;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import java.nio.ByteBuffer;
-
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestBuffered {
 
-    static BufferedCollection.ITypeAdaptor<Integer> adaptor = HashingHelper.IntegerAdapter;
+    /*static BufferedCollectionInteger.ITypeAdaptor<Integer> adaptor = HashingHelper.IntegerAdapter;
 
     @Test
     public void test01CreateOne(){
 
-        BufferedCollection<Integer> coll = new BufferedCollection<>("test.buff", 4, Integer.MAX_VALUE /2, adaptor);
+        BufferedCollectionInteger<Integer> coll = new BufferedCollectionInteger<>("test.buff", 4, Integer.MAX_VALUE /2, adaptor);
 
 
         coll.set(0,10);
@@ -34,7 +31,7 @@ public class TestBuffered {
     @Test
     public void test02ComplexDataStructure(){
 
-        BufferedCollection<Cell> coll = new BufferedCollection<>("operations.buff", 4, Integer.MAX_VALUE /2, Cell.OperationAdapter);
+        BufferedCollectionInteger<Cell> coll = new BufferedCollectionInteger<>("operations.buff", 4, Integer.MAX_VALUE /2, Cell.OperationAdapter);
 
 
         coll.set(0,new Cell(1, 2));
@@ -49,7 +46,7 @@ public class TestBuffered {
     @Test
     public void test03ReadComplexDataStructure(){
 
-        BufferedCollection<Cell> coll = new BufferedCollection<>("operations.buff", 4, Integer.MAX_VALUE /2, Cell.OperationAdapter);
+        BufferedCollectionInteger<Cell> coll = new BufferedCollectionInteger<>("operations.buff", 4, Integer.MAX_VALUE /2, Cell.OperationAdapter);
 
         for(Cell op: coll)
             LogProvider.info(op);
@@ -61,7 +58,7 @@ public class TestBuffered {
     @Test
     public void test04LoadAndRetrieve(){
 
-        BufferedCollection<Integer> coll = new BufferedCollection<>("test.buff", 4, Integer.MAX_VALUE/2, adaptor);
+        BufferedCollectionInteger<Integer> coll = new BufferedCollectionInteger<>("test.buff", 4, Integer.MAX_VALUE/2, adaptor);
 
 
         LogProvider.info(coll.size());
@@ -79,7 +76,7 @@ public class TestBuffered {
     public void test05CreateLarge(){
 
         // 1M byte file
-        BufferedCollection<Integer> coll = new BufferedCollection<>("large.buff", 10000000, Integer.MAX_VALUE/2 ,adaptor);
+        BufferedCollectionInteger<Integer> coll = new BufferedCollectionInteger<>("large.buff", 10000000, Integer.MAX_VALUE/2 ,adaptor);
 
 
         for(int i = 0; i< 10000000; i++)
@@ -138,7 +135,7 @@ public class TestBuffered {
 
     @Test
     public void test08Json(){
-        BufferedCollection<Cell> bi = new BufferedCollection<Cell>("json.buff", 3,  (int)((Integer.MAX_VALUE + 1l)/2), Cell.OperationAdapter);
+        BufferedCollectionInteger<Cell> bi = new BufferedCollectionInteger<Cell>("json.buff", 3,  (int)((Integer.MAX_VALUE + 1l)/2), Cell.OperationAdapter);
 
         bi.set(0,new Cell(0, 10));
         bi.set(1, new Cell(2, 10));
@@ -151,7 +148,7 @@ public class TestBuffered {
 
     @Test
     public void test09ReadJson(){
-        BufferedCollection<Cell> bi = new BufferedCollection<Cell>("json.buff", 3, (int)((Integer.MAX_VALUE + 1l)/2),  Cell.OperationAdapter);
+        BufferedCollectionInteger<Cell> bi = new BufferedCollectionInteger<Cell>("json.buff", 3, (int)((Integer.MAX_VALUE + 1l)/2),  Cell.OperationAdapter);
 
         LogProvider.info(bi.read(0));
         bi.close();
@@ -169,6 +166,6 @@ public class TestBuffered {
 
         bi.close();
 
-    }
+    }*/
 
 }

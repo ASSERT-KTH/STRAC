@@ -1,12 +1,9 @@
 package core.utils;
 
-import core.data_structures.IArray;
 import core.data_structures.IReadArray;
-import core.data_structures.buffered.BufferedCollection;
+import core.data_structures.buffered.BufferedCollectionInteger;
 
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.util.*;
 
 public class HashingHelper {
@@ -78,48 +75,4 @@ public class HashingHelper {
         return String.format("temp_dst/%s",  UUID.randomUUID().toString());
     }
 
-    public static BufferedCollection.ITypeAdaptor<Integer> IntegerAdapter = new BufferedCollection.ITypeAdaptor<Integer>() {
-        @Override
-        public Integer fromBytes(byte[] chunk) {
-            return ByteBuffer.wrap(chunk).getInt();
-        }
-
-        @Override
-        public byte[] toBytes(Integer i) {
-            return ByteBuffer.allocate(4).putInt(i).array();
-        }
-
-        @Override
-        public int size() {
-            return 4;
-        }
-
-        @Override
-        public Class<Integer> clazz() {
-            return Integer.class;
-        }
-    };
-
-
-    public static BufferedCollection.ITypeAdaptor<Double> DoubleAdapter = new BufferedCollection.ITypeAdaptor<Double>() {
-        @Override
-        public Double fromBytes(byte[] chunk) {
-            return ByteBuffer.wrap(chunk).getDouble();
-        }
-
-        @Override
-        public byte[] toBytes(Double i) {
-            return ByteBuffer.allocate(8).putDouble(i).array();
-        }
-
-        @Override
-        public int size() {
-            return 8;
-        }
-
-        @Override
-        public Class<Double> clazz() {
-            return Double.class;
-        }
-    };
 }

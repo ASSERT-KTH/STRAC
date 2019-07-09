@@ -1,50 +1,41 @@
 package core.data_structures.memory;
 
 import align.implementations.WindowedDTW;
-import core.ServiceRegister;
-import core.data_structures.IArray;
-import core.data_structures.IMapAdaptor;
 import core.data_structures.IMultidimensionalArray;
-import core.data_structures.buffered.BufferedCollection;
-import org.jetbrains.annotations.NotNull;
+import core.data_structures.buffered.BufferedCollectionInteger;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.lang.reflect.Array;
-import java.util.Iterator;
 
-public class InMemoryMultidimensional<T> implements IMultidimensionalArray<T> {
+public class InMemoryMultidimensional implements IMultidimensionalArray<Double> {
 
-    T[][] data;
+    Double[][] data;
     long maxI;
     long maxJ;
 
-    public InMemoryMultidimensional(BufferedCollection.ITypeAdaptor<T> adaptor,long maxI, long maxJ){
+    public InMemoryMultidimensional(long maxI, long maxJ){
 
         this.maxI = maxI;
         this.maxJ = maxJ;
 
-        data = (T[][]) Array.newInstance(adaptor.clazz(), (int)maxI, (int)maxJ);
+        data = new Double[(int)maxI][(int)maxJ];
     }
 
-    public T get(int... indexes) {
+    public Double get(int... indexes) {
         return this.data[indexes[0]][indexes[1]];
     }
 
     @Override
-    public T getDefault(T def, WindowedDTW.Window w, int... indexes) {
+    public Double getDefault(Double def, WindowedDTW.Window w, int... indexes) {
 
         if(!w.isInRange(indexes[0], indexes[1]))
             return def;
 
-        T result = get(indexes);
-
-        return result == null? def:result;
+        return data[indexes[0]][indexes[1]];
     }
 
     @Override
-    public void set(T value, int... indexes) {
-        this.data[indexes[0]][indexes[1]] =  value;
+    public void set(Double value, int i, int j) {
+        this.data[i][j] =  value;
     }
 
     @Override

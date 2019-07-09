@@ -9,7 +9,7 @@ public interface IMultidimensionalArray<T> {
 
     T getDefault(T def, WindowedDTW.Window w, int...indexes);
 
-    void set(T value, int...indexes);
+    void set(T value, int i, int j);
 
     long size(int dimension);
 

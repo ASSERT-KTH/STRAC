@@ -1,37 +1,34 @@
 package core.data_structures.memory;
 
+import align.Cell;
 import core.data_structures.IArray;
 import core.data_structures.IMapAdaptor;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.sql.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
-public class InMemoryArray implements IArray<Integer> {
+public class InMemoryWarpPath implements IArray<Cell> {
 
-    Integer[] items;
+    Cell[] items;
     int position;
 
-    public InMemoryArray(String id, int size){
+    public InMemoryWarpPath(String id, int size){
 
 
         if(size > 1 << 30){
             throw new RuntimeException("Too large array " + (size));
         }
 
-        this.items = new Integer[size];
+        this.items = new Cell[size];
         this.position = 0;
 
         this.id = id;
     }
 
     @Override
-    public Integer read(long position) {
+    public Cell read(long position) {
         return items[(int)position];
     }
 
@@ -46,31 +43,24 @@ public class InMemoryArray implements IArray<Integer> {
     }
 
     @Override
-    public Integer[] getPlain() {
+    public Cell[] getPlain() {
 
-        return (Integer[])items;
+        return items;
     }
 
     @Override
-    public void writeTo(Writer wr, IMapAdaptor<Integer> adaptor) throws IOException {
+    public void writeTo(Writer wr, IMapAdaptor<Cell> adaptor) throws IOException {
         this.reset();
-        try {
 
-            for (int item : items) {
+        for(Cell item: this){
 
-                    String value = adaptor.getValue(item);
+            String value = adaptor.getValue(item);
 
-                    if (value != null)
-                        wr.write(value);
-
-            }
-
-            wr.close();
-        }
-        catch (Exception e){
-            throw new RuntimeException(e);
+            if(value != null)
+                wr.write(value);
         }
 
+        wr.close();
     }
 
     String id;
@@ -81,7 +71,7 @@ public class InMemoryArray implements IArray<Integer> {
     }
 
     @Override
-    public void set(long position, Integer value) {
+    public void set(long position, Cell value) {
 
         items[(int)position] = value;
     }
@@ -99,12 +89,12 @@ public class InMemoryArray implements IArray<Integer> {
 
     @NotNull
     @Override
-    public Iterator iterator() {
+    public InMemoryWarpPath.Iterator iterator() {
 
-        return new Iterator();
+        return new InMemoryWarpPath.Iterator();
     }
 
-    class Iterator implements java.util.Iterator<Integer> {
+    class Iterator implements java.util.Iterator<Cell> {
 
         int _position = 0;
 
@@ -114,7 +104,7 @@ public class InMemoryArray implements IArray<Integer> {
         }
 
         @Override
-        public Integer next() {
+        public Cell next() {
             return items[_position++];
         }
     }

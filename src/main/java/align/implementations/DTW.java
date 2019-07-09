@@ -45,10 +45,10 @@ public class DTW extends Aligner {
             LogProvider.info("Warning", "Array too large. We need " + (need/1e9) + "GB space to store traditional DTW cost matrix");
             method = IServiceProvider.ALLOCATION_METHOD.EXTERNAL;
         }
-        ops = ServiceRegister.getProvider().allocateNewArray
-                (null, maxI + maxJ + 2, Cell.OperationAdapter, method);
+        ops = ServiceRegister.getProvider().allocateWarpPath
+                (null, maxI + maxJ + 2, method);
 
-        result = ServiceRegister.getProvider().allocateMuldimensionalArray(HashingHelper.DoubleAdapter, method, maxI + 1, maxJ + 1);
+        result = ServiceRegister.getProvider().allocateDoubleBidimensionalMatrix(maxI + 1, maxJ + 1, method);
 
 
         LogProvider.info("Setting up first row and column...");

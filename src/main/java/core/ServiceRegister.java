@@ -1,13 +1,16 @@
 package core;
 
+import align.Cell;
 import core.data_structures.IArray;
-import core.data_structures.IDict;
 import core.data_structures.IMultidimensionalArray;
-import core.data_structures.ISet;
-import core.data_structures.buffered.BufferedCollection;
-import core.data_structures.buffered.MultiDimensionalCollection;
+import core.data_structures.buffered.BidimensionalBufferedCollectionDouble;
+import core.data_structures.buffered.BufferedCollectionInteger;
+import core.data_structures.buffered.BufferedCollectionLong;
+import core.data_structures.buffered.BufferedWarpPath;
 import core.data_structures.memory.InMemoryArray;
+import core.data_structures.memory.InMemoryLongArray;
 import core.data_structures.memory.InMemoryMultidimensional;
+import core.data_structures.memory.InMemoryWarpPath;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,25 +29,33 @@ public class ServiceRegister {
 
     public static IServiceProvider getProvider(){
 
+        /*IArray<Integer> allocateIntegerArray(String id, long size, ALLOCATION_METHOD method);
+
+        IArray<Long> (String id, long size, ALLOCATION_METHOD method);
+
+        IMultidimensionalArray<Double> allocateDoubleBidimensionalMatrix(long maxI, long maxJ, ALLOCATION_METHOD method);
+*/
+
+
         if(_provider == null){
             _provider = new IServiceProvider() {
                 @Override
                 public ALLOCATION_METHOD selectMethod(long size) {
 
-                    if(size < 1L << 32)
+                    if(size < 1L << 30)
                         return ALLOCATION_METHOD.MEMORY;
 
                     return ALLOCATION_METHOD.EXTERNAL;
                 }
 
                 @Override
-                public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor, ALLOCATION_METHOD method) {
+                public IArray<Integer> allocateIntegerArray(String id, long size, ALLOCATION_METHOD method) {
 
                     if(method == ALLOCATION_METHOD.MEMORY){
-                        return new InMemoryArray<T>(id, (int)size);
+                        return new InMemoryArray(id, (int)size);
                     }
 
-                    IArray<T> result = new BufferedCollection<>(id==null? getRandomName(): id, size, Integer.MAX_VALUE/2, adaptor);
+                    IArray<Integer> result = new BufferedCollectionInteger(id==null? getRandomName(): id, size, Integer.MAX_VALUE/2);
 
                     openedArrays.add(result);
 
@@ -52,16 +63,44 @@ public class ServiceRegister {
                 }
 
                 @Override
-                public <T> IMultidimensionalArray<T> allocateMuldimensionalArray(BufferedCollection.ITypeAdaptor<T> adaptor, ALLOCATION_METHOD method, int... dimensions) {
+                public IArray<Cell> allocateWarpPath(String id, long size, ALLOCATION_METHOD method) {
+                    if(method == ALLOCATION_METHOD.MEMORY){
+                        return new InMemoryWarpPath(null, (int)size);
+                    }
 
-                    if(method == ALLOCATION_METHOD.MEMORY)
-                        return new InMemoryMultidimensional<>(adaptor, dimensions[0], dimensions[1]);
+                    IArray<Cell> result = new BufferedWarpPath(id==null? getRandomName(): id, size, Integer.MAX_VALUE/2);
 
-                    MultiDimensionalCollection<T> result = new MultiDimensionalCollection<T>(getRandomName(),adaptor, dimensions);
                     openedArrays.add(result);
 
                     return result;
                 }
+
+                @Override
+                public IArray<Long> allocateLonArray(String id, long size, ALLOCATION_METHOD method) {
+                    if(method == ALLOCATION_METHOD.MEMORY){
+                        return new InMemoryLongArray(id, (int)size);
+                    }
+
+                    IArray<Long> result = new BufferedCollectionLong(id==null? getRandomName(): id, size, Integer.MAX_VALUE/2);
+
+                    openedArrays.add(result);
+
+                    return result;
+                }
+
+                @Override
+                public IMultidimensionalArray<Double> allocateDoubleBidimensionalMatrix(long maxI, long maxJ, ALLOCATION_METHOD method) {
+
+                    if(method == ALLOCATION_METHOD.MEMORY)
+                        return new InMemoryMultidimensional( maxI, maxJ);
+
+                    BidimensionalBufferedCollectionDouble result = new BidimensionalBufferedCollectionDouble(getRandomName(), maxI, maxJ);
+
+                    openedArrays.add(result);
+
+                    return result;
+                }
+
 
             };
         }
