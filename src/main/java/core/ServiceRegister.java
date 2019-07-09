@@ -31,7 +31,7 @@ public class ServiceRegister {
                 @Override
                 public ALLOCATION_METHOD selectMethod(long size) {
 
-                    if(size < 1 << 30)
+                    if(size < 1L << 32)
                         return ALLOCATION_METHOD.MEMORY;
 
                     return ALLOCATION_METHOD.EXTERNAL;

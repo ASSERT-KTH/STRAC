@@ -182,6 +182,8 @@ public class BufferedCollection<T> implements IArray<T> {
         byte[] toBytes(T i);
 
         int size();
+
+        Class<T> clazz();
     }
 
     public class BufferedIterator implements Iterator<T>{

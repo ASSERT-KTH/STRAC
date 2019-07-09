@@ -4,10 +4,9 @@ import com.google.gson.Gson;
 import core.data_structures.buffered.BufferedCollection;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class InsertOperation implements Serializable {
+public class Cell implements Serializable {
 
     private int i;
 
@@ -15,7 +14,7 @@ public class InsertOperation implements Serializable {
 
     private int valueInCost;
 
-    public InsertOperation(int trace1Index, int trace2Index){
+    public Cell(int trace1Index, int trace2Index){
         this.i = trace1Index;
         this.j = trace2Index;
     }
@@ -42,20 +41,20 @@ public class InsertOperation implements Serializable {
         return String.format("%s %s", this.i, this.j);
     }
 
-    public static BufferedCollection.ITypeAdaptor<InsertOperation> OperationAdapter = new BufferedCollection.ITypeAdaptor<InsertOperation>() {
+    public static BufferedCollection.ITypeAdaptor<Cell> OperationAdapter = new BufferedCollection.ITypeAdaptor<Cell>() {
         @Override
-        public InsertOperation fromBytes(byte[] chunk) {
+        public Cell fromBytes(byte[] chunk) {
 
             int i = 0;
             for(i = 0; i < chunk.length && chunk[i] > 0; i++);
 
             String js = new String(chunk, 0, i);
 
-            return new Gson().fromJson(js, InsertOperation.class);
+            return new Gson().fromJson(js, Cell.class);
         }
 
         @Override
-        public byte[] toBytes(InsertOperation i) {
+        public byte[] toBytes(Cell i) {
 
             byte[] data = Arrays.copyOf(new Gson().toJson(i).getBytes(), size());
             return data;
@@ -64,6 +63,11 @@ public class InsertOperation implements Serializable {
         @Override
         public int size() {
             return 512;
+        }
+
+        @Override
+        public Class<Cell> clazz() {
+            return Cell.class;
         }
     };
 }

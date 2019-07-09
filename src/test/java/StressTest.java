@@ -27,7 +27,6 @@ import static core.utils.HashingHelper.getRandomName;
 
 public class StressTest {
 
-    static List<IArray> openedArrays = new ArrayList<>();
 
     @Before
     public void setup(){
@@ -35,6 +34,8 @@ public class StressTest {
         TestLogProvider.info("Start test session", new Date());
 
         ServiceRegister.getProvider();
+
+        comparers = new HashMap<>();
 
     }
 

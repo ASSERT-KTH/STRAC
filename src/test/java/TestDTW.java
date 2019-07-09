@@ -2,34 +2,18 @@ import align.*;
 import align.implementations.*;
 import core.*;
 import core.data_structures.IArray;
-import core.data_structures.IDict;
-import core.data_structures.IMultidimensionalArray;
-import core.data_structures.ISet;
-import core.data_structures.buffered.BufferedCollection;
-import core.data_structures.buffered.MultiDimensionalCollection;
 import core.data_structures.memory.InMemoryArray;
-import core.data_structures.memory.InMemoryMultidimensional;
-import core.data_structures.memory.InMemorySet;
-import core.models.TraceMap;
 import core.utils.DWTHelper;
-import core.utils.HashingHelper;
-import core.utils.TimeUtils;
 import interpreter.AlignInterpreter;
 import interpreter.dto.Alignment;
 import interpreter.dto.Payload;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.xml.sax.DTDHandler;
 
-import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-
-import static core.utils.HashingHelper.getRandomName;
 
 public class TestDTW {
 
@@ -177,13 +161,13 @@ public class TestDTW {
     public void testExpand(){
 
 
-        IArray<InsertOperation> ops = new InMemoryArray<>(null, 5);
+        IArray<Cell> ops = new InMemoryArray<>(null, 5);
 
-        ops.set(4, new InsertOperation(2 ,2));
-        ops.set(3, new InsertOperation(2 ,1));
-        ops.set(2, new InsertOperation(1 ,1));
-        ops.set(1, new InsertOperation(1 ,0));
-        ops.set(0, new InsertOperation(0 ,0));
+        ops.set(4, new Cell(2 ,2));
+        ops.set(3, new Cell(2 ,1));
+        ops.set(2, new Cell(1 ,1));
+        ops.set(1, new Cell(1 ,0));
+        ops.set(0, new Cell(0 ,0));
 
         WindowedDTW.Window w = DWTHelper.expandWindow(ops, 2, 6, 6, 5,0, 0);
 

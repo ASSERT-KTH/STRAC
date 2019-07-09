@@ -93,6 +93,11 @@ public class HashingHelper {
         public int size() {
             return 4;
         }
+
+        @Override
+        public Class<Integer> clazz() {
+            return Integer.class;
+        }
     };
 
 
@@ -110,6 +115,11 @@ public class HashingHelper {
         @Override
         public int size() {
             return 8;
+        }
+
+        @Override
+        public Class<Double> clazz() {
+            return Double.class;
         }
     };
 }

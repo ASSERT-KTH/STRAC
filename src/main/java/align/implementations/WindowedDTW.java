@@ -2,24 +2,19 @@ package align.implementations;
 
 import align.AlignDistance;
 import align.Aligner;
+import align.Cell;
 import align.ICellComparer;
-import align.InsertOperation;
 import core.IServiceProvider;
 import core.LogProvider;
 import core.ServiceRegister;
 import core.data_structures.IArray;
 import core.data_structures.IMultidimensionalArray;
 import core.data_structures.IReadArray;
-import core.data_structures.buffered.MultiDimensionalCollection;
-import core.data_structures.memory.InMemoryArray;
-import core.utils.DWTHelper;
 import core.utils.TimeUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
-import static core.utils.DWTHelper.draw;
 import static core.utils.HashingHelper.*;
 
 public class WindowedDTW extends Aligner {
@@ -66,10 +61,16 @@ public class WindowedDTW extends Aligner {
         TimeUtils u = new TimeUtils();
         u.reset();
 
-        for(int  i = 0;  i < trace1.size(); i++){
-            for(int j: window.iterator(i)){
+        long visited = 0;
+        long size = trace1.size();
 
+        for(int  i = 0;  i < size; i++){
+            int min = window.getMin(i);
+            int max = window.getMax(i);
 
+            for(int j = min; j <= max; j++){
+
+                visited++;
                 if ((i == 0) && (j == 0))
                     D.set(0.0, i, j);
                 else if (i == 0)             // first column
@@ -95,13 +96,14 @@ public class WindowedDTW extends Aligner {
             }
         }
 
+        LogProvider.info("Visited", visited);
         u.time("Cost matrix");
 
-        int i = (int)trace1.size() - 1;
-        int j = (int)trace2.size() - 1;
+        int i = (int)trace1.size();
+        int j = (int)trace2.size();
 
-        IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray(null, trace1.size()+trace2.size() + 2, InsertOperation.OperationAdapter,
-            ServiceRegister.getProvider().selectMethod(InsertOperation.OperationAdapter.size()*(trace1.size()+trace2.size() + 2))
+        IArray<Cell> ops = ServiceRegister.getProvider().allocateNewArray(null, trace1.size()+trace2.size() + 2, Cell.OperationAdapter,
+            ServiceRegister.getProvider().selectMethod(Cell.OperationAdapter.size()*(trace1.size()+trace2.size() + 2))
         );
 
         LogProvider.info("Getting warp path");
@@ -110,41 +112,44 @@ public class WindowedDTW extends Aligner {
         int minI = Integer.MAX_VALUE;
         int minJ = Integer.MAX_VALUE;
 
-        ops.set(position++, new InsertOperation((int)trace1.size() - 1, (int)trace2.size() - 1));
+        ops.set(position++, new Cell((int)trace1.size() - 1, (int)trace2.size() - 1));
 
         while ((i > 0) || (j > 0)) // 0,0 item
         {
 
-            double diag = oo;
-            double left = oo;
-            double up = oo;
+            final double diagCost;
+            final double leftCost;
+            final double downCost;
 
-            if(j > 0 && i > 0){
-                diag = D.getDefault(oo,window,i - 1, j - 1) + comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
-            }
-
-            if( j > 0){
-                left = D.getDefault(oo,window, i, j - 1) + getGapSymbol();
-            }
-
-
-            if( i > 0){
-                up = D.getDefault(oo,window,i - 1, j) + getGapSymbol();
-            }
-
-            if(diag <= left && diag <= up){
-                i--;
-                j--;
-            }
-            else if(left < diag && left < up){
-                j--;
-            }
-            else if(up < left){
-                i--;
-            }
-            else if (i <= j)
-                j--;
+            if ((i>0) && (j>0))
+                diagCost = D.getDefault(oo,window,i-1, j-1);
             else
+                diagCost = Double.POSITIVE_INFINITY;
+
+            if (i > 0)
+                leftCost = D.getDefault(oo, window,i-1, j);
+            else
+                leftCost = Double.POSITIVE_INFINITY;
+
+            if (j > 0)
+                downCost = D.getDefault(oo, window, i, j-1);
+            else
+                downCost = Double.POSITIVE_INFINITY;
+
+            // Determine which direction to move in.  Prefer moving diagonally and
+            //    moving towards the i==j axis of the matrix if there are ties.
+            if ((diagCost<=leftCost) && (diagCost<=downCost))
+            {
+                i--;
+                j--;
+            }
+            else if ((leftCost<diagCost) && (leftCost<downCost))
+                i--;
+            else if ((downCost<diagCost) && (downCost<leftCost))
+                j--;
+            else if (i <= j)  // leftCost==rightCost > diagCost
+                j--;
+            else   // leftCost==rightCost > diagCost
                 i--;
 
             if(i < minI)
@@ -153,7 +158,7 @@ public class WindowedDTW extends Aligner {
             if(j < minJ)
                 minJ = j;
 
-            ops.set(position++,new InsertOperation(i, j));
+            ops.set(position++,new Cell(i, j));
         }
 
         u.time("Warp path");
@@ -267,7 +272,7 @@ public class WindowedDTW extends Aligner {
 
             @Override
             public boolean hasNext() {
-                return j < maxValues.read(row);
+                return j <= maxValues.read(row);
             }
 
             @Override

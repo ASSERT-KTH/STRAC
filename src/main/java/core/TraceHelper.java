@@ -64,12 +64,12 @@ public class TraceHelper {
                                      String fileName){
 
 
+        int count = (int)patch.count();
 
         IArray<Integer> result = ServiceRegister.getProvider().allocateNewArray
                 (null,
-                (int)patch.count(), IntegerAdapter,
-                        ServiceRegister.getProvider().selectMethod(
-                                IntegerAdapter.size()*patch.count()
+                count, IntegerAdapter,
+                        ServiceRegister.getProvider().selectMethod(IntegerAdapter.size()*count
                         ));
 
         long position = 0;

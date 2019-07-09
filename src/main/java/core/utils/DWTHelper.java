@@ -1,6 +1,6 @@
 package core.utils;
 
-import align.InsertOperation;
+import align.Cell;
 import align.implementations.WindowedDTW;
 import core.LogProvider;
 import core.data_structures.IArray;
@@ -10,14 +10,13 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DWTHelper {
 
-    public static boolean existsCell(long i, long j, List<InsertOperation> ops){
+    public static boolean existsCell(long i, long j, List<Cell> ops){
 
-        for(InsertOperation op: ops){
+        for(Cell op: ops){
             if(op.getTrace1Index() == i && op.getTrace2Index() == j)
                 return true;
         }
@@ -55,11 +54,11 @@ public class DWTHelper {
 
 
 
-    public static WindowedDTW.Window expandWindow(IArray<InsertOperation> ops, int radius,
+    public static WindowedDTW.Window expandWindow(IArray<Cell> ops, int radius,
                                                   long lenT1, long lenT2, long opCount,
                                                   int minI, int minJ){
 
-        //ops.set(0,new InsertOperation((int)lenT1, (int)lenT2));
+        //ops.set(0,new Cell((int)lenT1, (int)lenT2));
 
         WindowedDTW.Window scale = new WindowedDTW.Window(lenT1, lenT2);
 
@@ -78,7 +77,7 @@ public class DWTHelper {
 
         for(long k = opCount - 1; k >= 0; k--){
 
-            InsertOperation op = ops.read(k);
+            Cell op = ops.read(k);
 
             final int warpedI = op.getTrace1Index();
             final int warpedJ = op.getTrace2Index();

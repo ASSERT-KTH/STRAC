@@ -10,11 +10,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.util.Iterator;
 
 public class InMemoryMultidimensional<T> implements IMultidimensionalArray<T> {
 
-    IArray<T> data;
+    T[][] data;
     long maxI;
     long maxJ;
 
@@ -23,13 +24,11 @@ public class InMemoryMultidimensional<T> implements IMultidimensionalArray<T> {
         this.maxI = maxI;
         this.maxJ = maxJ;
 
-
-        data = ServiceRegister.getProvider().allocateNewArray(null, maxI *maxJ, adaptor,
-                ServiceRegister.getProvider().selectMethod(adaptor.size()*maxI*maxJ));
+        data = (T[][]) Array.newInstance(adaptor.clazz(), (int)maxI, (int)maxJ);
     }
 
     public T get(int... indexes) {
-        return this.data.read(maxJ*indexes[0] + indexes[1]);
+        return this.data[indexes[0]][indexes[1]];
     }
 
     @Override
@@ -45,7 +44,7 @@ public class InMemoryMultidimensional<T> implements IMultidimensionalArray<T> {
 
     @Override
     public void set(T value, int... indexes) {
-        this.data.set(maxJ*indexes[0] + indexes[1], value);
+        this.data[indexes[0]][indexes[1]] =  value;
     }
 
     @Override

@@ -2,7 +2,7 @@ package interpreter;
 
 import align.AlignDistance;
 import align.Aligner;
-import align.InsertOperation;
+import align.Cell;
 import align.implementations.IImplementationInfo;
 import com.google.gson.Gson;
 import core.LogProvider;
@@ -118,7 +118,7 @@ public class AlignInterpreter {
                         ServiceRegister.getProvider().selectMethod(Integer.SIZE*max));
 
 
-                InsertOperation i1 = new InsertOperation(0, 0);
+                Cell i1 = new Cell(0, 0);
 
                 tr1.plainTrace.close();
                 tr2.plainTrace.close();
@@ -131,11 +131,11 @@ public class AlignInterpreter {
 
                 for(long i= distance.operationsCount - 2; i > 0 ; i--){
 
-                    InsertOperation i2 = distance.getInsertions().read(i);
+                    Cell i2 = distance.getInsertions().read(i);
                     //LogProvider.info(i2);
 
                     //System.out.print(i2 + "-");
-                    InsertOperation s = i2;
+                    Cell s = i2;
 
                     if(i2 == null){
                         LogProvider.info("Null operation", i2);

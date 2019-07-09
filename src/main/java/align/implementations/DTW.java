@@ -3,19 +3,14 @@ package align.implementations;
 import align.AlignDistance;
 import align.Aligner;
 import align.ICellComparer;
-import align.InsertOperation;
+import align.Cell;
 import core.IServiceProvider;
 import core.LogProvider;
 import core.ServiceRegister;
 import core.data_structures.IArray;
 import core.data_structures.IMultidimensionalArray;
 import core.data_structures.IReadArray;
-import core.data_structures.buffered.BufferedCollection;
 import core.utils.HashingHelper;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class DTW extends Aligner {
 
@@ -41,7 +36,7 @@ public class DTW extends Aligner {
         int maxJ = (int)trace2.size();
 
 
-        IArray<InsertOperation> ops = null;
+        IArray<Cell> ops = null;
         IMultidimensionalArray<Double> result = null;
 
         IServiceProvider.ALLOCATION_METHOD method = IServiceProvider.ALLOCATION_METHOD.MEMORY;
@@ -51,12 +46,14 @@ public class DTW extends Aligner {
             method = IServiceProvider.ALLOCATION_METHOD.EXTERNAL;
         }
         ops = ServiceRegister.getProvider().allocateNewArray
-                (null, maxI + maxJ + 2, InsertOperation.OperationAdapter, method);
+                (null, maxI + maxJ + 2, Cell.OperationAdapter, method);
 
         result = ServiceRegister.getProvider().allocateMuldimensionalArray(HashingHelper.DoubleAdapter, method, maxI + 1, maxJ + 1);
 
 
         LogProvider.info("Setting up first row and column...");
+
+        result.set(0.0, 0, 0);
 
         for(int j = 1; j < maxJ + 1; j++)
             result.set( 1.0*j*this.getGapSymbol(), 0, j);
@@ -101,7 +98,7 @@ public class DTW extends Aligner {
 
         long position = 0;
 
-        ops.set(position++, new InsertOperation((int)trace1.size(), (int)trace2.size()));
+        ops.set(position++, new Cell((int)trace1.size(), (int)trace2.size()));
 
         int minI = Integer.MAX_VALUE;
         int minJ = Integer.MAX_VALUE;
@@ -147,7 +144,7 @@ public class DTW extends Aligner {
             if(j < minJ)
                 minJ = j;
 
-            ops.set(position++,new InsertOperation(i, j));
+            ops.set(position++,new Cell(i, j));
         }
 /*
         System.out.println(trace1.size() + " " + trace2.size());
@@ -172,7 +169,7 @@ public class DTW extends Aligner {
 
         System.out.print("\\draw ");
         for(int x = 0;x < position; x++){
-            InsertOperation op1 = ops.read(x);
+            Cell op1 = ops.read(x);
 
             System.out.print(String.format("(%s, %s)",
                     op1.getTrace2Index() * 0.5 - 1.25,

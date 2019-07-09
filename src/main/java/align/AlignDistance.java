@@ -3,11 +3,9 @@ package align;
 import core.data_structures.IArray;
 import core.data_structures.IReadArray;
 
-import java.util.List;
-
 public class AlignDistance {
 
-    IArray<InsertOperation> operations;
+    IArray<Cell> operations;
     public int minI;
     public int minJ;
 
@@ -17,7 +15,7 @@ public class AlignDistance {
 
     double distance;
 
-    public AlignDistance(double distance, IArray<InsertOperation> ops, int minI, int minJ, long operationsCount){
+    public AlignDistance(double distance, IArray<Cell> ops, int minI, int minJ, long operationsCount){
         this.operations = ops;
         this.distance = distance;
         this.operationsCount = operationsCount;
@@ -31,7 +29,7 @@ public class AlignDistance {
         return distance;
     }
 
-    public IArray<InsertOperation> getInsertions(){
+    public IArray<Cell> getInsertions(){
         return operations;
     }
 
@@ -40,7 +38,7 @@ public class AlignDistance {
         double result = 0;
 
 
-        for(InsertOperation op: operations){
+        for(Cell op: operations){
                 result += comparer.compare(trace1.read(op.getTrace2Index()), trace2.read(op.getTrace2Index()));
 
         }
