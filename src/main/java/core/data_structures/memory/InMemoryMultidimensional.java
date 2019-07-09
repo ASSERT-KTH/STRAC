@@ -1,5 +1,6 @@
 package core.data_structures.memory;
 
+import align.implementations.WindowedDTW;
 import core.ServiceRegister;
 import core.data_structures.IArray;
 import core.data_structures.IMapAdaptor;
@@ -26,13 +27,15 @@ public class InMemoryMultidimensional<T> implements IMultidimensionalArray<T> {
         data = ServiceRegister.getProvider().allocateNewArray(null, maxI *maxJ, adaptor);
     }
 
-    @Override
     public T get(int... indexes) {
         return this.data.read(maxJ*indexes[0] + indexes[1]);
     }
 
     @Override
-    public T getDefault(T def, int... indexes) {
+    public T getDefault(T def, WindowedDTW.Window w, int... indexes) {
+
+        if(!w.isInRange(indexes[0], indexes[1]))
+            return def;
 
         T result = get(indexes);
 
@@ -47,5 +50,10 @@ public class InMemoryMultidimensional<T> implements IMultidimensionalArray<T> {
     @Override
     public long size(int dimension) {
         return dimension == 0? maxI:maxJ;
+    }
+
+    @Override
+    public void dispose() {
+
     }
 }

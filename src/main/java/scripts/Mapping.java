@@ -95,10 +95,22 @@ public class Mapping {
 
         List<TraceMap> traces = helper.mapTraceSetByFileLine(payload.files, false, false);
 
+        /*
         for(TraceMap tr: traces){
             FileWriter wr = new FileWriter(String.format("/Users/javier/Documents/%s.json", tr.traceFileName));
 
             wr.write(new Gson().toJson(tr.plainTrace));
+            wr.close();
+        }*/
+
+        for(TraceMap tr: traces){
+
+            FileWriter wr = new FileWriter(String.format("/Users/javier/Documents/trace_%s.csv", tr.traceFileName));
+
+            for(Integer i : tr.plainTrace) {
+                wr.write(String.format("%s\n", String.valueOf((i))));
+            }
+
             wr.close();
         }
 

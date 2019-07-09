@@ -1,52 +1,75 @@
 import align.*;
-import align.implementations.DTW;
-import align.implementations.FastDTW;
-import core.IServiceProvider;
-import core.LogProvider;
-import core.ServiceRegister;
-import core.TraceHelper;
+import align.implementations.*;
+import core.*;
 import core.data_structures.IArray;
 import core.data_structures.IDict;
 import core.data_structures.IMultidimensionalArray;
 import core.data_structures.ISet;
 import core.data_structures.buffered.BufferedCollection;
+import core.data_structures.buffered.MultiDimensionalCollection;
 import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryDict;
+import core.data_structures.memory.InMemoryMultidimensional;
 import core.data_structures.memory.InMemorySet;
 import core.models.TraceMap;
+import core.utils.DWTHelper;
+import core.utils.HashingHelper;
 import core.utils.TimeUtils;
+import interpreter.AlignInterpreter;
+import interpreter.dto.Alignment;
+import interpreter.dto.Payload;
 import ngram.Generator;
+import ngram.generators.StringKeyGenerator;
 import ngram.hash_keys.IHashCreator;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.xml.sax.DTDHandler;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import static core.utils.HashingHelper.getRandomName;
 
 public class TestDTW {
 
-    Random r = new Random();
+    static List<IArray> openedArrays = new ArrayList<>();
 
     @Before
     public void setup(){
+
+        TestLogProvider.info("Start test session", new Date());
+
         ServiceRegister.registerProvider(new IServiceProvider() {
+
 
             @Override
             public <T> IArray<T> allocateNewArray(String id, long size, BufferedCollection.ITypeAdaptor<T> adaptor) {
-                return new InMemoryArray<T>(getRandomName(), (int)size);
+                IArray<T> result = new InMemoryArray<T>(null, (int)size);
+
+
+                return result;
+                //return new InMemoryArray<T>(getRandomName(), (int)size);
             }
 
             @Override
             public <T> IMultidimensionalArray<T> allocateMuldimensionalArray(BufferedCollection.ITypeAdaptor<T> adaptor, int... dimensions) {
-                return null;
+
+                return new InMemoryMultidimensional<>(adaptor, dimensions[0], dimensions[1]);
+
+                //return new InMemoryMultidimensional<>(adaptor, dimensions[0], dimensions[1]);
             }
 
             @Override
             public <TKey, TValue> IDict<TKey, TValue> allocateNewDictionary() {
-                return new InMemoryDict<>();
+
+
+
+                return new InMemoryDict<TKey, TValue>();
             }
 
             @Override
@@ -54,127 +77,160 @@ public class TestDTW {
                 return new InMemorySet<>(new HashSet<>());
             }
 
+
+
             @Override
             public Generator getGenerator() {
-                return null;
+
+                return new StringKeyGenerator(t -> t.stream().map(String::valueOf).collect(Collectors.joining(","))
+                        , HashingHelper::hashList);
             }
         });
+        comparers = new HashMap<>();
+
+    }
+
+    static Map<String, IImplementationInfo> comparers;
+
+    @After
+    public void clean(){
+
+        TestLogProvider.info("Closing test session", new Date());
+        // Warming up
+
+
+        LogProvider.info("Disposing map files");
+        for(IArray arr: openedArrays)
+            arr.dispose();
     }
 
 
-    public List<Integer> generateRandomIntegers(int size){
-
-        List<Integer> result = new ArrayList<>();
-
-        for(int i = 0; i < size; i++)
-            result.add(r.nextInt(30000));
-
-        return result;
-    }
 
 
     @Test
-    public void testShortAlignment(){
+    public void testShortAlignment() throws IOException {
+        TestLogProvider.info("FastDTW radius time test");
 
+        Alignment dto = new Alignment();
+        dto.method = new Payload.MethodInfo();
+        dto.method.name = "FastDTW";
+        dto.method.params = new Object[]{
+                5.0
+        };
+        dto.comparison = new Alignment.Comparison();
+        dto.comparison.gap = 1;
+        dto.comparison.diff = 5;
+        dto.comparison.eq = 0;
+        dto.pairs = new ArrayList<>();
+        dto.outputAlignment = true;
+        dto.outputDir="reports";
+        //dto.exportImage = true;
 
-    }
-
-
-    @Test
-    public void testLargeAlign2(){
-
-
-    }
-
-    @Test
-    public void testRealData(){
-
-        List<TraceMap> traces = getTraces(
-                "mutated12/original.bytecode.txt",
-                "mutated10/original.bytecode.txt"
+        dto.files = Arrays.asList(
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/test_traces/1.txt",
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/test_traces/2.txt"
         );
 
+        comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        comparers.put("Linear", (objs) -> new LinearMemoryDTW(dto.comparison.gap,(x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        comparers.put("FastDTW", (objs) -> new FastDTW(((Double)objs[0]).intValue()
+                , dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
 
-        Aligner al = new FastDTW( 4, 1, (a, b) -> a == b? 2: -1);
+        AlignInterpreter interpreter = new AlignInterpreter(comparers, null);
 
-        AlignDistance distance =  al.align(traces.get(0).plainTrace, traces.get(1).plainTrace);
+        TestLogProvider.info(dto.files.get(0), dto.files.get(1), "[");
 
-        LogProvider.info(distance.getDistance());
-        LogProvider.info(distance.getInsertions());
+        for(int i = 0; i < 100; i++){
 
+            dto.method.params = new Object[]{
+                    i*1.0
+            };
 
-        LogProvider.info("Distance", distance.getDistance(
-                traces.get(0).plainTrace, traces.get(1).plainTrace,
-                new IAlignComparer<Integer>() {
-                    @Override
-                    public double compare(Integer t1, Integer t2) {
-                        return t1.equals(t2) ? 0: 1;
-                    }
+            AtomicLong now = new AtomicLong(System.nanoTime());
 
-                    @Override
-                    public double getGap() {
-                        return 1;
-                    }
-                }
+            int finalI = i;
 
-        ));
+            interpreter.execute(dto, (distance, tr1, tr2, al1, al2, total) -> {
+                TestLogProvider.info(finalI, ",", distance.getDistance(), ",", total, ",", System.nanoTime() - now.get(), ",");
+                now.set(System.nanoTime());
+            });
+
+        }
+
+        TestLogProvider.info("]");
+
     }
 
-    private List<TraceMap> getTraces(String path1, String path2){
 
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("sha256.old.js").getFile());
+    @Test
+    public void testShort2Alignment() throws IOException {
+        TestLogProvider.info("FastDTW radius time test");
 
-        String testFolder = file.getAbsolutePath(); //;
+        Alignment dto = new Alignment();
+        dto.method = new Payload.MethodInfo();
+        dto.method.name = "FastDTW";
+        dto.method.params = new Object[]{
+                5.0
+        };
+        dto.comparison = new Alignment.Comparison();
+        dto.comparison.gap = 1;
+        dto.comparison.diff = 5;
+        dto.comparison.eq = 0;
+        dto.pairs = new ArrayList<>();
+        dto.outputAlignment = true;
+        dto.outputDir="reports";
+        //dto.exportImage = true;
 
-        TraceHelper helper = new TraceHelper();
-        List<String> files = Arrays.asList(
-                String.format("%s/%s", testFolder, path1),
-                String.format("%s/%s", testFolder, path2)
+        dto.files = Arrays.asList(
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.kth.se.10.bytecode.txt.st.processed.txt",
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.github.com.10.bytecode.txt.st.processed.txt"
         );
 
+        comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        comparers.put("Linear", (objs) -> new LinearMemoryDTW(dto.comparison.gap,(x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        comparers.put("FastDTW", (objs) -> new FastDTW(((Double)objs[0]).intValue()
+                , dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
 
-        return helper.mapTraceSetByFileLine(files, false, false);
+        AlignInterpreter interpreter = new AlignInterpreter(comparers, null);
+
+        TestLogProvider.info(dto.files.get(0), dto.files.get(1), "[");
+
+        for(int i = 10; i < 100; i++){
+
+            dto.method.params = new Object[]{
+                    i*1.0
+            };
+
+            AtomicLong now = new AtomicLong(System.nanoTime());
+
+            int finalI = i;
+
+            interpreter.execute(dto, (distance, tr1, tr2, al1, al2, total) -> {
+                TestLogProvider.info(finalI, ",", distance.getDistance(), ",", total, ",", System.nanoTime() - now.get(), ",");
+                now.set(System.nanoTime());
+            });
+
+        }
+
+        TestLogProvider.info("]");
+
     }
 
 
-    @Test
-    public void testLargeAlign4(){
-
-    }
 
     @Test
-    public void testScaleOperations(){
-
-        List<InsertOperation> ops = new ArrayList<>();
-        ops.add(new InsertOperation(0,0));
-        ops.add(new InsertOperation(1,1));
-        ops.add(new InsertOperation(1,2));
-        ops.add(new InsertOperation(1,3));
-        ops.add(new InsertOperation(1,4));
-        ops.add(new InsertOperation(1,4));
-        ops.add(new InsertOperation(5,4));
+    public void testExpand(){
 
 
-        //DWTHelper.scalePath(ops, 2, 6, 6);
-    }
+        IArray<InsertOperation> ops = new InMemoryArray<>(null, 5);
 
+        ops.set(4, new InsertOperation(2 ,2));
+        ops.set(3, new InsertOperation(2 ,1));
+        ops.set(2, new InsertOperation(1 ,1));
+        ops.set(1, new InsertOperation(1 ,0));
+        ops.set(0, new InsertOperation(0 ,0));
 
-    @Test
-    public void testRadius(){
+        WindowedDTW.Window w = DWTHelper.expandWindow(ops, 2, 6, 6, 5,0, 0);
 
-        List<InsertOperation> ops = new ArrayList<>();
-        ops.add(new InsertOperation(0,0));
-        ops.add(new InsertOperation(1,1));
-        ops.add(new InsertOperation(1,2));
-        ops.add(new InsertOperation(1,3));
-        ops.add(new InsertOperation(1,4));
-        ops.add(new InsertOperation(1,4));
-        ops.add(new InsertOperation(5,4));
-
-
-       // List<InsertOperation> grow = DWTHelper.scalePath(ops, 2, 6, 6);
-
-        //DWTHelper.createWindow(grow, 2, 10, 10);
     }
 }

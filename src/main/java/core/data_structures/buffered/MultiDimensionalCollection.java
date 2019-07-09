@@ -1,5 +1,6 @@
 package core.data_structures.buffered;
 
+import align.implementations.WindowedDTW;
 import core.data_structures.IMultidimensionalArray;
 
 public class MultiDimensionalCollection<T> extends BufferedCollection<T> implements IMultidimensionalArray<T> {
@@ -17,8 +18,13 @@ public class MultiDimensionalCollection<T> extends BufferedCollection<T> impleme
         return super.read(getPosition(index));
     }
 
+
     @Override
-    public T getDefault(T def, int... indexes) {
+    public T getDefault(T def, WindowedDTW.Window w, int... indexes) {
+
+        if(!w.isInRange(indexes[0], indexes[1]))
+            return def;
+
         return get(indexes);
     }
 

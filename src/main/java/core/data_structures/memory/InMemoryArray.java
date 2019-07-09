@@ -103,7 +103,7 @@ public class InMemoryArray<T> implements IArray<T> {
 
         @Override
         public boolean hasNext() {
-            return _position < position;
+            return _position < items.length;
         }
 
         @Override

@@ -212,7 +212,7 @@ public class AlignInterpreter {
 
                     }
                     catch (Exception e){
-                        e.printStackTrace();
+                        //e.printStackTrace();
                         //throw new RuntimeException(e.getMessage());
                     }
 
@@ -244,8 +244,18 @@ public class AlignInterpreter {
                     try {
                         LogProvider.info("Writing align result to file");
 
-                        trace1Alignment.writeTo(new FileWriter(file1), t -> helper.getInverseBag().get(t) + "\n");
-                        trace2Alignment.writeTo(new FileWriter(file2), t -> helper.getInverseBag().get(t) + "\n");
+                        trace1Alignment.writeTo(new FileWriter(file1), t -> {
+                            if(t != null)
+                                return helper.getInverseBag().get(t) + "\n";
+
+                            return "";
+                        });
+                        trace2Alignment.writeTo(new FileWriter(file2), t -> {
+                            if(t != null)
+                                return helper.getInverseBag().get(t) + "\n";
+
+                            return "";
+                        });
                     }
                     catch (Exception e){
                         e.printStackTrace();

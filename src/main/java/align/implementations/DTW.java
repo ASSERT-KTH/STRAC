@@ -43,20 +43,18 @@ public class DTW extends Aligner {
         int maxI = (int)trace1.size();
         int maxJ = (int)trace2.size();
 
-        IMultidimensionalArray<Integer> result =
-                ServiceRegister.getProvider().allocateMuldimensionalArray(HashingHelper.IntegerAdapter, maxI + 1, maxJ + 1);
+        IMultidimensionalArray<Double> result =
+                ServiceRegister.getProvider().allocateMuldimensionalArray(HashingHelper.DoubleAdapter, maxI + 1, maxJ + 1);
 
         LogProvider.info("Setting up first row and column...");
 
         for(int j = 1; j < maxJ + 1; j++)
-            result.set(result.getDefault(0,0, j - 1) + this.getGapSymbol(), 0, j);
+            result.set( 1.0*j*this.getGapSymbol(), 0, j);
 
 
         for(int i = 1; i < maxI + 1; i++) {
-            Integer val = result.getDefault(0, i - 1, 0) + this.getGapSymbol();
-
             //LogProvider.info(val, i);
-            result.set(val, i, 0);
+            result.set(1.0*i*gap, i, 0);
         }
 
         LogProvider.info("Exploring complete space...");
@@ -65,11 +63,11 @@ public class DTW extends Aligner {
 
         for(int i = 1; i < maxI + 1; i++){
             for(int j = 1; j < maxJ + 1; j++){
-                Integer max = Math.min(
-                    result.getDefault(0,i - 1,j - 1) + this.comparer.compare(trace1.read(i - 1), trace2.read(j - 1)),
+                Double max = Math.min(
+                    1.0*result.get(i - 1,j - 1) + this.comparer.compare(trace1.read(i - 1), trace2.read(j - 1)),
                     Math.min(
-                            result.getDefault(0,i - 1,j) + this.getGapSymbol(),
-                            result.getDefault(0,i,j - 1) + this.getGapSymbol()
+                            1.0*result.get(i - 1,j) + this.getGapSymbol(),
+                            1.0*result.get(i,j - 1) + this.getGapSymbol()
                     )
                 );
 
@@ -97,6 +95,9 @@ public class DTW extends Aligner {
 
         ops.set(position++, new InsertOperation((int)trace1.size(), (int)trace2.size()));
 
+        int minI = Integer.MAX_VALUE;
+        int minJ = Integer.MAX_VALUE;
+
         while ((i>0) || (j>0))
         {
             final double diagCost;
@@ -104,17 +105,17 @@ public class DTW extends Aligner {
             final double downCost;
 
             if ((i>0) && (j>0))
-                diagCost = result.getDefault(0,i-1,j-1) + comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
+                diagCost = result.get(i-1,j-1) + comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
             else
                 diagCost = Double.POSITIVE_INFINITY;
 
             if (i > 0)
-                leftCost = result.getDefault(0,i-1,j) + getGapSymbol();
+                leftCost = result.get(i-1,j) + getGapSymbol();
             else
                 leftCost = Double.POSITIVE_INFINITY;
 
             if (j > 0)
-                downCost = result.getDefault(0,i,j-1) + getGapSymbol();
+                downCost = result.get(i,j-1) + getGapSymbol();
             else
                 downCost = Double.POSITIVE_INFINITY;
 
@@ -131,6 +132,12 @@ public class DTW extends Aligner {
                 j--;
             else
                 i--;
+
+            if(i < minI)
+                minI = i;
+
+            if(j < minJ)
+                minJ = j;
 
             ops.set(position++,new InsertOperation(i, j));
         }
@@ -180,6 +187,6 @@ public class DTW extends Aligner {
             System.out.println("\n");
         }*/
 
-        return new AlignDistance(result.get((int)maxI,(int)maxJ), ops, position);
+        return new AlignDistance(result.get((int)maxI,(int)maxJ), ops, minI, minJ, position);
     }
 }

@@ -94,4 +94,22 @@ public class HashingHelper {
             return 4;
         }
     };
+
+
+    public static BufferedCollection.ITypeAdaptor<Double> DoubleAdapter = new BufferedCollection.ITypeAdaptor<Double>() {
+        @Override
+        public Double fromBytes(byte[] chunk) {
+            return ByteBuffer.wrap(chunk).getDouble();
+        }
+
+        @Override
+        public byte[] toBytes(Double i) {
+            return ByteBuffer.allocate(8).putDouble(i).array();
+        }
+
+        @Override
+        public int size() {
+            return 8;
+        }
+    };
 }

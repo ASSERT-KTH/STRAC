@@ -27,84 +27,8 @@ public class DWTHelper {
 
 
 
-    public static List<InsertOperation> scalePath(List<InsertOperation> ops){
 
-        List<InsertOperation> result = new ArrayList<>();
-
-        //LogProvider.info(ops);
-        //factor = 2*factor;
-
-
-        for(int i = 0; i < ops.size(); i++){
-
-            InsertOperation current = ops.get(i);
-            int nI = current.getTrace1Index();
-            int nJ = current.getTrace2Index();
-
-            result.add(new InsertOperation(nI*2, nJ*2));
-            result.add(new InsertOperation(nI*2, nJ*2 + 1));
-            result.add(new InsertOperation(nI*2 + 1, nJ*2));
-            result.add(new InsertOperation(nI*2 + 1, nJ*2 + 1));
-        }
-
-
-        /*InsertOperation last = result.get(result.size() - 1);
-
-        if(last.getTrace1Index() != maxI ){
-            // Fill to bottom corner
-
-            int deltaX = maxI - last.getTrace1Index();
-
-            for(int i = 1; i < deltaX; i++){
-                result.add(new InsertOperation(last.getTrace1Index() + i, last.getTrace2Index()));
-            }
-
-        }
-
-        if(last.getTrace2Index() != maxJ){
-            int deltaX = maxJ - last.getTrace2Index();
-
-            for(int i = 1; i < deltaX; i++){
-                result.add(new InsertOperation( last.getTrace2Index(),last.getTrace2Index() + i));
-            }
-
-        }*/
-
-
-        LogProvider.info(ops);
-        LogProvider.info(result);
-        return result;
-    }
-
-    public static List<InsertOperation> createWindow(List<InsertOperation> ops, int radius, int maxI, int maxJ){
-        List<InsertOperation> result = new ArrayList<>();
-
-
-            for(InsertOperation op: ops){
-
-                result.add(op);
-                for(int i = -radius; i <= radius; i++){
-
-                    for(int j = -radius; j <= radius; j++) {
-                        int nI = op.getTrace1Index() + i;
-                        int nJ = op.getTrace2Index() + j;
-
-
-                        if (nI >= 0 && nJ >= 0 && !existsCell(nI, nJ, result))
-                            result.add(new InsertOperation(nI, nJ));
-                    }
-
-                }
-
-
-        }
-
-
-        LogProvider.info(result);
-        return result;
-    }
-
-    public static void draw(WindowedDTW.EmptyMap map, String name, int width, int height){
+    public static void draw(WindowedDTW.Window map, String name, int width, int height){
 
         int scale = 1;
         File writer = new File(name);
@@ -113,16 +37,12 @@ public class DWTHelper {
         BufferedImage img = new BufferedImage(width*pieceSize, height*pieceSize, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = img.createGraphics();
 
+        g.setColor(Color.decode("#ff0000"));
+        g.fillRect(0, 0, width, height);
         for(int i = 0; i < height; i++){
-            for(int j = 0; j < width; j++){
-                if(map.existColumn(i) && map.existRow(i, j)){
-                    g.setColor(Color.decode("#000000"));
-                    g.fillRect(j*pieceSize, i*pieceSize, pieceSize, pieceSize);
-                }
-                else{
-                    g.setColor(Color.decode("#ffffff"));
-                    g.fillRect(j*pieceSize, i*pieceSize, pieceSize, pieceSize);
-                }
+            for(int j: map.iterator(i)){
+                g.setColor(Color.decode("#ffffff"));
+                g.fillRect(j*pieceSize, i*pieceSize, pieceSize, pieceSize);
             }
         }
 
@@ -133,42 +53,15 @@ public class DWTHelper {
         }
     }
 
-    public static <T> void draw(WindowedDTW.WindowMap<T> map, String name, int width, int height, int rX, int rY){
-
-        int scale = 1;
-        File writer = new File(name);
-        int pieceSize = 1*scale;
-
-        BufferedImage img = new BufferedImage(width*pieceSize, height*pieceSize, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = img.createGraphics();
-
-        for(int j: map.getColumns()){
-            for(int i: map.getRow(j)){
-                g.setColor(Color.decode("#ff0000"));
-                g.fillRect(i*pieceSize, j*pieceSize, pieceSize, pieceSize);
-
-            }
-        }
-        g.setColor(Color.decode("#0000ff"));
-        g.fillRect(rX*pieceSize, rY*pieceSize, pieceSize, pieceSize);
 
 
-        try {
-            ImageIO.write(img, "png", writer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
-    public static WindowedDTW.EmptyMap
-    expandWindow(IArray<InsertOperation> ops, int radius, long lenT1, long lenT2){
+    public static WindowedDTW.Window expandWindow(IArray<InsertOperation> ops, int radius,
+                                                  long lenT1, long lenT2, long opCount,
+                                                  int minI, int minJ){
 
         //ops.set(0,new InsertOperation((int)lenT1, (int)lenT2));
 
-        WindowedDTW.EmptyMap grown = new WindowedDTW.EmptyMap();
-        WindowedDTW.EmptyMap expansion = new WindowedDTW.EmptyMap();
+        WindowedDTW.Window scale = new WindowedDTW.Window(lenT1, lenT2);
 
         TimeUtils utl = new TimeUtils();
 
@@ -176,78 +69,62 @@ public class DWTHelper {
         LogProvider.info("Expanding to...", ops.size()*4*radius*radius);
 
         utl.reset();
-        for(InsertOperation op: ops){
 
-            if(op == null)
-                break;
+        int lastWarpedI = Integer.MAX_VALUE;
+        int lastWarpedJ = Integer.MAX_VALUE;
 
-            if(op.getTrace1Index() >= 0 && op.getTrace2Index() >= 0)
-                expansion.set(op.getTrace1Index(), op.getTrace2Index());
+        int currentI = minI;
+        int currentJ = minJ;
 
-            for(int j  = -radius; j <= radius; j++) {
-                for (int i = -radius; i <= radius; i++) {
+        for(long k = opCount - 1; k >= 0; k--){
 
-                    int nI = op.getTrace1Index() + i;
-                    int nJ = op.getTrace2Index() + j;
+            InsertOperation op = ops.read(k);
 
-                    //LogProvider.info("Size", expansion.size());
-                    if (nI >= 0 && nJ >= 0 && (!expansion.existColumn(nI) || !expansion.existRow(nI, nJ)))
-                        expansion.set(nI, nJ);
+            final int warpedI = op.getTrace1Index();
+            final int warpedJ = op.getTrace2Index();
 
-                }
+            final int blockISize = 2; //k == 0? (lenT1%2 == 0? 2: 3): 2;
+            final int blockJSize = 2; //k == 0? (lenT2%2 == 0? 2: 3): 2;
+
+            if(warpedI > lastWarpedI)
+                currentI += blockISize;
+
+            if(warpedJ > lastWarpedJ)
+                currentJ += blockISize;
+
+            //Diag patch
+            if ((warpedJ>lastWarpedJ) && (warpedI>lastWarpedI))
+            {
+                scale.set(currentI - 1, currentJ);
+                scale.set(currentI, currentJ - 1);
             }
 
+            for (int x=0; x<blockISize; x++)
+            {
+                scale.set(currentI+x, currentJ);
+                scale.set(currentI+x, currentJ+blockJSize-1);
+            }  // end for loop
 
+            // Record the last position in the warp path so the direction of the path can be determined when the next
+            //    position of the path is evaluated.
+            lastWarpedI = warpedI;
+            lastWarpedJ = warpedJ;
         }
 
-        //draw(expansion, String.format("%s_%s_grown.png", lenT1, lenT2), (int)lenT2 + 1, (int)lenT1 + 1);
-        utl.time("Growing");
-
-
-
-        utl.reset();
-        for(int i: expansion.getColumns()){
-            for(int j: expansion.getRow(i)){
-
-                grown.set(i*2, j*2);
-
-                grown.set(i*2, j*2 + 1);
-
-                grown.set(i*2 + 1, j*2 + 1);
-
-                grown.set(i*2 + 1, j*2);
-            }
+        if(lenT1%2 == 1 && lenT1 > 0){
+            scale.set((int)lenT1 - 1, scale.getMin((int)lenT1 - 2));
+            scale.set((int)lenT1 - 1, scale.getMax((int)lenT1 - 2));
         }
 
         utl.time("Scaling");
-        //draw(grown, String.format("%s_%s_scale.png", lenT1, lenT2), (int)lenT2 + 1, (int)lenT1 + 1);
 
+        scale.expand(radius);
 
-       /* WindowedDTW.EmptyMap result = new WindowedDTW.EmptyMap();
+        utl.time("Growing");
 
-        /*int startJ = 0;
+        //draw(scale, String.format("%s_%s_grown.png", lenT1, lenT2), (int)lenT2, (int)lenT1);
 
-        for(int i = 0; i < lenT1; i++){
-            int newStartJ = -1;
-            for(int j =startJ; j < lenT2; j++){
-                if(grown.existColumn(i) && grown.existRow(i, j)){
-                    result.set(i, j);
-
-                    if(newStartJ == -1){
-                        newStartJ = j;
-                    }
-                }
-                else if (newStartJ != -1)
-                    break;
-            }
-
-            startJ = newStartJ;
-        }
-
-        utl.time("Generating");
-
-        draw(result, String.format("%s%s_final.png", lenT1, lenT2), (int)lenT2, (int)lenT1);*/
-        return grown;
+        return scale;
     }
 
 }

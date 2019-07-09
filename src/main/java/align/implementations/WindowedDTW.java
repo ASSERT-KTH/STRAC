@@ -7,12 +7,17 @@ import align.InsertOperation;
 import core.LogProvider;
 import core.ServiceRegister;
 import core.data_structures.IArray;
+import core.data_structures.IMultidimensionalArray;
 import core.data_structures.IReadArray;
+import core.data_structures.buffered.MultiDimensionalCollection;
+import core.utils.DWTHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
 import java.util.*;
 
 import static core.utils.DWTHelper.draw;
+import static core.utils.HashingHelper.*;
 
 public class WindowedDTW extends Aligner {
     @Override
@@ -42,115 +47,79 @@ public class WindowedDTW extends Aligner {
         return result;
     }
 
-    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2, EmptyMap window) {
-
-
-        EmptyMap map = window;
+    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2, Window window) {
 
         if(window == null)
-            map = createWindow(trace1.size() + 1, trace2.size() + 1);
+            window = new Window(trace1.size(), trace2.size());
 
 
-        long oo = Integer.MAX_VALUE;
+        double oo = Double.MAX_VALUE/2;
 
 
-        WindowMap<Long> D = new WindowMap<>();
+        IMultidimensionalArray<Double> D = ServiceRegister.getProvider().allocateMuldimensionalArray(DoubleAdapter,
+                (int)trace1.size() + 1, (int)trace2.size() + 1);
 
-        D.set(0, 0, 0l);
-        //D.set((int)trace1.size(), (int)trace2.size(), -1l);
+        for(int  i = 0;  i < trace1.size(); i++){
+            for(int j: window.iterator(i)){
 
 
-        for(Integer j: map.getRow(0)){
-            D.set(0, j, (long)j*gap);
-        }
+                if ((i == 0) && (j == 0))
+                    D.set(0.0, i, j);
+                else if (i == 0)             // first column
+                {
+                    D.set(1.0*gap * j, i, j);
+                } else if (j == 0)             // first row
+                {
+                    D.set(1.0*gap * i, i, j);
+                } else                         // not first column or first row
+                {
+                    long dt = comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
 
-        for(Integer i: map.getColumns()){
-            D.set(i, 0, (long)i*gap);
-        }
 
-        for(Integer i : map.getColumns()){
-
-            if(i > 0 && i <= trace1.size())
-                for(Integer j: map.getRow(i)){
-
-                    if(j > 0 && j <= trace2.size()) {
-                        int nI = i;
-                        int nJ = j;
-
-                        long dt = comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
-
-                        List<Long> values = new ArrayList<>(3);
-
-                        if(D.existColumn(nI - 1) && D.existRow(nI - 1, nJ - 1))
-                            values.add(D.get(nI - 1, nJ - 1) + dt);
-
-                        if(D.existColumn(nI - 1) && D.existRow(nI - 1, nJ))
-                            values.add(D.get(nI - 1, nJ) + gap);
-
-                        if(D.existColumn(nI) && D.existRow(nI, nJ - 1))
-                            values.add(D.get(nI, nJ - 1) + gap);
-
-                        if(values.size() == 0){
-                            LogProvider.info(nI, nJ, trace1.size(), trace2.size());
-
-                            draw(window, "test_window", (int)trace2.size(), (int)trace1.size());
-                            draw(D, "test_D", (int)trace2.size(), (int)trace1.size(), nJ, nI);
-
-                            throw new RuntimeException("Error");
-                        }
-
-                        if(values.size() > 0)
-                            D.set(i, j, getMin(values));
-                    }
+                    D.set(Math.min(
+                            D.getDefault( oo, window, i - 1, j - 1) + dt,
+                            Math.min(
+                                    D.getDefault(oo, window,i - 1, j) + gap,
+                                    D.getDefault(oo,window, i, j - 1) + gap
+                            )
+                    ), i, j);
                 }
-        }
-
-
-        //draw(D,  String.format("%s_%s.png", trace1.size(), trace2.size()), (int)trace2.size(), (int)trace1.size());
-
-        /*for(int i = 0; i <= trace1.size(); i++){
-
-            System.out.print(String.format("%04d ", i));
-
-            for(int j =0; j<= trace2.size(); j++){
-
-
-                System.out.print(String.format("%01d", D.getOrDefault(i, j, 0)) + " ");
-
 
             }
-
-            System.out.println();
-        }*/
+        }
 
 
-        int i = (int)trace1.size();
-        int j = (int)trace2.size();
+        int i = (int)trace1.size() - 1;
+        int j = (int)trace2.size() - 1;
 
         IArray<InsertOperation> ops = ServiceRegister.getProvider().allocateNewArray(null, trace1.size()+trace2.size() + 2, InsertOperation.OperationAdapter);
 
+        LogProvider.info("Getting warp path");
 
         long position = 0;
-        ops.set(position++, new InsertOperation((int)trace1.size(), (int)trace2.size()));
+        int minI = Integer.MAX_VALUE;
+        int minJ = Integer.MAX_VALUE;
+
+        ops.set(position++, new InsertOperation((int)trace1.size() - 1, (int)trace2.size() - 1));
 
         while ((i > 0) || (j > 0)) // 0,0 item
         {
 
-            long diag = oo;
-            long left = oo;
-            long up = oo;
+            double diag = oo;
+            double left = oo;
+            double up = oo;
 
             if(j > 0 && i > 0){
-                diag = D.getOrDefault(i - 1, j - 1, oo) + comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
+                diag = D.getDefault(oo,window,i - 1, j - 1) + comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
             }
 
             if( j > 0){
-                left = D.getOrDefault(i, j - 1, oo) + getGapSymbol();
+                left = D.getDefault(oo,window, i, j - 1) + getGapSymbol();
             }
 
 
             if( i > 0){
-                up = D.getOrDefault(i - 1, j, oo) + getGapSymbol();
+                up = D.getDefault(oo,window,i - 1, j) + getGapSymbol();
             }
 
             if(diag <= left && diag <= up){
@@ -168,149 +137,130 @@ public class WindowedDTW extends Aligner {
             else
                 i--;
 
-            //LogProvider.info(i, j);
+            if(i < minI)
+                minI = i;
+
+            if(j < minJ)
+                minJ = j;
+
             ops.set(position++,new InsertOperation(i, j));
         }
 
+        Double val = D.getDefault(oo, window,(int)trace1.size() - 1, (int)trace2.size() - 1);
 
-        /*System.out.println(" ");
+        LogProvider.info("DTW distnace", val);
+        D.dispose();
 
-        for(int x: map.getColumns()){
-
-            System.out.print(x  + " -> ");
-            for(int y : map.getRow(x)){
-                System.out.print(y + "(" + map.get(x, y) + ") ");
-
-            }
-
-            System.out.println();
-        }*/
-
-        /*System.out.println(trace1.size() - 1);
-        System.out.println(trace2.size() - 1);
-        LogProvider.info(ops);*/
-        Long val = D.get((int)trace1.size(), (int)trace2.size());
-        //draw(D, "merde.png", (int)trace2.size() + 1, (int)trace1.size() + 1);
-        if(val == null){
-            //
-            throw new RuntimeException("Ahhh");
-        }
-
-        return new AlignDistance(val, ops, position);
+        return new AlignDistance(val, ops, minI, minJ, position);
     }
 
 
-    public EmptyMap createWindow(long maxI, long maxJ){
 
-        EmptyMap map = new EmptyMap();
+    public static class Window{
 
-        for(int i = 1; i < maxI; i ++){
-            for(int j = 1; j < maxJ; j++){
-                map.set(i, j);
+        IArray<Integer> minValues;
+        IArray<Integer> maxValues;
+
+        int width;
+
+        public Window(long height, long width){
+            minValues = ServiceRegister.getProvider().allocateNewArray(null, height, IntegerAdapter);
+            maxValues = ServiceRegister.getProvider().allocateNewArray(null, height, IntegerAdapter);
+
+            this.width = (int)width;
+
+            for(int i = 0; i < height; i++){
+                setRange(-1, -1, i);
             }
         }
 
-        return map;
-    }
+        public void expand(int radius){
+            for(int i = 0; i < minValues.size(); i++){
+                int val = minValues.read(i);
 
+                minValues.set(i, Math.max(0, val - radius));
 
-    public static class EmptyMap{
-        Map<Integer, Set<Integer>> map;
+                int maxVal = maxValues.read(i);
 
-
-        public EmptyMap(){
-            this.map = new TreeMap<>();
-
+                maxValues.set(i, Math.min(maxVal  + radius, width));
+            }
         }
 
-        public boolean existColumn(int i)
-        {
-            return this.map.containsKey(i);
+        public int getMin(int row){
+            return minValues.read(row);
         }
 
-        public boolean existRow(int i, int j){
-            return this.map.get(i).contains(j);
+        public int getMax(int row){
+            return maxValues.read(row);
         }
 
-        public void set(int i, int j){
+        public void set(int row, int col){
 
-            if(i < 0 || j < 0)
-                throw new RuntimeException("Invalid indexes " + i + " " + j);
+            if(row >= minValues.size() || col > width)
+                return;
 
-            if(!this.map.containsKey(i))
-                this.map.put(i, new TreeSet<>());
-
-            this.map.get(i).add(j);
+            if (minValues.read(row) == -1 && col >= 0 && col <= width)
+            {
+                minValues.set(row, col);
+                maxValues.set(row, col);
+            }
+            else if (minValues.read(row) > col && col >= 0 && col <= width)  // minimum range in the row is expanded
+            {
+                minValues.set(row, col);
+            }
+            else if (maxValues.read(row) < col && col >= 0 && col <= width) // maximum range in the row is expanded
+            {
+                maxValues.set(row, col);
+            }  // end if
         }
 
-        public Iterable<Integer> getColumns(){
-            return this.map.keySet();
+        public void setRange(int min, int max, int row){
+            minValues.set(row, min);
+            maxValues.set(row, max);
         }
 
-        public Iterable<Integer> getRow(int column){
-            return this.map.get(column);
-        }
-    }
-
-    public static class WindowMap<T>{
-
-        Map<Integer, Map<Integer, T>> map;
-
-
-        public WindowMap(){
-            this.map = new HashMap<>();
-
+        public Iterable<Integer> iterator(int row){
+            return new RowIterator(row);
         }
 
-        public boolean existColumn(int i)
-        {
-            return this.map.containsKey(i);
+        public long rowCount(){
+            return minValues.size();
         }
 
-        public boolean existRow(int i, int j){
-            return this.map.get(i).containsKey(j);
+        public void dispose(){
+            this.minValues.dispose();
+            this.maxValues.dispose();
         }
 
-        public void set(int i, int j, T value){
-
-            if(i < 0 || j < 0)
-                throw new RuntimeException("Invalid indexes " + i + " " + j);
-
-            if(!this.map.containsKey(i))
-                this.map.put(i, new HashMap<>());
-
-            this.map.get(i).put(j, value);
+        public boolean isInRange(int row, int col){
+            return row < minValues.size() && minValues.read(row) <= col && col < maxValues.read(row);
         }
 
-        public T get(int i, int j){
+        public class RowIterator implements Iterable<Integer>, Iterator<Integer>{
+            int row;
+            int j;
 
-            return this.map.get(i).get(j);
+            public RowIterator(int row){
+                this.row = row;
+                this.j = minValues.read(row);
+            }
+
+            @Override
+            public boolean hasNext() {
+                return j < maxValues.read(row);
+            }
+
+            @Override
+            public Integer next() {
+                return j++;
+            }
+
+            @NotNull
+            @Override
+            public Iterator<Integer> iterator() {
+                return this;
+            }
         }
-
-        public T getOrDefault(int i, int j, T def){
-
-            if(this.existColumn(i) && this.existRow(i, j))
-                return this.map.get(i).get(j);
-
-            return def;
-        }
-
-        public Iterable<Integer> getColumns(){
-            return this.map.keySet();
-        }
-
-        public Iterable<Integer> getRow(int column){
-            return this.map.get(column).keySet();
-        }
-
-        public void removeRow(int row){
-            this.map.remove(row);
-        }
-
-        public void removeCol(int row, int col){
-            this.map.get(row).remove(col);
-        }
-
     }
 
 }

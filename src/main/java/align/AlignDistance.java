@@ -8,16 +8,22 @@ import java.util.List;
 public class AlignDistance {
 
     IArray<InsertOperation> operations;
+    public int minI;
+    public int minJ;
+
     public IArray<Integer> costMatrix;
 
     public long operationsCount;
 
     double distance;
 
-    public AlignDistance(double distance, IArray<InsertOperation> ops, long operationsCount){
+    public AlignDistance(double distance, IArray<InsertOperation> ops, int minI, int minJ, long operationsCount){
         this.operations = ops;
         this.distance = distance;
         this.operationsCount = operationsCount;
+
+        this.minI = minI;
+        this.minJ = minJ;
     }
 
 
