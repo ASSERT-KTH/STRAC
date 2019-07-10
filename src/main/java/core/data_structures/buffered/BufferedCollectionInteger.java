@@ -17,6 +17,11 @@ import static core.utils.HashingHelper.getRandomName;
 public class BufferedCollectionInteger extends BufferedCollection<Integer> {
 
 
+    @Override
+    int dataSize() {
+        return 4;
+    }
+
     public BufferedCollectionInteger(String fileName, long dataSize, int segmentSize) {
         super(fileName, dataSize, segmentSize);
     }
