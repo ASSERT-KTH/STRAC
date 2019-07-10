@@ -1,6 +1,5 @@
 package core.data_structures.buffered;
 
-
 import align.implementations.WindowedDTW;
 import core.data_structures.IMultidimensionalArray;
 
@@ -9,20 +8,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
-public class BidimensionalBufferedCollectionDouble implements IMultidimensionalArray<Double> {
-
+public abstract class BufferedCostMatrix<T> implements IMultidimensionalArray<T> {
 
     long maxI;
     long maxJl;
     WindowedDTW.Window window;
 
 
-    private double[] lastRow;
-    private double[] currRow;
+    private T[] lastRow;
+    private T[] currRow;
     private int currRowIndex;
     private int minlastCol;
     private int minCurrCol;
@@ -31,21 +26,22 @@ public class BidimensionalBufferedCollectionDouble implements IMultidimensionalA
 
 
     private final File swapFile;
-    private final RandomAccessFile cellValuesFile;
+    private final RandomAccessFile storeFile;
 
-    public BidimensionalBufferedCollectionDouble(String fileName, long maxI, long maxJ) {
+    public BufferedCostMatrix(String fileName, long maxI, long maxJ) {
         this(fileName, maxI, maxJ, new WindowedDTW.Window(maxI, maxJ));
     }
 
+    public abstract T[] allocateArray(int size);
 
-    public BidimensionalBufferedCollectionDouble(String fileName, long maxI, long maxJ, WindowedDTW.Window window) {
+    public BufferedCostMatrix(String fileName, long maxI, long maxJ, WindowedDTW.Window window) {
 
         this.window = window;
 
 
         if (window.getLength0() > 0){
 
-            currRow = new double[window.getMax(1)-window.getMin(1)+1];
+            currRow = allocateArray(window.getMax(1)-window.getMin(1)+1);
             currRowIndex = 1;
             minlastCol = window.getMin(currRowIndex-1);
         }
@@ -53,7 +49,7 @@ public class BidimensionalBufferedCollectionDouble implements IMultidimensionalA
             currRowIndex = 0;
 
         minCurrCol = window.getMin(currRowIndex);
-        lastRow = new double[window.getMax(0)-window.getMin(0)+1];
+        lastRow = allocateArray(window.getMax(0)-window.getMin(0)+1);
 
         this.maxJl = maxJ;
         this.maxI = maxI;
@@ -63,14 +59,16 @@ public class BidimensionalBufferedCollectionDouble implements IMultidimensionalA
         swapFile = new File(fileName + "_b");
 
         try {
-            cellValuesFile = new RandomAccessFile(swapFile, "rw");
+            storeFile = new RandomAccessFile(swapFile, "rw");
 
         } catch (FileNotFoundException e) {
-            throw new InternalError("ERROR:  Unable to create file: " + swapFile);
+            throw new InternalError("Unable to create file: " + swapFile);
         }
     }
 
-    public Double get(int...index){
+    abstract T readFromFile(RandomAccessFile file) throws IOException;
+
+    public T get(int...index){
         int col = index[1];
         int row = index[0];
 
@@ -81,22 +79,22 @@ public class BidimensionalBufferedCollectionDouble implements IMultidimensionalA
         else
         {
             try {
-                cellValuesFile.seek(rowOffsets[row] + 8*(col - window.getMin(row)));
+                storeFile.seek(rowOffsets[row] + dataSize()*(col - window.getMin(row)));
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             try {
-                return cellValuesFile.readDouble();
+                return readFromFile(storeFile); //cellValuesFile.readDouble();
             } catch (IOException e) {
-                throw new InternalError("Unable to read CostMatrix in the file (IOException)");
+                throw new RuntimeException("We cannot read from file");
             }
         }  // end if
     }  // end get(..)
 
 
     @Override
-    public Double getDefault(Double def, WindowedDTW.Window w, int... indexes) {
+    public T getDefault(T def, WindowedDTW.Window w, int... indexes) {
 
         if(!w.isInRange(indexes[0], indexes[1]))
             return def;
@@ -104,8 +102,11 @@ public class BidimensionalBufferedCollectionDouble implements IMultidimensionalA
         return get(indexes);
     }
 
+    abstract void setToFile(T value, ByteBuffer buff);
 
-    public void set(Double value, int i, int j){
+    abstract int dataSize();
+
+    public void set(T value, int i, int j){
         int col = j;
         int row = i;
 
@@ -118,14 +119,14 @@ public class BidimensionalBufferedCollectionDouble implements IMultidimensionalA
         else if (row == currRowIndex + 1) {
 
             try {
-                cellValuesFile.seek(cellValuesFile.length());  // move file poiter to end of file
-                rowOffsets[currRowIndex-1] = cellValuesFile.getFilePointer();
+                storeFile.seek(storeFile.length());  // move file poiter to end of file
+                rowOffsets[currRowIndex-1] = storeFile.getFilePointer();
 
-                ByteBuffer buff = ByteBuffer.allocate(lastRow.length*8);
-                for(double val: lastRow)
-                    buff.putDouble(val);
+                ByteBuffer buff = ByteBuffer.allocate(lastRow.length*dataSize());
+                for(T val: lastRow)
+                    setToFile(val, buff); //buff.putDouble(val);
 
-                cellValuesFile.write(buff.array());
+                storeFile.write(buff.array());
 
             } catch (IOException e) {
                 throw new InternalError("Unable to fill the CostMatrix in file (IOException)");
@@ -136,7 +137,7 @@ public class BidimensionalBufferedCollectionDouble implements IMultidimensionalA
             minlastCol = minCurrCol;
             minCurrCol = window.getMin(row);
             currRowIndex++;
-            currRow = new double[window.getMax(row) - window.getMin(row) + 1];
+            currRow = allocateArray(window.getMax(row) - window.getMin(row) + 1);
             currRow[col - minCurrCol] = value;
         }
     }
@@ -150,7 +151,7 @@ public class BidimensionalBufferedCollectionDouble implements IMultidimensionalA
     public void dispose() {
         try
         {
-            cellValuesFile.close();
+            storeFile.close();
         }
         catch (Exception e)
         {
@@ -167,4 +168,5 @@ public class BidimensionalBufferedCollectionDouble implements IMultidimensionalA
     public void flush() {
 
     }
+
 }

@@ -4,7 +4,7 @@ import align.Cell;
 import align.implementations.WindowedDTW;
 import core.data_structures.IArray;
 import core.data_structures.IMultidimensionalArray;
-import core.data_structures.buffered.BidimensionalBufferedCollectionDouble;
+import core.data_structures.buffered.DoubleCostMatrix;
 import core.data_structures.buffered.BufferedCollectionInteger;
 import core.data_structures.buffered.BufferedCollectionLong;
 import core.data_structures.buffered.BufferedWarpPath;
@@ -95,7 +95,7 @@ public class ServiceRegister {
                     if(method == ALLOCATION_METHOD.MEMORY)
                         return new InMemoryMultidimensional( maxI, maxJ);
 
-                    BidimensionalBufferedCollectionDouble result = new BidimensionalBufferedCollectionDouble(getRandomName(), maxI, maxJ);
+                    DoubleCostMatrix result = new DoubleCostMatrix(getRandomName(), maxI, maxJ);
 
                     //openedArrays.add(result);
 
@@ -107,7 +107,7 @@ public class ServiceRegister {
                     if(method == ALLOCATION_METHOD.MEMORY)
                         return new InMemoryMultidimensional( maxI, maxJ);
 
-                    BidimensionalBufferedCollectionDouble result = new BidimensionalBufferedCollectionDouble(getRandomName(), maxI, maxJ, window);
+                    DoubleCostMatrix result = new DoubleCostMatrix(getRandomName(), maxI, maxJ, window);
 
                     //openedArrays.add(result);
 

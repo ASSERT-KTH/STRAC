@@ -1,20 +1,16 @@
 package core.data_structures.buffered;
 
-import core.LogProvider;
 import core.data_structures.IArray;
 import core.data_structures.IMapAdaptor;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.HashMap;
 import java.util.Iterator;
 
-public class BufferedCollectionDouble implements IArray<Double> {
+public abstract class BufferedCollection<T> implements IArray<T> {
 
     RandomAccessFile aFile;
 
@@ -27,11 +23,13 @@ public class BufferedCollectionDouble implements IArray<Double> {
 
     int segment_size;
 
-    public BufferedCollectionDouble(String fileName, long dataSize, int segmentSize) {
+    abstract int dataSize();
+
+    public BufferedCollection(String fileName, long dataSize, int segmentSize) {
         aFile = null;
         this.filename = fileName;
 
-        _size = dataSize*8;
+        _size = dataSize*dataSize();
 
         this.segment_size = segmentSize;
 
@@ -69,14 +67,16 @@ public class BufferedCollectionDouble implements IArray<Double> {
         }
     }
 
-    @Override
-    public void set(long position, Double value) {
+    abstract void setData(T value, ByteBuffer buff);
 
-        position = position * 8;
+    @Override
+    public void set(long position, T value) {
+        position = position*dataSize();
 
         ByteBuffer buf = buffer(position);
 
-        buf.putDouble(value);
+        if(value != null)
+            setData(value, buf);
     }
 
     private ByteBuffer buffer(long index){
@@ -95,14 +95,15 @@ public class BufferedCollectionDouble implements IArray<Double> {
 
     }
 
-    @Override
-    public Double read(long position) {
+    public abstract T readFromFile(ByteBuffer buff);
 
-        position = position*8;
+    @Override
+    public T read(long position) {
+        position = position*dataSize();
 
         ByteBuffer buf = buffer(position);
 
-        return buf.getDouble();
+        return readFromFile(buf);
     }
 
     @Override
@@ -124,7 +125,7 @@ public class BufferedCollectionDouble implements IArray<Double> {
 
     @Override
     public long size() {
-        return _size/4;
+        return _size/dataSize();
     }
 
     @Override
@@ -133,40 +134,19 @@ public class BufferedCollectionDouble implements IArray<Double> {
     }
 
     @Override
-    public Double[] getPlain() {
+    public T[] getPlain() {
         return null;
     }
 
-    public void bulkSave(double[] value, long position){
-
-        final int doubleSize = 8;  // 8 byes in a double
-
-        ByteBuffer buff = ByteBuffer.allocate(value.length*doubleSize);
-
-        for(double val: value)
-            buff.putDouble(val);
-
-
-        try {
-            aFile.seek(position*doubleSize);
-            aFile.write(buff.array());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
     @Override
-    public void writeTo(Writer wr, IMapAdaptor<Double> adaptor) throws IOException {
+    public void writeTo(Writer wr, IMapAdaptor<T> adaptor) throws IOException {
         this.reset();
 
         for(MappedByteBuffer buff: _buffers)
             buff.force();
         int position = 0;
 
-        for(Double item: this){
+        for(T item: this){
             String value = adaptor.getValue(item);
 
             //System.out.println(String.format("\\node at (%s,%s) {%s};", (position++)*0.5 - 0.75, 2.75, value.substring(0, 1)));
@@ -185,12 +165,12 @@ public class BufferedCollectionDouble implements IArray<Double> {
 
     @NotNull
     @Override
-    public Iterator<Double> iterator() {
-        return new BufferedCollectionDouble.BufferedIterator();
+    public Iterator<T> iterator() {
+        return new BufferedCollection.BufferedIterator();
     }
 
 
-    public class BufferedIterator implements Iterator<Double>{
+    public class BufferedIterator implements Iterator<T>{
 
         int index = 0;
 
@@ -205,7 +185,7 @@ public class BufferedCollectionDouble implements IArray<Double> {
         }
 
         @Override
-        public Double next() {
+        public T next() {
             return read(index++);
         }
     }
