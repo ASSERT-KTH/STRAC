@@ -2,6 +2,7 @@ package core.data_structures.buffered;
 
 import align.implementations.WindowedDTW;
 import core.data_structures.IMultidimensionalArray;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -102,7 +103,7 @@ public abstract class BufferedCostMatrix<T> implements IMultidimensionalArray<T>
         return get(indexes);
     }
 
-    abstract void setToFile(T value, ByteBuffer buff);
+    abstract void setToFile(@NotNull  T value, ByteBuffer buff);
 
     abstract int dataSize();
 

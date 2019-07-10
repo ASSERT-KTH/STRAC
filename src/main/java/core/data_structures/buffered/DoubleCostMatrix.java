@@ -34,7 +34,7 @@ public class DoubleCostMatrix extends BufferedCostMatrix<Double> {
     }
 
     @Override
-    void setToFile(Double value, ByteBuffer buff) {
+    void setToFile( Double value, ByteBuffer buff) {
         if(value != null)
             buff.putDouble(value);
     }

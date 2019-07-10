@@ -32,12 +32,6 @@ public class BufferedWarpPath extends  BufferedCollection<Cell> {
         buff.put(chunk, 0, chunk.length);
     }
 
-    @Override
-    public void set(long position, Cell value) {
-
-
-
-    }
 
     @Override
     public Cell readFromFile(ByteBuffer buff) {
