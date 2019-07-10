@@ -47,4 +47,9 @@ public class InMemoryMultidimensional implements IMultidimensionalArray<Double> 
     public void dispose() {
 
     }
+
+    @Override
+    public void flush() {
+
+    }
 }

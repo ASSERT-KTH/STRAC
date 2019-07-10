@@ -42,6 +42,11 @@ public class BiDimensionalCollectionInteger extends BufferedCollectionInteger im
         return 0;
     }
 
+    @Override
+    public void flush() {
+
+    }
+
     long getPosition(int...index){
 
 

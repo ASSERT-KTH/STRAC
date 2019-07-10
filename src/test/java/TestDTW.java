@@ -49,13 +49,13 @@ public class TestDTW {
 
     @Test
     public void testShortAlignment() throws IOException {
-        TestLogProvider.info("FastDTW radius time test");
+        //TestLogProvider.info("FastDTW radius time test");
 
         Alignment dto = new Alignment();
         dto.method = new Payload.MethodInfo();
         dto.method.name = "FastDTW";
         dto.method.params = new Object[]{
-                5.0
+                10.0
         };
         dto.comparison = new Alignment.Comparison();
         dto.comparison.gap = 1;
@@ -80,25 +80,51 @@ public class TestDTW {
 
         TestLogProvider.info(dto.files.get(0), dto.files.get(1), "[");
 
-        for(int i = 0; i < 100; i++){
 
-            dto.method.params = new Object[]{
-                    i*1.0
-            };
+        interpreter.execute(dto, (distance, tr1, tr2, al1, al2, total) -> {
 
-            AtomicLong now = new AtomicLong(System.nanoTime());
+        });
+    }
 
-            int finalI = i;
 
-            interpreter.execute(dto, (distance, tr1, tr2, al1, al2, total) -> {
-                TestLogProvider.info(finalI, ",", distance.getDistance(), ",", total, ",", System.nanoTime() - now.get(), ",");
-                now.set(System.nanoTime());
-            });
 
-        }
+    @Test
+    public void testShortAlignment2() throws IOException {
+        //TestLogProvider.info("FastDTW radius time test");
 
-        TestLogProvider.info("]");
+        Alignment dto = new Alignment();
+        dto.method = new Payload.MethodInfo();
+        dto.method.name = "DTW";
+        dto.method.params = new Object[]{
+                //10.0
+        };
+        dto.comparison = new Alignment.Comparison();
+        dto.comparison.gap = 1;
+        dto.comparison.diff = 5;
+        dto.comparison.eq = 0;
+        dto.pairs = new ArrayList<>();
+        dto.outputAlignment = true;
+        dto.outputDir="reports";
+        //dto.exportImage = true;
 
+        dto.files = Arrays.asList(
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/test_traces/1.txt",
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/test_traces/2.txt"
+        );
+
+        comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        comparers.put("Linear", (objs) -> new LinearMemoryDTW(dto.comparison.gap,(x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        comparers.put("FastDTW", (objs) -> new FastDTW(((Double)objs[0]).intValue()
+                , dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+
+        AlignInterpreter interpreter = new AlignInterpreter(comparers, null);
+
+        TestLogProvider.info(dto.files.get(0), dto.files.get(1), "[");
+
+
+        interpreter.execute(dto, (distance, tr1, tr2, al1, al2, total) -> {
+
+        });
     }
 
 
@@ -110,7 +136,7 @@ public class TestDTW {
         dto.method = new Payload.MethodInfo();
         dto.method.name = "FastDTW";
         dto.method.params = new Object[]{
-                5.0
+                1.0
         };
         dto.comparison = new Alignment.Comparison();
         dto.comparison.gap = 1;

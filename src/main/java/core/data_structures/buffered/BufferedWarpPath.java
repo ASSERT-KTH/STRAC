@@ -3,6 +3,7 @@ package core.data_structures.buffered;
 import align.Cell;
 import core.data_structures.IArray;
 import core.data_structures.IMapAdaptor;
+import core.utils.HashingHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -28,7 +29,7 @@ public class BufferedWarpPath implements IArray<Cell> {
         aFile = null;
         this.filename = fileName;
 
-        _size = dataSize*4;
+        _size = dataSize*Cell.CELL_ADAPTOR.size();
 
         this.segment_size = segmentSize;
 
@@ -68,11 +69,13 @@ public class BufferedWarpPath implements IArray<Cell> {
 
     @Override
     public void set(long position, Cell value) {
-        position = position*4;
 
-        ByteBuffer buf = buffer(position);
 
-        //buf.putDouble(value);
+        ByteBuffer buf = buffer(position*Cell.CELL_ADAPTOR.size());
+
+        byte[] chunk = Cell.CELL_ADAPTOR.toBytes(value);
+
+        buf.put(chunk, 0, chunk.length);
     }
 
     private ByteBuffer buffer(long index){
@@ -93,11 +96,13 @@ public class BufferedWarpPath implements IArray<Cell> {
 
     @Override
     public Cell read(long position) {
-        position = position*4;
+        ByteBuffer buf = buffer(position*Cell.CELL_ADAPTOR.size());
 
-        ByteBuffer buf = buffer(position);
+        byte[] chunk = new byte[Cell.CELL_ADAPTOR.size()];
 
-        return null;
+        buf.get(chunk, 0, chunk.length);
+
+        return Cell.CELL_ADAPTOR.fromBytes(chunk);
     }
 
     @Override
@@ -119,7 +124,7 @@ public class BufferedWarpPath implements IArray<Cell> {
 
     @Override
     public long size() {
-        return _size/4;
+        return _size/Cell.CELL_ADAPTOR.size();
     }
 
     @Override

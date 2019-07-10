@@ -60,7 +60,7 @@ public class DWTHelper {
 
         //ops.set(0,new Cell((int)lenT1, (int)lenT2));
 
-        WindowedDTW.Window scale = new WindowedDTW.Window(lenT1, lenT2);
+        WindowedDTW.Window scale = new WindowedDTW.Window(lenT1 + 1, lenT2 + 1, true);
 
         TimeUtils utl = new TimeUtils();
 
@@ -75,7 +75,7 @@ public class DWTHelper {
         int currentI = minI;
         int currentJ = minJ;
 
-        for(long k = opCount - 1; k >= 0; k--){
+        for(long k = opCount; k >= 0; k--){
 
             Cell op = ops.read(k);
 
@@ -117,13 +117,41 @@ public class DWTHelper {
 
         utl.time("Scaling");
 
-        scale.expand(radius);
+        WindowedDTW.Window grown = new WindowedDTW.Window(lenT1 + 1, lenT2 + 1, true);
+
+        for(int i = 0; i < lenT1 + 1; i++){
+            int minCol = scale.getMin(i);
+            int maxCol = scale.getMax(i);
+
+            int upRow = Math.max(0, i - radius);
+            int downRow = Math.min((int)lenT1, i + radius);
+
+            grown.set(i, minCol);
+            grown.set(i, maxCol);
+
+            grown.set(i, Math.max(0, minCol - radius));
+            grown.set(i, Math.min((int)lenT1, maxCol + radius));
+
+
+            for(int u = i; u >= upRow; u--){
+                grown.set(u, maxCol);
+                grown.set(u, scale.getMin(u));
+            }
+            for(int u = i; u <= downRow; u++){
+
+                grown.set(u, minCol);
+                grown.set(u, scale.getMax(u));
+            }
+
+        }
+
 
         utl.time("Growing");
 
-        //draw(scale, String.format("%s_%s_grown.png", lenT1, lenT2), (int)lenT2, (int)lenT1);
+        //draw(scale, String.format("%s_%s_scale.png", lenT1, lenT2), (int)lenT2, (int)lenT1);
+        //draw(grown, String.format("%s_%s_grown.png", lenT1, lenT2), (int)lenT2, (int)lenT1);
 
-        return scale;
+        return grown;
     }
 
 }

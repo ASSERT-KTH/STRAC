@@ -19,6 +19,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import javax.imageio.ImageIO;
+import javax.management.RuntimeErrorException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -106,7 +107,7 @@ public class AlignInterpreter {
                 String file2 = String.format("%s/align.%s.%s", dto.outputDir, tr2.traceFileName, tr1.traceFileName);
 
 
-                long max = distance.operationsCount + 1;
+                long max = distance.operationsCount;
 
                 IArray<Integer> trace1Alignment
                         = ServiceRegister.getProvider().allocateIntegerArray(getRandomName(), max,
@@ -117,7 +118,7 @@ public class AlignInterpreter {
                         ServiceRegister.getProvider().selectMethod(Integer.SIZE*max));
 
 
-                Cell i1 = new Cell(0, 0);
+                Cell i1 = null;
 
                 tr1.plainTrace.close();
                 tr2.plainTrace.close();
@@ -125,76 +126,48 @@ public class AlignInterpreter {
                 long p1 = 0;
                 long p2 = 0;
 
-                long t1Rest = tr1.plainTrace.size();
-                long t2Rest = tr2.plainTrace.size();
+                Cell i2 = null;
+                for(long i = distance.operationsCount; i > 0 ; i--){
 
-                for(long i= distance.operationsCount - 2; i > 0 ; i--){
-
-                    Cell i2 = distance.getInsertions().read(i);
+                    i2 = distance.getInsertions().read(i - 1);
+                    i1 = distance.getInsertions().read(i);
                     //LogProvider.info(i2);
 
                     //System.out.print(i2 + "-");
-                    Cell s = i2;
 
-                    if(i2 == null){
-                        LogProvider.info("Null operation", i2);
+                    if(i1 == null){
+                        //LogProvider.info("Null operation", i2);
                         continue;
                     }
 
-                    long[] direction = new long[] {
-                            i2.getTrace1Index() - i1.getTrace1Index(),
-                            i2.getTrace2Index() - i1.getTrace2Index()
-                    };
-
-                    if(direction[0] > 1){
-                        LogProvider.info("Warning", direction[0], direction[1], i);
-                    }
-
                     try {
+                        //LogProvider.info(i1);
 
-                        if (direction[0] > 0 && direction[1] > 0) {
-                            trace1Alignment.set(p1++,tr1.plainTrace.read(s.getTrace1Index() - 1));
-                            trace2Alignment.set(p2++,tr2.plainTrace.read(s.getTrace2Index() - 1));
-                            t1Rest--;
-                            t2Rest--;
-
+                        if(i2.getTrace1Index() > i1.getTrace1Index() && i2.getTrace2Index() > i1.getTrace2Index()){
+                            trace1Alignment.set(p1,tr1.plainTrace.read(i1.getTrace1Index()));
+                            trace2Alignment.set(p1,tr2.plainTrace.read(i1.getTrace2Index()));
+                            p1++;
                         }
-                        if (direction[0] == 0) {
-                            trace1Alignment.set(p1++,-1);
-                            trace2Alignment.set(p2++,tr2.plainTrace.read(s.getTrace2Index() - 1));
-                            t2Rest--;
+                        else if(i2.getTrace2Index() > i1.getTrace2Index()){
+                            trace1Alignment.set(p1,-1);
+                            trace2Alignment.set(p1,tr2.plainTrace.read(i1.getTrace2Index()));
+                            p1++;
                         }
-
-                        if (direction[1] == 0) {
-                            trace2Alignment.set(p2++,-1);
-                            trace1Alignment.set(p1++, tr1.plainTrace.read(s.getTrace1Index() - 1));
-                            t1Rest--;
+                        else if(i2.getTrace1Index() > i1.getTrace1Index() ) {
+                            trace2Alignment.set(p1,-1);
+                            trace1Alignment.set(p1, tr1.plainTrace.read(i1.getTrace1Index() ));
+                            p1++;
+                        }
+                        else{
+                            //throw new RuntimeException("Error");
                         }
                     }
                     catch (Exception e){
                         e.printStackTrace();
-                        //throw new RuntimeException(e.getMessage());
+                        throw new RuntimeException(e.getMessage());
                     }
-
-                    i1 = i2;
                 }
 
-                while(t1Rest > 0 && t2Rest > 0){
-
-                    trace1Alignment.set(p1++, tr1.plainTrace.read(tr1.plainTrace.size() - (t1Rest--)));
-                    trace2Alignment.set(p2++, tr2.plainTrace.read(tr2.plainTrace.size() - (t2Rest--)));
-                }
-
-                for(; t1Rest > 0; t1Rest--) {
-
-                    trace2Alignment.set(p2++, -1);
-                }
-                for(; t2Rest > 0; t2Rest--) {
-                    trace2Alignment.set(p2++, tr2.plainTrace.read(tr2.plainTrace.size() - t2Rest));
-                    trace1Alignment.set(p1++, -1);
-                }
-
-                // Comparing the two traces
 
                 double total = 0;
                 trace1Alignment.reset();
@@ -215,16 +188,17 @@ public class AlignInterpreter {
                     catch (Exception e){
                         e.printStackTrace();
                         System.err.println(i + " ");
-                        //throw new RuntimeException(e.getMessage());
+                        throw new RuntimeException(e.getMessage());
                     }
 
                 }
 
 
-                total = total/(trace1Alignment.size());
 
                 LogProvider.info("DTW Distance", distance.getDistance());
-                LogProvider.info("Distance (How many coincidences percent)", total);
+                LogProvider.info("Distance (How many coincidences percent)", total/(trace1Alignment.size()), total, trace1Alignment.size());
+
+                total = total/(trace1Alignment.size());
 
                 if(action != null)
                     action.action(distance, tr1, tr2, trace1Alignment, trace2Alignment, total);
@@ -246,7 +220,7 @@ public class AlignInterpreter {
                     try {
                         LogProvider.info("Writing align result to file");
 
-                        /*trace1Alignment.writeTo(new FileWriter(file1), t -> {
+                        trace1Alignment.writeTo(new FileWriter(file1), t -> {
                             if(t != null)
                                 return helper.getInverseBag().get(t) + "\n";
 
@@ -257,7 +231,7 @@ public class AlignInterpreter {
                                 return helper.getInverseBag().get(t) + "\n";
 
                             return "";
-                        });*/
+                        });
                     }
                     catch (Exception e){
                         e.printStackTrace();

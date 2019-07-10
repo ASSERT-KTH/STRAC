@@ -1,5 +1,6 @@
 package core.data_structures.buffered;
 
+import core.LogProvider;
 import core.data_structures.IArray;
 import core.data_structures.IMapAdaptor;
 import org.jetbrains.annotations.NotNull;
@@ -7,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
@@ -139,14 +141,21 @@ public class BufferedCollectionDouble implements IArray<Double> {
 
         final int doubleSize = 8;  // 8 byes in a double
 
-        ByteBuffer buf = ByteBuffer.allocate(doubleSize*value.length);
-
+        ByteBuffer buff = ByteBuffer.allocate(value.length*doubleSize);
 
         for(double val: value)
-            buf.putDouble(val);
+            buff.putDouble(val);
 
-        ByteBuffer buff = buffer(position);
-        buff.put(buf);
+
+        try {
+            aFile.seek(position*doubleSize);
+            aFile.write(buff.array());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     @Override

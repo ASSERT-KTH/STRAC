@@ -48,22 +48,22 @@ public class WindowedDTW extends Aligner {
     public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2, Window window) {
 
         if(window == null)
-            window = new Window(trace1.size(), trace2.size());
+            window = new Window(trace1.size() + 1, trace2.size() + 1);
 
 
         double oo = Double.MAX_VALUE/2;
 
         IServiceProvider.ALLOCATION_METHOD method =
-                ServiceRegister.getProvider().selectMethod(8L*(trace1.size())*(trace2.size()));
+                ServiceRegister.getProvider().selectMethod(8L*(trace1.size() + 1)*(trace2.size() + 1));
 
         IMultidimensionalArray<Double> D = ServiceRegister.getProvider().allocateDoubleBidimensionalMatrixWindow(
-                (int)trace1.size(), (int)trace2.size(), method, window);
+                (int)trace1.size() + 1, (int)trace2.size() + 1, method, window);
 
         TimeUtils u = new TimeUtils();
         u.reset();
 
         long visited = 0;
-        long size = trace1.size();
+        long size = trace1.size() + 1;
 
         for(int  i = 0;  i < size; i++){
             int min = window.getMin(i);
@@ -100,11 +100,11 @@ public class WindowedDTW extends Aligner {
         LogProvider.info("Visited", visited);
         u.time("Cost matrix");
 
-        int i = (int)trace1.size() - 1;
-        int j = (int)trace2.size() - 1;
+        int i = (int)trace1.size();
+        int j = (int)trace2.size();
 
-        IArray<Cell> ops = ServiceRegister.getProvider().allocateWarpPath(null, trace1.size()+trace2.size() + 2,
-            ServiceRegister.getProvider().selectMethod(512*(trace1.size()+trace2.size() + 2))
+        IArray<Cell> ops = ServiceRegister.getProvider().allocateWarpPath(null, trace1.size()+trace2.size(),
+            ServiceRegister.getProvider().selectMethod(512*(trace1.size()+trace2.size()))
         );
 
         LogProvider.info("Getting warp path");
@@ -113,7 +113,9 @@ public class WindowedDTW extends Aligner {
         int minI = Integer.MAX_VALUE;
         int minJ = Integer.MAX_VALUE;
 
-        ops.set(position++, new Cell((int)trace1.size() - 1, (int)trace2.size() - 1));
+        ops.set(position++, new Cell((int)trace1.size(), (int)trace2.size()));
+
+        D.flush();
 
         while ((i > 0) || (j > 0)) // 0,0 item
         {
@@ -122,8 +124,9 @@ public class WindowedDTW extends Aligner {
             final double leftCost;
             final double downCost;
 
-            if ((i>0) && (j>0))
-                diagCost = D.getDefault(oo,window,i-1, j-1);
+            if ((i>0) && (j>0)) {
+                diagCost = D.getDefault(oo, window, i - 1, j - 1);
+            }
             else
                 diagCost = Double.POSITIVE_INFINITY;
 
@@ -166,13 +169,10 @@ public class WindowedDTW extends Aligner {
 
         Double val = D.getDefault(oo, window,(int)trace1.size() - 1, (int)trace2.size() - 1);
 
-        if(val == 0)
-            throw new RuntimeException("Ahhhhhhh");
-
         LogProvider.info("DTW distnace", val);
         D.dispose();
 
-        return new AlignDistance(val, ops, minI, minJ, position);
+        return new AlignDistance(val, ops, minI, minJ, position-1);
     }
 
 
@@ -185,6 +185,16 @@ public class WindowedDTW extends Aligner {
         int width;
 
         public Window(long height, long width){
+            this(height, width, false);
+
+            for(int i = 0; i < height; i++){
+                setRange(0, (int)width, i);
+            }
+        }
+
+
+
+        public Window(long height, long width, boolean set){
 
             IServiceProvider.ALLOCATION_METHOD method = ServiceRegister.getProvider().selectMethod(4*height);
 
@@ -198,9 +208,10 @@ public class WindowedDTW extends Aligner {
 
             this.width = (int)width;
 
-            for(int i = 0; i < height; i++){
-                setRange(-1, -1, i);
-            }
+            if(set)
+                for(int i = 0; i < height; i++){
+                    setRange(-1, -1, i);
+                }
         }
 
         public void expand(int radius){

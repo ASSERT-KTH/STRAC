@@ -15,4 +15,6 @@ public interface IMultidimensionalArray<T> {
 
     void dispose();
 
+    void flush();
+
 }

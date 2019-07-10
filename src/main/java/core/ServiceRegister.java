@@ -97,7 +97,7 @@ public class ServiceRegister {
 
                     BidimensionalBufferedCollectionDouble result = new BidimensionalBufferedCollectionDouble(getRandomName(), maxI, maxJ);
 
-                    openedArrays.add(result);
+                    //openedArrays.add(result);
 
                     return result;
                 }
@@ -109,7 +109,7 @@ public class ServiceRegister {
 
                     BidimensionalBufferedCollectionDouble result = new BidimensionalBufferedCollectionDouble(getRandomName(), maxI, maxJ, window);
 
-                    openedArrays.add(result);
+                    //openedArrays.add(result);
 
                     return result;
                 }

@@ -128,7 +128,8 @@ public class StressTest {
     }
 
     static int start  = 0;
-    static int end = 100;
+    static int end = 230;
+
     @Test
     public void testConvergenceEquals() throws IOException {
 
@@ -150,8 +151,8 @@ public class StressTest {
         //dto.exportImage = true;
 
         dto.files = Arrays.asList(
-                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.github.com.10.bytecode.txt.st.processed.txt",
-                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.github.com.12.bytecode.txt.st.processed.txt"
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces/www.github.com.10.bytecode.txt.st.processed.txt",
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces/www.github.com.12.bytecode.txt.st.processed.txt"
         );
 
         comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
@@ -193,7 +194,7 @@ public class StressTest {
         };
         dto.comparison = new Alignment.Comparison();
         dto.comparison.gap = 1;
-        dto.comparison.diff = 2;
+        dto.comparison.diff = 10;
         dto.comparison.eq = 0;
         dto.pairs = new ArrayList<>();
         dto.outputAlignment = true;
@@ -201,8 +202,8 @@ public class StressTest {
         //dto.exportImage = true;
 
         dto.files = Arrays.asList(
-                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.kth.se.10.bytecode.txt.st.processed.txt",
-                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.github.com.10.bytecode.txt.st.processed.txt"
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces/www.kth.se.10.bytecode.txt.st.processed.txt",
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces/www.kth.se.1.bytecode.txt.st.processed.txt"
         );
 
         comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
@@ -227,7 +228,7 @@ public class StressTest {
                 //2.0
         };
         dto.comparison = new Alignment.Comparison();
-        dto.comparison.gap = 1;
+        dto.comparison.gap = 2;
         dto.comparison.diff = 2;
         dto.comparison.eq = 0;
         dto.pairs = new ArrayList<>();
@@ -236,9 +237,10 @@ public class StressTest {
         //dto.exportImage = true;
 
         dto.files = Arrays.asList(
-                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces/youtube.com.10.bytecode.txt.st.processed.txt",
-                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces/2019.splashcon.org.12.bytecode.txt.st.processed.txt"
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.github.com.10.bytecode.txt.st.processed.txt",
+                "/Users/javier/IdeaProjects/kTToolkit/scripts/chrome_scripts/traces_tiny/www.kth.se.12.bytecode.txt.st.processed.txt"
         );
+
 
 
         comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));

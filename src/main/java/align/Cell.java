@@ -41,7 +41,17 @@ public class Cell implements Serializable {
         return String.format("%s %s", this.i, this.j);
     }
 
-    /*public static BufferedCollectionInteger.ITypeAdaptor<Cell> OperationAdapter = new BufferedCollectionInteger.ITypeAdaptor<Cell>() {
+    public interface  ITypeAdaptor<T> {
+       T fromBytes(byte[] chunk);
+
+        byte[] toBytes(T i);
+
+        int size();
+
+        Class<T> clazz();
+    }
+
+    public static ITypeAdaptor<Cell> CELL_ADAPTOR = new ITypeAdaptor<Cell>() {
         @Override
         public Cell fromBytes(byte[] chunk) {
 
@@ -69,5 +79,5 @@ public class Cell implements Serializable {
         public Class<Cell> clazz() {
             return Cell.class;
         }
-    };*/
+    };
 }

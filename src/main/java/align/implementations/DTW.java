@@ -46,52 +46,48 @@ public class DTW extends Aligner {
             method = IServiceProvider.ALLOCATION_METHOD.EXTERNAL;
         }
         ops = ServiceRegister.getProvider().allocateWarpPath
-                (null, maxI + maxJ + 2, method);
+                (null, trace1.size()+trace2.size(), method);
 
-        result = ServiceRegister.getProvider().allocateDoubleBidimensionalMatrix(maxI + 1, maxJ + 1, method);
-
-
-        LogProvider.info("Setting up first row and column...");
-
-        result.set(0.0, 0, 0);
-
-        for(int j = 1; j < maxJ + 1; j++)
-            result.set( 1.0*j*this.getGapSymbol(), 0, j);
-
-
-        for(int i = 1; i < maxI + 1; i++) {
-            //LogProvider.info(val, i);
-            result.set(1.0*i*gap, i, 0);
-        }
+        result = ServiceRegister.getProvider().allocateDoubleBidimensionalMatrix(maxI + 1, maxJ + 1,  method);
 
         LogProvider.info("Exploring complete space...");
+        Double oo = Double.POSITIVE_INFINITY/2;
 
         double last = 0;
 
-        for(int i = 1; i < maxI + 1; i++){
-            for(int j = 1; j < maxJ + 1; j++){
-                Double max = Math.min(
-                    1.0*result.get(i - 1,j - 1) + this.comparer.compare(trace1.read(i - 1), trace2.read(j - 1)),
-                    Math.min(
-                            1.0*result.get(i - 1,j) + this.getGapSymbol(),
-                            1.0*result.get(i,j - 1) + this.getGapSymbol()
-                    )
-                );
+        for(int i = 0; i < maxI + 1; i++){
+            for(int j = 0; j < maxJ + 1; j++){
 
-                double progress = (i*trace2.size() + j*1.0)/(trace1.size()*trace2.size());
+                if ((i == 0) && (j == 0))
+                    result.set(0.0, i, j);
+                else if (i == 0)             // first column
+                {
+                    result.set(1.0*gap * j, i, j);
+                } else if (j == 0)             // first row
+                {
+                    result.set(1.0*gap * i, i, j);
+                } else                         // not first column or first row
+                {
+                    Double max = Math.min(
+                            1.0 * result.get(i - 1, j - 1) + this.comparer.compare(trace1.read(i - 1), trace2.read(j - 1)),
+                            Math.min(
+                                    1.0 * result.get(i - 1, j) + this.getGapSymbol(),
+                                    1.0 * result.get(i, j - 1) + this.getGapSymbol()
+                            )
+                    );
 
-                if(progress - last >= 0.1) {
-                    LogProvider.info(progress*100, "%");
-                    last = progress;
+                    double progress = (i * trace2.size() + j * 1.0) / (trace1.size() * trace2.size());
+
+                    if (progress - last >= 0.1) {
+                        LogProvider.info(progress * 100, "%");
+                        last = progress;
+                    }
+
+                    result.set(max, i, j);
                 }
-
-                result.set(max, i, j);
             }
 
         }
-
-
-
 
         int i = (int)maxI;
         int j = (int)maxJ;
@@ -103,6 +99,8 @@ public class DTW extends Aligner {
         int minI = Integer.MAX_VALUE;
         int minJ = Integer.MAX_VALUE;
 
+        //result.flush();
+
         while ((i>0) || (j>0))
         {
             final double diagCost;
@@ -110,19 +108,19 @@ public class DTW extends Aligner {
             final double downCost;
 
             if ((i>0) && (j>0))
-                diagCost = result.get(i-1,j-1) + comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
+                diagCost = result.get(i-1,j-1);
             else
-                diagCost = Double.POSITIVE_INFINITY;
+                diagCost = oo;
 
             if (i > 0)
-                leftCost = result.get(i-1,j) + getGapSymbol();
+                leftCost = result.get(i-1,j);
             else
-                leftCost = Double.POSITIVE_INFINITY;
+                leftCost = oo;
 
             if (j > 0)
-                downCost = result.get(i,j-1) + getGapSymbol();
+                downCost = result.get(i,j-1);
             else
-                downCost = Double.POSITIVE_INFINITY;
+                downCost = oo;
 
             if ((diagCost<=leftCost) && (diagCost<=downCost))
             {
@@ -146,52 +144,7 @@ public class DTW extends Aligner {
 
             ops.set(position++,new Cell(i, j));
         }
-/*
-        System.out.println(trace1.size() + " " + trace2.size());
 
-        System.out.println(-1*trace1.size()/2 + " " + trace1.size()/2);
-        System.out.println(-1*trace2.size()/2 + " " + trace2.size()/2);
-
-
-        double posx = -1.25;
-        double posy = 2.25;
-
-        for(int x = 0; x < maxI + 1; x++){
-            for(int y = 0 ; y < maxJ + 1; y++){
-                System.out.println(String.format("\\node at (%s,%s) {%s};", posx, posy, result.get(x, y)));
-                posx += 0.5;
-            }
-            posy -= 0.5;
-            posx = -1.25;
-        }
-
-        System.out.println("");
-
-        System.out.print("\\draw ");
-        for(int x = 0;x < position; x++){
-            Cell op1 = ops.read(x);
-
-            System.out.print(String.format("(%s, %s)",
-                    op1.getTrace2Index() * 0.5 - 1.25,
-                    -1*op1.getTrace1Index() * 0.5 + 2.25
-            ));
-
-            if(x < position - 1)
-                System.out.print(" -- ");
-        }
-
-        System.out.println(";");
-
-        System.out.println();
-        /*for(int in = 0; in < maxI + 1; in++) {
-
-            for(int jn = 0; jn < maxJ + 1; jn++){
-                System.out.print(result[in][jn] + " ");
-            }
-
-            System.out.println("\n");
-        }*/
-
-        return new AlignDistance(result.get((int)maxI,(int)maxJ), ops, minI, minJ, position);
+        return new AlignDistance(result.get((int)maxI,(int)maxJ), ops, minI, minJ, position-1);
     }
 }

@@ -5,13 +5,15 @@ import align.implementations.WindowedDTW;
 import core.data_structures.IMultidimensionalArray;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class BidimensionalBufferedCollectionDouble extends BufferedCollectionDouble implements IMultidimensionalArray<Double> {
+public class BidimensionalBufferedCollectionDouble implements IMultidimensionalArray<Double> {
 
 
     long maxI;
@@ -25,18 +27,18 @@ public class BidimensionalBufferedCollectionDouble extends BufferedCollectionDou
     private int minlastCol;
     private int minCurrCol;
 
+    private final long[] rowOffsets;
+
+
+    private final File swapFile;
+    private final RandomAccessFile cellValuesFile;
 
     public BidimensionalBufferedCollectionDouble(String fileName, long maxI, long maxJ) {
-        super(fileName, maxI*maxJ, 1 << 30);
-
-        this.maxI = maxI;
-        this.maxJl = maxJ;
-
+        this(fileName, maxI, maxJ, new WindowedDTW.Window(maxI, maxJ));
     }
 
 
     public BidimensionalBufferedCollectionDouble(String fileName, long maxI, long maxJ, WindowedDTW.Window window) {
-        this(fileName, maxI, maxJ);
 
         this.window = window;
 
@@ -53,6 +55,19 @@ public class BidimensionalBufferedCollectionDouble extends BufferedCollectionDou
         minCurrCol = window.getMin(currRowIndex);
         lastRow = new double[window.getMax(0)-window.getMin(0)+1];
 
+        this.maxJl = maxJ;
+        this.maxI = maxI;
+
+        rowOffsets = new long[(int)maxI];
+
+        swapFile = new File(fileName + "_b");
+
+        try {
+            cellValuesFile = new RandomAccessFile(swapFile, "rw");
+
+        } catch (FileNotFoundException e) {
+            throw new InternalError("ERROR:  Unable to create file: " + swapFile);
+        }
     }
 
     public Double get(int...index){
@@ -65,7 +80,17 @@ public class BidimensionalBufferedCollectionDouble extends BufferedCollectionDou
             return lastRow[col-minlastCol];
         else
         {
-            return super.read(getPosition(row, col));
+            try {
+                cellValuesFile.seek(rowOffsets[row] + 8*(col - window.getMin(row)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                return cellValuesFile.readDouble();
+            } catch (IOException e) {
+                throw new InternalError("Unable to read CostMatrix in the file (IOException)");
+            }
         }  // end if
     }  // end get(..)
 
@@ -92,7 +117,20 @@ public class BidimensionalBufferedCollectionDouble extends BufferedCollectionDou
         }
         else if (row == currRowIndex + 1) {
 
-            super.bulkSave(lastRow, (currRowIndex - 1)*maxJl);
+            try {
+                cellValuesFile.seek(cellValuesFile.length());  // move file poiter to end of file
+                rowOffsets[currRowIndex-1] = cellValuesFile.getFilePointer();
+
+                ByteBuffer buff = ByteBuffer.allocate(lastRow.length*8);
+                for(double val: lastRow)
+                    buff.putDouble(val);
+
+                cellValuesFile.write(buff.array());
+
+            } catch (IOException e) {
+                throw new InternalError("Unable to fill the CostMatrix in file (IOException)");
+            }
+
 
             lastRow = currRow;
             minlastCol = minCurrCol;
@@ -103,13 +141,30 @@ public class BidimensionalBufferedCollectionDouble extends BufferedCollectionDou
         }
     }
 
-    public long getPosition(int row, int col){
-        return row*maxJl + col;
-    }
-
     @Override
     public long size(int dimension) {
         return 0;
     }
 
+    @Override
+    public void dispose() {
+        try
+        {
+            cellValuesFile.close();
+        }
+        catch (Exception e)
+        {
+            System.err.println("unable to close swap file '" + this.swapFile.getPath() + "' during finialization");
+        }
+        finally
+        {
+            swapFile.delete();   // delete the swap file
+
+        }
+    }
+
+    @Override
+    public void flush() {
+
+    }
 }
