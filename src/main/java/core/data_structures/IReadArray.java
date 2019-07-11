@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.Array;
 
-public interface IReadArray<T> extends Iterable<T>{
+public interface IReadArray<T> extends Iterable<T>, IDisposable{
 
     T read(long position);
 
     void close();
-
-    void dispose();
 
     long size();
 

@@ -130,6 +130,7 @@ public abstract class BufferedCostMatrix<T> implements IMultidimensionalArray<T>
                 storeFile.write(buff.array());
 
             } catch (IOException e) {
+                e.printStackTrace();
                 throw new InternalError("Unable to fill the CostMatrix in file (IOException)");
             }
 

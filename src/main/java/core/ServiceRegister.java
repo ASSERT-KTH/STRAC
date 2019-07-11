@@ -3,6 +3,7 @@ package core;
 import align.Cell;
 import align.implementations.WindowedDTW;
 import core.data_structures.IArray;
+import core.data_structures.IDisposable;
 import core.data_structures.IMultidimensionalArray;
 import core.data_structures.buffered.DoubleCostMatrix;
 import core.data_structures.buffered.BufferedCollectionInteger;
@@ -26,7 +27,7 @@ public class ServiceRegister {
         _provider = provider;
     }
 
-    static List<IArray> openedArrays = new ArrayList<>();
+    static List<IDisposable> openedArrays = new ArrayList<>();
 
     public static IServiceProvider getProvider(){
 
@@ -97,7 +98,7 @@ public class ServiceRegister {
 
                     DoubleCostMatrix result = new DoubleCostMatrix(getRandomName(), maxI, maxJ);
 
-                    //openedArrays.add(result);
+                    openedArrays.add(result);
 
                     return result;
                 }
@@ -109,7 +110,7 @@ public class ServiceRegister {
 
                     DoubleCostMatrix result = new DoubleCostMatrix(getRandomName(), maxI, maxJ, window);
 
-                    //openedArrays.add(result);
+                    openedArrays.add(result);
 
                     return result;
                 }
@@ -122,7 +123,7 @@ public class ServiceRegister {
 
     public static void dispose(){
 
-        for(IArray arr: openedArrays)
+        for(IDisposable arr: openedArrays)
             arr.dispose();
     }
 

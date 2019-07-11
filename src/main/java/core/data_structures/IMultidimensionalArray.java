@@ -2,7 +2,7 @@ package core.data_structures;
 
 import align.implementations.WindowedDTW;
 
-public interface IMultidimensionalArray<T> {
+public interface IMultidimensionalArray<T> extends IDisposable {
 
 
     T get(int...indexes);
@@ -12,8 +12,6 @@ public interface IMultidimensionalArray<T> {
     void set(T value, int i, int j);
 
     long size(int dimension);
-
-    void dispose();
 
     void flush();
 
