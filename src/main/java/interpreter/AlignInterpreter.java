@@ -44,8 +44,9 @@ public class AlignInterpreter {
 
 
     public interface IOnAlign{
-        void action(AlignDistance distance, TraceMap trace1, TraceMap trace2, IArray<Integer> alignResult1, IArray<Integer> alignResult2, double calculatedEuclideanDistance);
+        void action(AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize);
     }
+
 
     public void execute(Alignment dto) throws IOException {
         execute(dto,  null);
@@ -170,8 +171,16 @@ public class AlignInterpreter {
 
 
                 double total = 0;
+                double mismatch = 0;
+                double gaps1 = 0;
+                double gaps2 = 0;
+
+                double totalNonGaps = 0;
+
                 trace1Alignment.reset();
                 trace2Alignment.reset();
+
+
 
                 for(int i = 0; i < trace1Alignment.size(); i++){
 
@@ -181,8 +190,16 @@ public class AlignInterpreter {
 
                         //double val = dto.comparison.diff;
 
-                        if(t1 == t2)
+                        if(t1 == t2 && t1 != -1)
                             total++;
+                        if(t1 != t2 && t1 != -1 && t2 != -1)
+                            mismatch++;
+                        if(t1 == -1)
+                            gaps1++;
+                        if(t2 == -1)
+                            gaps2++;
+                        //if(t1 != -1 || t2 != -1)
+                        totalNonGaps++;
 
                     }
                     catch (Exception e){
@@ -196,12 +213,13 @@ public class AlignInterpreter {
 
 
                 LogProvider.info("DTW Distance", distance.getDistance());
-                LogProvider.info("Distance (How many coincidences percent)", total/(trace1Alignment.size()), total, trace1Alignment.size());
-
-                total = total/(trace1Alignment.size());
+                LogProvider.info("Distance (How many coincidences percent)", total/(totalNonGaps), total, totalNonGaps);
 
                 if(action != null)
-                    action.action(distance, tr1, tr2, trace1Alignment, trace2Alignment, total);
+                    action.action(distance, total, mismatch, gaps1, gaps2, trace1Alignment.size());
+
+                total = total/totalNonGaps;
+
 
                 if(!Double.isNaN(total)) {
                     resultDto.set(pair[0], pair[1], total);

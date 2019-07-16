@@ -30,7 +30,7 @@ public class DTW extends Aligner {
     @Override
     public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2) {
 
-        long need = 4*(trace1.size() + 1)*(trace2.size() + 1);
+        long need = 8*(trace1.size() + 1)*(trace2.size() + 1);
 
         int maxI = (int)trace1.size();
         int maxJ = (int)trace2.size();
