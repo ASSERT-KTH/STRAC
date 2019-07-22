@@ -58,7 +58,7 @@ public class ConvergenceTest2 {
         dto.method = new Payload.MethodInfo();
         dto.method.name = "FastDTW";
         dto.method.params = Arrays.asList(2);
-        dto.distanceFunctionName = "dBin";
+        //dto.distanceFunctionName = "dBin";
         dto.comparison = new Alignment.Comparison();
         dto.comparison.gap = 1;
         dto.comparison.diff = 5;

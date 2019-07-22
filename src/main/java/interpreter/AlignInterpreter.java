@@ -3,6 +3,7 @@ package interpreter;
 import align.AlignDistance;
 import align.Aligner;
 import align.Cell;
+import align.ICellComparer;
 import align.implementations.IImplementationInfo;
 import com.google.gson.Gson;
 import core.LogProvider;
@@ -54,6 +55,25 @@ public class AlignInterpreter {
     public void execute(Alignment dto, IOnAlign action) throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
 
 
+        if(dto.distanceFunctionName == null){
+
+            LogProvider.info("Distance function not provided. We set a default one based on dto comparison data");
+            dto.distanceFunctionName = "default";
+
+            ServiceRegister.registerFunction("default", new ICellComparer() {
+                @Override
+                public int compare(int a, int b) {
+                    return a != b ? dto.comparison.diff: dto.comparison.eq;
+                }
+
+                @Override
+                public int gapCost(int position, TRACE_DISCRIMINATOR discriminator) {
+                    return dto.comparison.gap;
+                }
+            });
+        }
+
+        
         TraceHelper helper = new TraceHelper();
 
         LogProvider.info("Parsing traces");

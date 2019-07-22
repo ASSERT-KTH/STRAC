@@ -65,7 +65,7 @@ public class ConvergenceTest6 {
 
         dto.method.params = new ArrayList<>();
 
-        dto.distanceFunctionName = "dBin";
+       // dto.distanceFunctionName = "dBin";
         dto.comparison = new Alignment.Comparison();
         dto.comparison.gap = 1;
         dto.comparison.diff = 5;
@@ -101,7 +101,7 @@ public class ConvergenceTest6 {
         try {
             interpreter.execute(dto, (distance, success, mismatch, gaps1, gaps2, total) -> {
 
-                TestLogProvider.info( (System.nanoTime() - now)/(1000000));
+                TestLogProvider.info( (System.nanoTime() - now)/(1000000), ",", distance);
             });
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             e.printStackTrace();
