@@ -12,19 +12,17 @@ import core.data_structures.IMultidimensionalArray;
 import core.data_structures.IReadArray;
 import core.utils.HashingHelper;
 
+@align.annotations.Aligner(name="DTW")
 public class DTW extends Aligner {
 
-
-    ICellComparer comparer;
 
     @Override
     public String getName() {
         return "DTW";
     }
 
-    public DTW(int gap, ICellComparer comparer){
-        super(gap);
-        this.comparer = comparer;
+    public DTW(ICellComparer comparer){
+        super(comparer);
     }
 
     @Override
@@ -62,17 +60,17 @@ public class DTW extends Aligner {
                     result.set(0.0, i, j);
                 else if (i == 0)             // first column
                 {
-                    result.set(1.0*gap * j, i, j);
+                    result.set(1.0*getGapSymbol(j, ICellComparer.TRACE_DISCRIMINATOR.Y) * j, i, j);
                 } else if (j == 0)             // first row
                 {
-                    result.set(1.0*gap * i, i, j);
+                    result.set(1.0*getGapSymbol(i, ICellComparer.TRACE_DISCRIMINATOR.X) * i, i, j);
                 } else                         // not first column or first row
                 {
                     Double max = Math.min(
                             1.0 * result.get(i - 1, j - 1) + this.comparer.compare(trace1.read(i - 1), trace2.read(j - 1)),
                             Math.min(
-                                    1.0 * result.get(i - 1, j) + this.getGapSymbol(),
-                                    1.0 * result.get(i, j - 1) + this.getGapSymbol()
+                                    1.0 * result.get(i - 1, j) + getGapSymbol(i, ICellComparer.TRACE_DISCRIMINATOR.X),
+                                    1.0 * result.get(i, j - 1) + getGapSymbol(j, ICellComparer.TRACE_DISCRIMINATOR.Y)
                             )
                     );
 

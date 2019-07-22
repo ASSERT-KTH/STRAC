@@ -7,16 +7,16 @@ import scripts.Align;
 
 public abstract class Aligner {
 
-    protected int gap;
+    protected ICellComparer comparer;
 
-    protected Aligner(int gapValue){
-        this.gap = gapValue;
+    protected Aligner(ICellComparer comparer){
+        this.comparer = comparer;
     }
 
     public abstract String getName();
 
-    protected int getGapSymbol(){
-        return gap;
+    protected int getGapSymbol(int position, ICellComparer.TRACE_DISCRIMINATOR discriminator){
+        return comparer.gapCost(position, discriminator);
     }
 
     public abstract AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2);// Try to provide linked list arrays

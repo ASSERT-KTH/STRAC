@@ -1,7 +1,6 @@
 import align.implementations.DTW;
 import align.implementations.FastDTW;
 import align.implementations.IImplementationInfo;
-import align.implementations.LinearMemoryDTW;
 import core.LogProvider;
 import core.ServiceRegister;
 import core.TestLogProvider;
@@ -15,6 +14,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 
@@ -56,9 +56,10 @@ public class ConvergenceTest4 {
         Alignment dto = new Alignment();
         dto.method = new Payload.MethodInfo();
         dto.method.name = "DTW";
-        dto.method.params = new Object[]{
-                //5.0
-        };
+        dto.method.params = Arrays.asList(
+                5.0
+        );
+        dto.distanceFunctionName = "dBin";
         dto.comparison = new Alignment.Comparison();
         dto.comparison.gap = 1;
         dto.comparison.diff = 5;
@@ -73,23 +74,22 @@ public class ConvergenceTest4 {
                 f2
         );
 
-        comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        /* comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
         comparers.put("Linear", (objs) -> new LinearMemoryDTW(dto.comparison.gap,(x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
         comparers.put("FastDTW", (objs) -> new FastDTW(((Double)objs[0]).intValue()
-                , dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+                , dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));*/
 
-        AlignInterpreter interpreter = new AlignInterpreter(comparers, null);
-
-
+        AlignInterpreter interpreter = new AlignInterpreter(null);
 
 
-
-        interpreter.execute(dto, (distance, success, mismatch, gaps1, gaps2, total) -> {
-            TestLogProvider.info( "[",eq, ",", distance.getDistance(), ",", success, ",",  mismatch, ",", gaps1, ",",gaps2, ",",total, ",",
-                    String.format("\"%s\"", name),"],");
-        });
-
-
+        try {
+            interpreter.execute(dto, (distance, success, mismatch, gaps1, gaps2, total) -> {
+                TestLogProvider.info( "[",eq, ",", distance.getDistance(), ",", success, ",",  mismatch, ",", gaps1, ",",gaps2, ",",total, ",",
+                        String.format("\"%s\"", name),"],");
+            });
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
 
 
         System.gc();

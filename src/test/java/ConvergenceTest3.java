@@ -1,7 +1,6 @@
 import align.implementations.DTW;
 import align.implementations.FastDTW;
 import align.implementations.IImplementationInfo;
-import align.implementations.LinearMemoryDTW;
 import core.LogProvider;
 import core.ServiceRegister;
 import core.TestLogProvider;

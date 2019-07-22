@@ -12,23 +12,24 @@ import core.utils.DWTHelper;
 import core.utils.HashingHelper;
 import core.utils.TimeUtils;
 
+
+@align.annotations.Aligner(name="FastDTW")
 public class FastDTW extends Aligner {
 
 
     private int radius = 2;
-    private ICellComparer comparer;
 
     private DTW standard;
     private WindowedDTW windowed;
 
 
-    public FastDTW(int radius, int gap, ICellComparer comparer){
-        super(gap);
+    public FastDTW(ICellComparer comparer, Integer radius){
+        super(comparer);
         this.radius = radius;
         this.comparer = comparer;
 
-        this.standard = new DTW(gap,comparer);
-        this.windowed = new WindowedDTW(gap,comparer);
+        this.standard = new DTW(comparer);
+        this.windowed = new WindowedDTW(comparer);
     }
 
     @Override

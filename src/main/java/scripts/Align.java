@@ -3,7 +3,6 @@ package scripts;
 import align.implementations.DTW;
 import align.implementations.FastDTW;
 import align.implementations.IImplementationInfo;
-import align.implementations.LinearMemoryDTW;
 import com.google.gson.Gson;
 import core.LogProvider;
 import core.ServiceRegister;
@@ -54,14 +53,14 @@ public class Align {
 
         Alignment dto = new Gson().fromJson(new FileReader(args[0]), Alignment.class);
 
-        comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
-        comparers.put("Linear", (objs) -> new LinearMemoryDTW(dto.comparison.gap,(x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
-        comparers.put("FastDTW", (objs) -> new FastDTW(((Double)objs[0]).intValue()
-                , dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        //comparers.put("DTW", (objs) -> new DTW(dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        //comparers.put("Linear", (objs) -> new LinearMemoryDTW(dto.comparison.gap,(x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
+        //comparers.put("FastDTW", (objs) -> new FastDTW(((Double)objs[0]).intValue()
+         //       , dto.comparison.gap, (x, y) -> x == y? dto.comparison.eq: dto.comparison.diff));
 
         //PostgreInterface.setup(dto.dbHost, dto.dbPort, dto.dbName, dto.user, dto.password, false);
 
-        AlignInterpreter executor = new AlignInterpreter(comparers, ve);
+        AlignInterpreter executor = new AlignInterpreter(ve);
 
 
         try{

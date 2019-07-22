@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +36,9 @@ import static core.utils.HashingHelper.getRandomName;
 public class AlignInterpreter {
 
     VelocityEngine ve;
-    Map<String, IImplementationInfo> comparers;
 
-    public AlignInterpreter(Map<String, IImplementationInfo> comparers, VelocityEngine engine){
+    public AlignInterpreter(VelocityEngine engine){
         this.ve = engine;
-        this.comparers = comparers;
     }
 
 
@@ -48,24 +47,20 @@ public class AlignInterpreter {
     }
 
 
-    public void execute(Alignment dto) throws IOException {
+    public void execute(Alignment dto) throws IOException, IllegalAccessException, InvocationTargetException, InstantiationException {
         execute(dto,  null);
     }
 
-    public void execute(Alignment dto, IOnAlign action) throws IOException {
+    public void execute(Alignment dto, IOnAlign action) throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
 
 
         TraceHelper helper = new TraceHelper();
 
-        if(!comparers.containsKey(dto.method.name)){
-            LogProvider.info(comparers.keySet());
-            throw  new RuntimeException("Method nos allowed");
-        }
-
         LogProvider.info("Parsing traces");
 
         List<TraceMap> traces = helper.mapTraceSetByFileLine(dto.files, false, false);
-        Aligner align = comparers.get(dto.method.name).getAligner(dto.method.params);
+
+        Aligner align = ServiceRegister.getAligner(dto.method.name, dto.method.params.toArray(), ServiceRegister.getComparer(dto.distanceFunctionName));
 
 
         AlignResultDto resultDto = new AlignResultDto();

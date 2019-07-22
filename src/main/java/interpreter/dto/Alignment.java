@@ -18,6 +18,8 @@ public class Alignment extends BaseDto {
 
     public Comparison comparison;
 
+    public String distanceFunctionName;
+
     public String outputAlignmentMap;
 
     public static class Comparison{

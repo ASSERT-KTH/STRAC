@@ -1,5 +1,6 @@
 package interpreter.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,6 @@ public class Payload extends BaseDto {
 
         public String name;
 
-        public Object[] params;
+        public List<Object> params;
     }
 }

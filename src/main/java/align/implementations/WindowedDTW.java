@@ -17,32 +17,22 @@ import java.util.*;
 
 import static core.utils.HashingHelper.*;
 
+@align.annotations.Aligner(name="WindowDTW")
 public class WindowedDTW extends Aligner {
+
     @Override
     public String getName() {
         return "Windowed DTW";
     }
 
-    private ICellComparer comparer;
 
-    public WindowedDTW(int gap, ICellComparer comparer){
-        super(gap);
-        this.comparer = comparer;
+    public WindowedDTW(ICellComparer comparer){
+        super(comparer);
     }
 
     @Override
     public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2) {
         return this.align(trace1, trace2, null);
-    }
-
-    static long getMin(List<Long> ls){
-        long result = ls.get(0);
-
-        for(long l: ls)
-            if(result > l)
-                result = l;
-
-        return result;
     }
 
     public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2, Window window) {
@@ -76,10 +66,10 @@ public class WindowedDTW extends Aligner {
                     D.set(0.0, i, j);
                 else if (i == 0)             // first column
                 {
-                    D.set(1.0*gap * j, i, j);
+                    D.set(1.0*getGapSymbol(j, ICellComparer.TRACE_DISCRIMINATOR.Y) * j, i, j);
                 } else if (j == 0)             // first row
                 {
-                    D.set(1.0*gap * i, i, j);
+                    D.set(1.0*getGapSymbol(i, ICellComparer.TRACE_DISCRIMINATOR.X) * i, i, j);
                 } else                         // not first column or first row
                 {
                     long dt = comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
@@ -88,8 +78,8 @@ public class WindowedDTW extends Aligner {
                     D.set(Math.min(
                             D.getDefault( oo, window, i - 1, j - 1) + dt,
                             Math.min(
-                                    D.getDefault(oo, window,i - 1, j) + gap,
-                                    D.getDefault(oo,window, i, j - 1) + gap
+                                    D.getDefault(oo, window,i - 1, j) + getGapSymbol(i, ICellComparer.TRACE_DISCRIMINATOR.X),
+                                    D.getDefault(oo,window, i, j - 1) + getGapSymbol(j, ICellComparer.TRACE_DISCRIMINATOR.Y)
                             )
                     ), i, j);
                 }
