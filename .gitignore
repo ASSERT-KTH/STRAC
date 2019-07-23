@@ -13,3 +13,5 @@ temp_dst
 FastDTWTest.java
 
 dist
+
+local_tests/
