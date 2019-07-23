@@ -9,6 +9,9 @@ after_success:
 - mvn clean test jacoco:report coveralls:report
 deploy:
   provider: releases
+  user: xppcoder@gmail.com
+  password:
+    secure: fyuwSA62ctqgAVKQXikiAD4kcRgyTziAnPUTMttUADuCf1e7MvquvDv7A0pqtqwzqGgCfzge7ekvR4RKJ30IyFxRGilSxeeniHvGmNkyghAOd1LLPumbPkO5U5dv3CzpzDQ3gaTZwr5eUKHqi0sfZs5KA4Q+WW1uO12RxVc+XajUmy+SYQDcWg3EZ/kGHRaH0hhRRwZIAL1MvOe77M8au7HE0FrtwTFepTYb9UgNmfAqSRTR8/LDx7leqKtyiFbuZnBeJuSJIFC0ursRB8BBAVy20/tU2piBFgL1e8/gF1qfzxd404OdjEa/MLwP8bmugaP9w1T2XFKqnPv3JVWk27WM/obhsm17+n3qCD7VibtjqcD4vm5MxZpLWpzwlxTne9OR+gJ0XfLuO0w6MdFCyMK1/bxmmhQ4x/vAjFUKop3zATdHKJ42C/GIMA58aK0NGjQvP6i9NF41rw71bKkW4qj4Pco79S/NCXPuJyZ2Va7V/PS03R0SdIoqX7dkIN7ZpPngH4beHZ1kHLb8MA+FeWCM+ySxO1UfQxQ6lWYUG+LsJIdL1H0x3GJWEkt8SA+z+G2UfYW9fTnykFVRGXrda2hO/21l9SAHmtLda7iM5XyJxxJunESKSuCZRr+uDMHbP76rlxGZ5m1OfJe9CHIlQmhPHolfD6pCFr8kQZyN460=
   file: "/home/travis/build/Jacarte/STRAC/dist/*"
   skip_cleanup: true
   file_glob: true
@@ -17,6 +20,3 @@ deploy:
     branch: master
   name: STRAC
   body: STRAC
-  user: xppcoder@gmail.com
-  password:
-    secure: fyuwSA62ctqgAVKQXikiAD4kcRgyTziAnPUTMttUADuCf1e7MvquvDv7A0pqtqwzqGgCfzge7ekvR4RKJ30IyFxRGilSxeeniHvGmNkyghAOd1LLPumbPkO5U5dv3CzpzDQ3gaTZwr5eUKHqi0sfZs5KA4Q+WW1uO12RxVc+XajUmy+SYQDcWg3EZ/kGHRaH0hhRRwZIAL1MvOe77M8au7HE0FrtwTFepTYb9UgNmfAqSRTR8/LDx7leqKtyiFbuZnBeJuSJIFC0ursRB8BBAVy20/tU2piBFgL1e8/gF1qfzxd404OdjEa/MLwP8bmugaP9w1T2XFKqnPv3JVWk27WM/obhsm17+n3qCD7VibtjqcD4vm5MxZpLWpzwlxTne9OR+gJ0XfLuO0w6MdFCyMK1/bxmmhQ4x/vAjFUKop3zATdHKJ42C/GIMA58aK0NGjQvP6i9NF41rw71bKkW4qj4Pco79S/NCXPuJyZ2Va7V/PS03R0SdIoqX7dkIN7ZpPngH4beHZ1kHLb8MA+FeWCM+ySxO1UfQxQ6lWYUG+LsJIdL1H0x3GJWEkt8SA+z+G2UfYW9fTnykFVRGXrda2hO/21l9SAHmtLda7iM5XyJxxJunESKSuCZRr+uDMHbP76rlxGZ5m1OfJe9CHIlQmhPHolfD6pCFr8kQZyN460=
