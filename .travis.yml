@@ -12,3 +12,14 @@ script:
 
 after_success:
   - mvn clean test jacoco:report coveralls:report
+
+deploy:
+  provider: releases
+  file: "/home/travis/build/Jacarte/STRAC/dist/*"
+  skip_cleanup: true
+  file_glob: true
+  on:
+    repo: Jacarte/STRAC
+    branch: master
+  name: STRAC
+  body: STRAC
