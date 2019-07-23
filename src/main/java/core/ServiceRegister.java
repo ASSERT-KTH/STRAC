@@ -4,7 +4,11 @@ import align.Aligner;
 import align.Cell;
 import align.ICellComparer;
 import align.annotations.EventDistance;
+import align.event_distance.DInst;
+import align.implementations.DTW;
+import align.implementations.FastDTW;
 import align.implementations.WindowedDTW;
+import com.google.common.reflect.ClassPath;
 import core.data_structures.IArray;
 import core.data_structures.IDisposable;
 import core.data_structures.IMultidimensionalArray;
@@ -17,12 +21,19 @@ import core.data_structures.memory.InMemoryArray;
 import core.data_structures.memory.InMemoryLongArray;
 import core.data_structures.memory.InMemoryMultidimensional;
 import core.data_structures.memory.InMemoryWarpPath;
+import org.reflections.Reflections;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static core.utils.HashingHelper.getRandomName;
 
@@ -42,50 +53,43 @@ public class ServiceRegister {
     static boolean registered = false;
 
 
-    public static void setup(){
+    public static void setup() throws IOException, ClassNotFoundException {
+
+        //Registering native aligners
+        LogProvider.info(DTW.class, DInst.class, FastDTW.class, WindowedDTW.class);
 
         functionDistance = new HashMap<>();
         aligners = new HashMap<>();
 
-        ClassLoader classLoader = Aligner.class.getClassLoader();
-
-        Arrays
-                .stream(classLoader.getDefinedPackages())
-        .map(t -> new Tuple<>(t.getName(), t.getName().replace(".",  "/")))
-        .filter( t-> !t.item1.equals(""))
-        .map(t -> new Tuple<>(t.item1, new File(classLoader.getResource(t.item2).getFile())))
-        .filter(t -> t.item2.exists())
-        .flatMap( t -> Arrays.stream(
-                t.item2.list()).map(f ->
-                new Tuple<>(t.item1, f)
-                ))
-        .filter( t -> t.item2.endsWith(".class"))
-        .map(t -> new Tuple<>(t.item1, t.item2.substring(0, t.item2.length() - 6)))
-        .map(t -> loadClass(classLoader, t.item2, t.item1))
-        .filter( c -> c.getDeclaredAnnotation(align.annotations.Aligner.class) != null
-        || c.getDeclaredAnnotation(align.annotations.EventDistance.class) != null)
-        .forEach(t -> {
-
-            LogProvider.info("Registering class", t.getName());
-
-            EventDistance distanceAnnotation = (EventDistance) t.getDeclaredAnnotation(EventDistance.class);
-            align.annotations.Aligner alignerAnnotation  = (align.annotations.Aligner) t.getDeclaredAnnotation(align.annotations.Aligner.class);
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
 
-            if(distanceAnnotation != null){
-                try {
-                    functionDistance.put(distanceAnnotation.name(), (ICellComparer) t.getConstructors()[0].newInstance());
+        Reflections reflections = new Reflections("my.project");
 
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            }
+        Arrays.stream(loader.getDefinedPackages())
+                .flatMap(t -> new Reflections(t.getName()).getTypesAnnotatedWith(align.annotations.Aligner.class).stream())
+                .forEach(t -> {
 
-            if (alignerAnnotation != null) {
-                aligners.put(alignerAnnotation.name(), t);
-            }
-        })
-                ;
+                    LogProvider.info("Registering aligner...", t);
+                    aligners.put(t.getDeclaredAnnotation(align.annotations.Aligner.class).name(), (Class<? extends Aligner>)t);
+                });
+
+
+
+        Arrays.stream(loader.getDefinedPackages())
+                .flatMap(t -> new Reflections(t.getName()).getTypesAnnotatedWith(align.annotations.EventDistance.class).stream())
+                .forEach(t -> {
+
+                    LogProvider.info("Registering distance...", t);
+                    try {
+                        functionDistance.put((t.getDeclaredAnnotation(EventDistance.class)).name(),
+                                (ICellComparer) t.getDeclaredConstructors()[0].newInstance()
+                                );
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                });
+
 
         registered = true;
     }
@@ -118,6 +122,12 @@ public class ServiceRegister {
         for(int i = 0; i < constructorParameters.length; i++)
             parameters[i + 1] = constructorParameters[i];
 
+        LogProvider.info("Initializing aligner. Parameter types", comparer,
+                String.join(",", Arrays.stream(constructorParameters).map(t -> t.getClass().toString()).collect(Collectors.toList())));
+
+        LogProvider.info("Constructor types",
+                String.join(",", Arrays.stream(aligners.get(name).getConstructors()[0].getParameterTypes()).map(t -> t.toString()).collect(Collectors.toList())));
+
         return (Aligner) aligners.get(name).getConstructors()[0].newInstance(parameters);
     }
 
@@ -137,8 +147,6 @@ public class ServiceRegister {
 
         IMultidimensionalArray<Double> allocateDoubleBidimensionalMatrix(long maxI, long maxJ, ALLOCATION_METHOD method);
 */
-        if(!registered)
-            setup();
 
         if(_provider == null){
             _provider = new IServiceProvider() {

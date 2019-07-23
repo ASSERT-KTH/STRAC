@@ -43,6 +43,12 @@ public class AlignInterpreter {
     }
 
 
+    public AlignInterpreter(){
+        this.ve = null;
+    }
+
+
+
     public interface IOnAlign{
         void action(AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize);
     }
@@ -73,7 +79,7 @@ public class AlignInterpreter {
             });
         }
 
-        
+
         TraceHelper helper = new TraceHelper();
 
         LogProvider.info("Parsing traces");
@@ -271,7 +277,7 @@ public class AlignInterpreter {
                     }
                 }
 
-                if(dto.exportHTML){//dto.exportHTML){
+                if(dto.exportHTML && ve != null){//dto.exportHTML){
                     LogProvider.info("Exporting to html preview");
                     exportHTML(trace1Alignment, trace2Alignment, helper,
                             tr1.traceFile,

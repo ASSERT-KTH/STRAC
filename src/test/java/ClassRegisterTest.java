@@ -25,7 +25,7 @@ public class ClassRegisterTest {
 
 
     @Test
-    public void loadClasses(){
+    public void loadClasses() throws IOException, ClassNotFoundException {
 
 
         ServiceRegister.setup();

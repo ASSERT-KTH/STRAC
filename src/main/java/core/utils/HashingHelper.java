@@ -3,6 +3,7 @@ package core.utils;
 import core.data_structures.IReadArray;
 import core.data_structures.buffered.BufferedCollectionInteger;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.*;
 
@@ -72,6 +73,10 @@ public class HashingHelper {
     }
 
     public static String getRandomName(){
+
+        if(!new File("temp_dst").exists())
+            new File("temp_dst").mkdir();
+
         return String.format("temp_dst/%s",  UUID.randomUUID().toString());
     }
 

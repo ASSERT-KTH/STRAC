@@ -23,9 +23,9 @@ public class FastDTW extends Aligner {
     private WindowedDTW windowed;
 
 
-    public FastDTW(ICellComparer comparer, Integer radius){
+    public FastDTW(ICellComparer comparer, Double radius){
         super(comparer);
-        this.radius = radius;
+        this.radius = radius.intValue();
         this.comparer = comparer;
 
         this.standard = new DTW(comparer);
