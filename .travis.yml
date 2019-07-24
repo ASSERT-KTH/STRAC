@@ -3,7 +3,6 @@ jdk:
 - oraclejdk11
 install: true
 script:
-- mvn clean test
 - mvn clean package
 after_success:
 - mvn clean test jacoco:report coveralls:report
