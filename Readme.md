@@ -1,4 +1,4 @@
-# STRAC (Scalable Trace Comparison project)
+# STRAC (Scalable Trace Comparison project) [![Build Status](https://travis-ci.org/Jacarte/STRAC.svg?branch=master)](https://travis-ci.org/Jacarte/STRAC)
 
 One paragraph of project description goes here
 
@@ -80,8 +80,7 @@ If appropriate, explain how to become an integrator / merger
 
 Give a list of authors
 
-* Billie Thompson
-* Martin Monperrus
+* Javier Cabrera
 
 ## Acknowledgments
 
