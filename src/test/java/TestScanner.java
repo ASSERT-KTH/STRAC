@@ -9,7 +9,10 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
+
+/* @ Test scanner capacities */
 public class TestScanner {
+
 
     @Test
     public void testScanner() throws IOException, ClassNotFoundException {
