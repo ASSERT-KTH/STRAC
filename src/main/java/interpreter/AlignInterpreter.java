@@ -23,10 +23,7 @@ import javax.imageio.ImageIO;
 import javax.management.RuntimeErrorException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +81,13 @@ public class AlignInterpreter {
 
         LogProvider.info("Parsing traces");
 
-        List<TraceMap> traces = helper.mapTraceSetByFileLine(dto.files, false, false);
+        List<TraceMap> traces = helper.mapTraceSetByFileLine(dto.files, dto.separator == null ? "\r\n" : dto.separator, t -> {
+            try {
+                return new FileInputStream(t);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }, false);
 
         Aligner align = ServiceRegister.getAligner(dto.method.name, dto.method.params.toArray(), ServiceRegister.getComparer(dto.distanceFunctionName));
 

@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -87,65 +88,85 @@ public class TraceHelper {
         return result;
     }
 
+    public long countSentences(String separator, InputStream stream){
+        Scanner sc = new Scanner(stream, "UTF-8").useDelimiter(Pattern.compile(separator));
 
-    public TraceMap mapTraceFileByLine(String fileName, boolean createTree, boolean keepSentences) {
+        long count = 0;
+
+        while (sc.hasNext()) {
+            sc.next();
+            count++;
+        }
+
+        return count;
+    }
+
+    public TraceMap mapTraceFileByLine(String fileName, String separator, InputStream stream, boolean keepSentences) {
 
         LogProvider.LOGGER()
                 .info("Processing " + fileName);
 
-        IArray<Integer> trace ;
 
+        long count = countSentences(separator, stream);
 
         try {
+            stream.reset();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-            trace = updateBag(Files.lines(Paths.get(fileName)),
-                    Files.lines(Paths.get(fileName)),
-                    fileName);
-            trace.close();
+        IArray<Integer> trace = ServiceRegister.getProvider().allocateIntegerArray(null, count,
+                ServiceRegister.getProvider().selectMethod(count));
 
-            String[] sentences = null;
+
+        Scanner sc = new Scanner(stream, "UTF-8").useDelimiter(Pattern.compile(separator));
+
+
+        List<String> sentences = new ArrayList<>();
+        long index = 0;
+
+        while (sc.hasNext()) {
+            String line = sc.next();
 
             if(keepSentences)
-                sentences = Files.readAllLines(Paths.get(fileName)).toArray(new String[0]);
+                sentences.add(line);
 
-            LogProvider.info("New trace added size: ", trace.size());
+            trace.set(index++, updateBag(line));
 
-            core.LogProvider.LOGGER()
-                    .info(String.format("Global bag info: total sentences %s different sentences %s", this.getSentecesCount(), this.getDifferentSentenceCount()));
-
-            trace.close(); // Save caching
-
-            return new TraceMap(trace, fileName, createTree, sentences);
-        } catch (IOException e) {
-            e.printStackTrace();
-            core.LogProvider.info("Error", e.getMessage());
-
-            throw new RuntimeException("Error");
         }
+
+
+        LogProvider.info("New trace added size: ", index);
+
+        core.LogProvider.LOGGER()
+                .info(String.format("Global bag info: total sentences %s different sentences %s", this.getSentecesCount(), this.getDifferentSentenceCount()));
+
+
+        return new TraceMap(trace, fileName, sentences.toArray(new String[0]));
+
     }
 
-    public List<TraceMap> mapTraceSetByFileLine(List<String> files, boolean createTree, boolean keepSentences){
+    public List<TraceMap> mapTraceSetByFileLine(List<String> files, String separator, IStreamProvider provider, boolean keepSentences){
 
 
         return files.stream()
-                .map(t -> this.mapTraceFileByLine(t, createTree, keepSentences))
+                .map(t -> this.mapTraceFileByLine(t, separator, provider.getStream(t), keepSentences))
                 .collect(Collectors.toList());
 
     }
 
+    public interface IStreamProvider{
+        InputStream getStream(String filename);
+    }
 
 
-    public List<TraceMap> mapTraceSetByFileLine(List<String> files){
+    public List<TraceMap> mapTraceSetByFileLine(List<String> files, IStreamProvider provider){
 
 
         return files.stream()
-                .map(t -> this.mapTraceFileByLine(t, true, false))
+                .map(t -> this.mapTraceFileByLine(t, "\r\n", provider.getStream(t), false))
                 .collect(Collectors.toList());
 
-    }
-
-    public List<TraceMap> mapTraceSetByFileLine(String[] files){
-        return this.mapTraceSetByFileLine(Arrays.asList(files));
     }
 
 

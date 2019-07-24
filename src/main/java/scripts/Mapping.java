@@ -37,7 +37,13 @@ public class Mapping {
 
         TraceHelper helper = new TraceHelper();
 
-        List<TraceMap> traces = helper.mapTraceSetByFileLine(payload.files, false, false);
+        List<TraceMap> traces = helper.mapTraceSetByFileLine(payload.files, "\r\n",  t -> {
+            try {
+                return new FileInputStream(t);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }, false);
 
         /*
         for(TraceMap tr: traces){

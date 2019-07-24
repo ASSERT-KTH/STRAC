@@ -17,7 +17,7 @@ public class TraceMap {
     public String[] originalSentences;
 
 
-    public TraceMap(IReadArray<Integer> trace, String traceFile, boolean createTree, String[] originalTraces){
+    public TraceMap(IReadArray<Integer> trace, String traceFile,  String[] originalTraces){
 
 
         this.plainTrace = trace;
@@ -29,7 +29,7 @@ public class TraceMap {
         this.originalSentences = originalTraces;
     }
     public TraceMap(IReadArray<Integer> trace, String traceFile){
-        this(trace, traceFile, true, null);
+        this(trace, traceFile, null);
     }
 
 
