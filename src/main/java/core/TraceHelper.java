@@ -101,25 +101,20 @@ public class TraceHelper {
         return count;
     }
 
-    public TraceMap mapTraceFileByLine(String fileName, String separator, InputStream stream, boolean keepSentences) {
+    public TraceMap mapTraceFileByLine(String fileName, String separator, IStreamProvider provider, boolean keepSentences) {
 
         LogProvider.LOGGER()
                 .info("Processing " + fileName);
 
 
-        long count = countSentences(separator, stream);
+        long count = countSentences(separator, provider.getStream(fileName));
 
-        try {
-            stream.reset();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
         IArray<Integer> trace = ServiceRegister.getProvider().allocateIntegerArray(null, count,
                 ServiceRegister.getProvider().selectMethod(count));
 
 
-        Scanner sc = new Scanner(stream, "UTF-8").useDelimiter(Pattern.compile(separator));
+        Scanner sc = new Scanner(provider.getStream(fileName), "UTF-8").useDelimiter(Pattern.compile(separator));
 
 
         List<String> sentences = new ArrayList<>();
@@ -150,7 +145,7 @@ public class TraceHelper {
 
 
         return files.stream()
-                .map(t -> this.mapTraceFileByLine(t, separator, provider.getStream(t), keepSentences))
+                .map(t -> this.mapTraceFileByLine(t, separator, provider, keepSentences))
                 .collect(Collectors.toList());
 
     }
@@ -164,7 +159,7 @@ public class TraceHelper {
 
 
         return files.stream()
-                .map(t -> this.mapTraceFileByLine(t, "\r\n", provider.getStream(t), false))
+                .map(t -> this.mapTraceFileByLine(t, "\r\n", provider, false))
                 .collect(Collectors.toList());
 
     }
