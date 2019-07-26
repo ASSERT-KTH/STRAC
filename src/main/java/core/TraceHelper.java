@@ -54,8 +54,10 @@ public class TraceHelper {
             bag.put(sentence, bag.keySet().size() + 1);
             inverseBag.put(bag.keySet().size(), sentence);
 
+            return this.bag.keySet().size();
         }
-        return this.bag.keySet().size();
+
+        return bag.get(sentence);
     }
 
     public IArray<Integer> updateBag(Stream<String> sentences,
@@ -88,45 +90,61 @@ public class TraceHelper {
         return result;
     }
 
-    public long countSentences(String separator, InputStream stream){
-        Scanner sc = new Scanner(stream, "UTF-8").useDelimiter(Pattern.compile(separator));
+    public long countSentences(String separator, String[] remove,  InputStream stream, IHasNext hasNextIterator, INextProvider sentenceProvider){
+
+        Scanner sc = sentenceProvider.setupScanner(new Scanner(stream, "UTF-8"), separator);
 
         long count = 0;
 
-        while (sc.hasNext()) {
-            sc.next();
-            count++;
+        while (hasNextIterator.hasNext(separator, sc)) {
+            String line = sentenceProvider.getNext(separator, sc);
+
+            for(String pattern: remove)
+                line = line.replaceAll(pattern, "");
+
+            line = line.trim();
+
+            if(!line.equals(""))
+                count++;
         }
 
         return count;
     }
 
-    public TraceMap mapTraceFileByLine(String fileName, String separator, IStreamProvider provider, boolean keepSentences) {
+    public TraceMap mapTraceFileByLine(String fileName, String separator, String[] remove, IStreamProvider provider,
+                                       boolean keepSentences, IHasNext hasNextIterator, INextProvider sentenceProvider) {
 
         LogProvider.LOGGER()
                 .info("Processing " + fileName);
 
 
-        long count = countSentences(separator, provider.getStream(fileName));
+        long count = countSentences(separator, remove, provider.getStream(fileName), hasNextIterator, sentenceProvider);
 
 
         IArray<Integer> trace = ServiceRegister.getProvider().allocateIntegerArray(null, count,
                 ServiceRegister.getProvider().selectMethod(count));
 
 
-        Scanner sc = new Scanner(provider.getStream(fileName), "UTF-8").useDelimiter(Pattern.compile(separator));
+        Scanner sc = sentenceProvider.setupScanner(new Scanner(provider.getStream(fileName), "UTF-8"), separator);
 
 
         List<String> sentences = new ArrayList<>();
         long index = 0;
 
-        while (sc.hasNext()) {
-            String line = sc.next();
+        while (hasNextIterator.hasNext(separator, sc)) {
+            String line = sentenceProvider.getNext(separator, sc);
 
-            if(keepSentences)
+
+            for(String pattern: remove)
+                line = line.replaceAll(pattern, "");
+
+            line = line.trim();
+
+            if(keepSentences && !line.equals(""))
                 sentences.add(line);
 
-            trace.set(index++, updateBag(line));
+            if(!line.equals(""))
+                trace.set(index++, updateBag(line));
 
         }
 
@@ -141,28 +159,52 @@ public class TraceHelper {
 
     }
 
-    public List<TraceMap> mapTraceSetByFileLine(List<String> files, String separator, IStreamProvider provider, boolean keepSentences){
+    public List<TraceMap> mapTraceSetByFileLine(List<String> files, String separator,  IStreamProvider provider,
+                                                boolean keepSentences, boolean complement) {
 
+        return mapTraceSetByFileLine(files, separator, new String[0], provider, keepSentences, complement);
+
+    }
+
+    public List<TraceMap> mapTraceSetByFileLine(List<String> files, String separator, String[] remove, IStreamProvider provider,
+                                                boolean keepSentences, boolean complement){
+
+
+        IHasNext separatorProvider = (pattern, sc) -> sc.hasNext();
+
+        INextProvider sentenceProvider = new INextProvider() {
+            @Override
+            public String getNext(String pattern, Scanner sc) {
+                return sc.next();
+            }
+
+            @Override
+            public Scanner setupScanner(Scanner sc, String pattern) {
+                return sc.useDelimiter(Pattern.compile(separator));
+            }
+        };
 
         return files.stream()
-                .map(t -> this.mapTraceFileByLine(t, separator, provider, keepSentences))
+                .map(t -> this.mapTraceFileByLine(t, separator, remove, provider, keepSentences, separatorProvider, sentenceProvider))
                 .collect(Collectors.toList());
 
+    }
+
+    public interface IHasNext{
+        boolean hasNext(String pattern, Scanner sc);
+    }
+
+    public interface INextProvider{
+
+        String getNext(String pattern, Scanner sc);
+
+        Scanner setupScanner(Scanner sc, String pattern);
     }
 
     public interface IStreamProvider{
         InputStream getStream(String filename);
     }
 
-
-    public List<TraceMap> mapTraceSetByFileLine(List<String> files, IStreamProvider provider){
-
-
-        return files.stream()
-                .map(t -> this.mapTraceFileByLine(t, "\r\n", provider, false))
-                .collect(Collectors.toList());
-
-    }
 
 
     public void save(String filePath) throws IOException {

@@ -4,7 +4,6 @@ import align.AlignDistance;
 import align.Aligner;
 import align.Cell;
 import align.ICellComparer;
-import align.implementations.IImplementationInfo;
 import com.google.gson.Gson;
 import core.LogProvider;
 import core.ServiceRegister;
@@ -20,14 +19,12 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import javax.imageio.ImageIO;
-import javax.management.RuntimeErrorException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static core.utils.HashingHelper.getRandomName;
 
@@ -52,10 +49,26 @@ public class AlignInterpreter {
 
 
     public void execute(Alignment dto) throws IOException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        execute(dto,  null);
+        execute(dto,  null, t -> {
+            try {
+                return new FileInputStream(t);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
-    public void execute(Alignment dto, IOnAlign action) throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
+    public void execute(Alignment dto, IOnAlign action) throws InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+        execute(dto, action, t -> {
+            try {
+                return new FileInputStream(t);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public void execute(Alignment dto, IOnAlign action, TraceHelper.IStreamProvider provider) throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
 
 
         if(dto.distanceFunctionName == null){
@@ -81,13 +94,7 @@ public class AlignInterpreter {
 
         LogProvider.info("Parsing traces");
 
-        List<TraceMap> traces = helper.mapTraceSetByFileLine(dto.files, dto.separator == null ? "\r\n" : dto.separator, t -> {
-            try {
-                return new FileInputStream(t);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }, false);
+        List<TraceMap> traces = helper.mapTraceSetByFileLine(dto.files, dto.separator == null ? "\r\n" : dto.separator, dto.clean == null? new String[0]: dto.clean, provider , false, false);
 
         Aligner align = ServiceRegister.getAligner(dto.method.name, dto.method.params.toArray(), ServiceRegister.getComparer(dto.distanceFunctionName));
 
@@ -237,7 +244,6 @@ public class AlignInterpreter {
 
 
                 LogProvider.info("DTW Distance", distance.getDistance());
-                LogProvider.info("Distance (How many coincidences percent)", total/(totalNonGaps), total, totalNonGaps);
 
                 if(action != null)
                     action.action(distance, total, mismatch, gaps1, gaps2, trace1Alignment.size());

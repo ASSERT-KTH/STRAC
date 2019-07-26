@@ -8,10 +8,12 @@ import org.junit.Test;
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 
 
 /* @ Test scanner capacities */
-public class TestScanner {
+public class TestScanner extends BaseResourceFileTest {
 
 
     @Test
@@ -25,7 +27,7 @@ public class TestScanner {
         List<TraceMap> map = helper.mapTraceSetByFileLine(Arrays.asList("test"), ",", t -> {
 
             return new ByteArrayInputStream("hello, world, hello, 1, 2, 3".getBytes());
-        }, false);
+        }, false, false);
 
         Assert.assertEquals(6, map.get(0).plainTrace.size());
     }
@@ -42,7 +44,7 @@ public class TestScanner {
         List<TraceMap> map = helper.mapTraceSetByFileLine(Arrays.asList("test"), ", |m", t -> {
 
             return new ByteArrayInputStream("hello, world, hello, 1, 2, 3m".getBytes());
-        }, true);
+        }, true, false);
 
         Assert.assertEquals(6, map.get(0).plainTrace.size());
     }
@@ -59,14 +61,7 @@ public class TestScanner {
 
         TraceHelper helper = new TraceHelper();
 
-        List<TraceMap> map = helper.mapTraceSetByFileLine(Arrays.asList("test"), "\r|\n", t -> {
-
-            try {
-                return new FileInputStream(classLoader.getResource("test.file").getFile());
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }, true);
+        List<TraceMap> map = helper.mapTraceSetByFileLine(Arrays.asList("test"), "\r|\n", t -> getFile("test.file"), true, false);
 
         Assert.assertEquals(16, map.get(0).plainTrace.size());
 
@@ -80,20 +75,9 @@ public class TestScanner {
         ServiceRegister.setup();
         ServiceRegister.getProvider();
 
-
-
-        ClassLoader classLoader = getClass().getClassLoader();
-
         TraceHelper helper = new TraceHelper();
 
-        List<TraceMap> map = helper.mapTraceSetByFileLine(Arrays.asList("test"), ",", t -> {
-
-            try {
-                return new FileInputStream(classLoader.getResource("test2.file").getFile());
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }, true);
+        List<TraceMap> map = helper.mapTraceSetByFileLine(Arrays.asList("test"), ",", t -> getFile("test2.file"), true, false);
 
         Assert.assertEquals(11, map.get(0).plainTrace.size());
 
@@ -101,4 +85,91 @@ public class TestScanner {
         for(String sentence: map.get(0).originalSentences)
             LogProvider.info(sentence);
     }
+
+
+    @Test
+    public void testFileStreamComplement() throws IOException, ClassNotFoundException {
+
+        ServiceRegister.setup();
+        ServiceRegister.getProvider();
+
+        TraceHelper helper = new TraceHelper();
+
+        List<TraceMap> map = helper.mapTraceSetByFileLine(Arrays.asList("test"), "\\d+", t -> getFile("test.file"), true, true);
+
+        Assert.assertEquals(16, map.get(0).plainTrace.size());
+
+
+        for(String sentence: map.get(0).originalSentences)
+            LogProvider.info(sentence);
+    }
+
+    @Test
+    public void testBytecodeOperatorPlusOperands() throws IOException, ClassNotFoundException {
+
+        ServiceRegister.setup();
+        ServiceRegister.getProvider();
+
+
+        TraceHelper helper = new TraceHelper();
+
+        //                                                                               header 3717 E> 0x468d544a1e @   EOL    jump address           address
+        List<TraceMap> map = helper.mapTraceSetByFileLine(Arrays.asList("bytecode.txt", "pure.txt"), "[\n\r]", new String[] {
+                        "( )*\\d+ [ES]>",
+                        "0x\\w+ @",
+                        "\\w+ : ([0-9a-f]{2} )+( )*",
+                        "\\(.*\\)",
+                        "\\{.*\\}"
+
+                },
+                t -> getFile(t),
+                true, false);
+
+        Assert.assertEquals(map.get(0).plainTrace.size(), map.get(1).plainTrace.size());
+
+    }
+
+
+    @Test
+    public void testBytecodeOperatorOnly() throws IOException, ClassNotFoundException {
+
+        ServiceRegister.setup();
+        ServiceRegister.getProvider();
+
+
+        TraceHelper helper = new TraceHelper();
+
+        //                                                                               header 3717 E> 0x468d544a1e @   EOL    jump address           address
+        List<TraceMap> map = helper.mapTraceSetByFileLine(Arrays.asList("bytecode.txt"), "[\r\n]",new String[]{
+                        "( )*\\d+ [ES]>",
+                        "0x\\w+ @",
+                        "\\w+ : ",
+                        "[A-Z](.*)",
+                        "\\(.*\\)",
+                        "\\{.*\\}",
+                        "r[0-9]+[,-]?",
+                        "<this>[,-]?",
+                        "<closure>[,-]?",
+                        "<context>[,-]?",
+                        "\\[\\w+\\][,-]?",
+                        "#\\w+[,-]?"
+                },
+                t -> getFile(t),
+                true, false);
+
+
+        int count = 0;
+
+        for(String s: map.get(0).originalSentences){
+
+            //if(s.split(" ").length > 1)
+                LogProvider.info(s, count);
+
+            count++;
+        }
+
+    }
+
+
+
 }

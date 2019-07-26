@@ -24,6 +24,8 @@ public class Alignment extends BaseDto {
 
     public String separator;
 
+    public String[] clean;
+
     public static class Comparison{
         public int diff;
         public int eq;

@@ -21,7 +21,7 @@ public class Mapping {
 
     public static void main(String[] args) throws IOException, SQLException, ParseException {
 
-        setup();
+        /*setup();
 
 
 
@@ -43,7 +43,7 @@ public class Mapping {
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
-        }, false);
+        }, false, payload.com);
 
         /*
         for(TraceMap tr: traces){
@@ -51,7 +51,7 @@ public class Mapping {
 
             wr.write(new Gson().toJson(tr.plainTrace));
             wr.close();
-        }*/
+        }
 
         for(TraceMap tr: traces){
 
@@ -62,7 +62,7 @@ public class Mapping {
             }
 
             wr.close();
-        }
+        }*/
 
     }
 }

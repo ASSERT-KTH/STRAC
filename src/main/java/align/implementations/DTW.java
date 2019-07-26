@@ -66,22 +66,27 @@ public class DTW extends Aligner {
                     result.set(1.0*getGapSymbol(i, ICellComparer.TRACE_DISCRIMINATOR.X) * i, i, j);
                 } else                         // not first column or first row
                 {
-                    Double max = Math.min(
-                            1.0 * result.get(i - 1, j - 1) + this.comparer.compare(trace1.read(i - 1), trace2.read(j - 1)),
-                            Math.min(
-                                    1.0 * result.get(i - 1, j) + getGapSymbol(i, ICellComparer.TRACE_DISCRIMINATOR.X),
-                                    1.0 * result.get(i, j - 1) + getGapSymbol(j, ICellComparer.TRACE_DISCRIMINATOR.Y)
-                            )
-                    );
+                    try {
+                        Double max = Math.min(
+                                1.0 * result.get(i - 1, j - 1) + this.comparer.compare(trace1.read(i - 1), trace2.read(j - 1)),
+                                Math.min(
+                                        1.0 * result.get(i - 1, j) + getGapSymbol(i, ICellComparer.TRACE_DISCRIMINATOR.X),
+                                        1.0 * result.get(i, j - 1) + getGapSymbol(j, ICellComparer.TRACE_DISCRIMINATOR.Y)
+                                )
+                        );
 
-                    double progress = (i * trace2.size() + j * 1.0) / (trace1.size() * trace2.size());
+                        double progress = (i * trace2.size() + j * 1.0) / (trace1.size() * trace2.size());
 
-                    if (progress - last >= 0.1) {
-                        LogProvider.info(progress * 100, "%");
-                        last = progress;
+                        if (progress - last >= 0.1) {
+                            LogProvider.info(progress * 100, "%");
+                            last = progress;
+                        }
+
+                        result.set(max, i, j);
                     }
-
-                    result.set(max, i, j);
+                    catch (Exception e){
+                        throw new RuntimeException(e);
+                    }
                 }
             }
 
