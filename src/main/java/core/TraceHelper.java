@@ -6,6 +6,7 @@ import core.data_structures.IArray;
 import core.data_structures.memory.InMemoryArray;
 import core.models.TraceMap;
 import core.utils.HashingHelper;
+import interpreter.dto.Alignment;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
@@ -13,6 +14,8 @@ import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -111,7 +114,7 @@ public class TraceHelper {
         return count;
     }
 
-    public TraceMap mapTraceFileByLine(String fileName, String separator, String[] remove, IStreamProvider provider,
+    public TraceMap mapTraceFileByLine(String fileName, String separator, String[] remove, Alignment.Include include, IStreamProvider provider,
                                        boolean keepSentences, IHasNext hasNextIterator, INextProvider sentenceProvider) {
 
         LogProvider.LOGGER()
@@ -140,8 +143,23 @@ public class TraceHelper {
 
             line = line.trim();
 
+            if(include != null) {
+
+                Pattern p = Pattern.compile(include.pattern);
+
+                Matcher m = p.matcher(line);
+
+                MatchResult r = m.toMatchResult();
+                while(m.find()){
+                    line = m.group(include.group);
+                    break;
+                }
+            }
+
+
             if(keepSentences && !line.equals(""))
                 sentences.add(line);
+
 
             if(!line.equals(""))
                 trace.set(index++, updateBag(line));
@@ -162,11 +180,11 @@ public class TraceHelper {
     public List<TraceMap> mapTraceSetByFileLine(List<String> files, String separator,  IStreamProvider provider,
                                                 boolean keepSentences, boolean complement) {
 
-        return mapTraceSetByFileLine(files, separator, new String[0], provider, keepSentences, complement);
+        return mapTraceSetByFileLine(files, separator, new String[0], null, provider, keepSentences, complement);
 
     }
 
-    public List<TraceMap> mapTraceSetByFileLine(List<String> files, String separator, String[] remove, IStreamProvider provider,
+    public List<TraceMap> mapTraceSetByFileLine(List<String> files, String separator, String[] remove, Alignment.Include include, IStreamProvider provider,
                                                 boolean keepSentences, boolean complement){
 
 
@@ -185,7 +203,7 @@ public class TraceHelper {
         };
 
         return files.stream()
-                .map(t -> this.mapTraceFileByLine(t, separator, remove, provider, keepSentences, separatorProvider, sentenceProvider))
+                .map(t -> this.mapTraceFileByLine(t, separator, remove, include, provider, keepSentences, separatorProvider, sentenceProvider))
                 .collect(Collectors.toList());
 
     }

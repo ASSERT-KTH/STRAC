@@ -94,7 +94,7 @@ public class AlignInterpreter {
 
         LogProvider.info("Parsing traces");
 
-        List<TraceMap> traces = helper.mapTraceSetByFileLine(dto.files, dto.separator == null ? "\r\n" : dto.separator, dto.clean == null? new String[0]: dto.clean, provider , false, false);
+        List<TraceMap> traces = helper.mapTraceSetByFileLine(dto.files, dto.separator == null ? "\r\n" : dto.separator, dto.clean == null? new String[0]: dto.clean, dto.include, provider , false, false);
 
         Aligner align = ServiceRegister.getAligner(dto.method.name, dto.method.params.toArray(), ServiceRegister.getComparer(dto.distanceFunctionName));
 

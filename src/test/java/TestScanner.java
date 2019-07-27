@@ -2,6 +2,7 @@ import core.LogProvider;
 import core.ServiceRegister;
 import core.TraceHelper;
 import core.models.TraceMap;
+import interpreter.dto.Alignment;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -121,7 +122,7 @@ public class TestScanner extends BaseResourceFileTest {
                         "\\(.*\\)",
                         "\\{.*\\}"
 
-                },
+                }, null,
                 t -> getFile(t),
                 true, false);
 
@@ -153,23 +154,49 @@ public class TestScanner extends BaseResourceFileTest {
                         "<context>[,-]?",
                         "\\[\\w+\\][,-]?",
                         "#\\w+[,-]?"
-                },
+                }, null,
                 t -> getFile(t),
                 true, false);
 
 
-        int count = 0;
-
-        for(String s: map.get(0).originalSentences){
-
-            //if(s.split(" ").length > 1)
-                LogProvider.info(s, count);
-
-            count++;
-        }
 
     }
 
 
+
+    @Test
+    public void testTraceHelperRegexpCapabilities() throws IOException, ClassNotFoundException {
+
+        ServiceRegister.setup();
+        ServiceRegister.getProvider();
+
+
+        TraceHelper helper = new TraceHelper();
+
+        Alignment.Include in = new Alignment.Include();
+        in.pattern="^([0-9a-f]{2}) ([0-9a-f]{2} )*";
+        in.group = 1;
+
+        //                                                                               header 3717 E> 0x468d544a1e @   EOL    jump address           address
+        List<TraceMap> map = helper.mapTraceSetByFileLine(Arrays.asList("bytecode.txt"), "[\n\r]", new String[] {
+                        "( )*\\d+ [ES]>",
+                        "0x\\w+ @",
+                        "\\w+ : ",
+                        " [A-Z](.*)"
+
+                }, in ,
+                t -> getFile(t),
+                true, false);
+
+        int count = 0;
+        for(String sentence: map.get(0).originalSentences) {
+            LogProvider.info(sentence);
+
+            if(count++ > 50)
+                break;
+        }
+
+
+    }
 
 }

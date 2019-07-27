@@ -26,6 +26,16 @@ public class Alignment extends BaseDto {
 
     public String[] clean;
 
+    public Include include;
+
+    public static class Include {
+
+        public String pattern;
+        public int group;
+
+
+    }
+
     public static class Comparison{
         public int diff;
         public int eq;

@@ -34,10 +34,50 @@ public class TestAligners extends BaseResourceFileTest {
                 "( )*\\d+ [ES]>",
                 "0x\\w+ @",
                 "\\w+ : ",
-                " [A-Z](.*)",
-                "\\(.*\\)",
-                "\\{.*\\}"
+                " [A-Z](.*)"
         };
+        dto.outputDir="reports";
+        //dto.exportImage = true;
+
+
+        dto.files = Arrays.asList(
+                "bytecodes/wikipedia.org.bytecode",
+                "bytecodes/wikipedia.1.org.bytecode"
+        );
+
+        AlignInterpreter interpreter = new AlignInterpreter(null);
+
+
+        interpreter.execute(dto, null, this::getFile);
+
+
+    }
+
+
+    @Test
+    public void testDTW3() throws InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+        Alignment dto = new Alignment();
+        dto.method = new Payload.MethodInfo();
+        dto.method.name = "DTW";
+        dto.method.params = Arrays.asList();
+        //dto.distanceFunctionName = "dBin";
+        dto.comparison = new Alignment.Comparison();
+        dto.comparison.gap = 1;
+        dto.comparison.diff = 5;
+        dto.comparison.eq = 0;
+        dto.pairs = new ArrayList<>();
+        dto.outputAlignment = true;
+        dto.separator ="[\n\r]";
+        dto.clean =new String[] {
+                "( )*\\d+ [ES]>",
+                "0x\\w+ @",
+                "\\w+ : ",
+                " [A-Z](.*)"
+        };
+        dto.include = new Alignment.Include();
+        dto.include.pattern = "^(\\[0-9]{2})";
+        dto.include.group = 0;
+
         dto.outputDir="reports";
         //dto.exportImage = true;
 
