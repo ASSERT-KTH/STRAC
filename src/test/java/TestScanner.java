@@ -3,14 +3,13 @@ import core.ServiceRegister;
 import core.TraceHelper;
 import core.models.TraceMap;
 import interpreter.dto.Alignment;
+import local_tests.BaseResourceFileTest;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Pattern;
 
 
 /* @ Test scanner capacities */
