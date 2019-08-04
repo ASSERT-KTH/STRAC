@@ -45,7 +45,7 @@ STRAC, a scalable and extensible tool tailored to compare bytecode traces genera
 
 ### Releases
 
-[Last release](https://github.com/Jacarte/STRAC/releases/tag/0.11)
+[Lastest release](https://github.com/Jacarte/STRAC/releases/tag/0.11)
 
 ## Authors
 
