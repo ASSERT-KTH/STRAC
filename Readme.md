@@ -10,7 +10,7 @@ STRAC, a scalable and extensible tool tailored to compare bytecode traces genera
 ### Payload json format
 
 
-```json
+```javascript
     
 {
   "files": ["file1", "file2", ..., "filex"],
