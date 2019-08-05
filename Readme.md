@@ -5,7 +5,7 @@ STRAC, a scalable and extensible tool tailored to compare bytecode traces genera
 
 ## Getting Started
 - Download release files
-    - java -jar STRAC.jar [payload.json]
+- Execute  ```java -jar STRAC.jar [payload.json]```
 
 ### Payload json format
 
@@ -21,7 +21,7 @@ STRAC, a scalable and extensible tool tailored to compare bytecode traces genera
   },
   "outputAlignment": true, // output aligned trace
   "distanceFunctionName": "dSen", // built in distance function
-  "separator": "\r\n", // event separator in the log file
+  "separator": "[\r\n]", // event separator in the log file
   "clean": ["@", "[\r\t\n ]"], // Clean log event using Java regular expressions pressent in the array
   "include": {
     "pattern": "(\\d)",
@@ -36,6 +36,48 @@ STRAC, a scalable and extensible tool tailored to compare bytecode traces genera
 }
 
 ```
+
+#### How STRAC process files
+
+STRAC processes files using a protocol discriminator in the following order:
+- Network fetching: ```https://something.something```
+- File path: ```/file.txt```
+- Command standard output: ```chrome --js-flags="--print-bytecode" http://www.google.com```
+
+If the provided file cannot pass any of the previous providers, a runtime exception is invoked
+
+#### Practical payload example
+
+```json
+{
+  "files": ["chrome --js-flags=\"--print-bytecode\" http://www.google.com",
+   "chrome --js-flags=\"--print-bytecode\" http://www.github.com"],
+  "pairs": [] , 
+  "method": {
+    "name": "FastDTW",
+    "params": [100.0] 
+  },
+  "outputAlignment": true,
+  "distanceFunctionName": "dBin",
+  "separator": "[\r\n]",
+  "clean": ["( )*\\d+ [ES]>",
+            "0x\\w+ @",
+            "\\w+ : ",
+            " [A-Z](.*)"], 
+  "include": {
+    "pattern": "(\\d)",
+    "group": 0
+  },
+  "comparison": { 
+    "eq": 0,
+    "diff":5,
+    "gap": 1
+  }
+  
+}
+```
+
+
 
 ### Using STRAC from code
 
