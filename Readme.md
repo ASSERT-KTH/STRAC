@@ -101,7 +101,7 @@ Explain about STRAC uses event distances
 
 ### Releases
 
-[Last release](https://github.com/Jacarte/STRAC/releases/tag/0.11)
+[Lastest release](https://github.com/Jacarte/STRAC/releases/tag/0.11)
 
 ## Authors
 
