@@ -10,7 +10,7 @@ STRAC, a scalable and extensible tool tailored to compare bytecode traces genera
 ### Payload json format
 
 
-```json
+```javascript
     
 {
   "files": ["file1", "file2", ..., "filex"],
@@ -36,6 +36,20 @@ STRAC, a scalable and extensible tool tailored to compare bytecode traces genera
 }
 
 ```
+
+### Using STRAC from code
+
+### How to extend STRAC
+
+#### Define new Aligner
+
+Explain about STRAC uses reflection to register new aligners
+
+#### Define new event distance
+
+Explain about STRAC uses event distances
+
+
 
 ### Prerequisites
 

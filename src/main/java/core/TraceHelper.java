@@ -220,9 +220,11 @@ public class TraceHelper {
     }
 
     public interface IStreamProvider{
-        InputStream getStream(String filename);
-    }
 
+        InputStream getStream(String filename);
+
+        boolean validate(String filename);
+    }
 
 
     public void save(String filePath) throws IOException {

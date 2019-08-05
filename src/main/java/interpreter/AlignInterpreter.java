@@ -7,6 +7,7 @@ import align.ICellComparer;
 import com.google.gson.Gson;
 import core.LogProvider;
 import core.ServiceRegister;
+import core.StreamProviderFactory;
 import core.TraceHelper;
 import core.data_structures.IArray;
 import core.data_structures.IReadArray;
@@ -49,23 +50,11 @@ public class AlignInterpreter {
 
 
     public void execute(Alignment dto) throws IOException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        execute(dto,  null, t -> {
-            try {
-                return new FileInputStream(t);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        execute(dto,  null, StreamProviderFactory.getInstance());
     }
 
     public void execute(Alignment dto, IOnAlign action) throws InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
-        execute(dto, action, t -> {
-            try {
-                return new FileInputStream(t);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        execute(dto, action,StreamProviderFactory.getInstance());
     }
 
     public void execute(Alignment dto, IOnAlign action, TraceHelper.IStreamProvider provider) throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
