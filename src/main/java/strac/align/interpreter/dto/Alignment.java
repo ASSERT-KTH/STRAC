@@ -1,6 +1,6 @@
 package strac.align.interpreter.dto;
 
-import core.dto.FileContentDto;
+import strac.core.dto.FileContentDto;
 
 import java.util.List;
 

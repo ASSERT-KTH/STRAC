@@ -6,10 +6,10 @@ import strac.align.align.ICellComparer;
 import strac.align.align.Cell;
 import strac.align.utils.AlignServiceProvider;
 import strac.align.utils.IAlignAllocator;
-import core.LogProvider;
-import core.data_structures.IArray;
-import core.data_structures.IMultidimensionalArray;
-import core.data_structures.IReadArray;
+import strac.core.LogProvider;
+import strac.core.data_structures.IArray;
+import strac.core.data_structures.IMultidimensionalArray;
+import strac.core.data_structures.IReadArray;
 
 @strac.align.align.annotations.Aligner(name="DTW")
 public class DTW extends Aligner {

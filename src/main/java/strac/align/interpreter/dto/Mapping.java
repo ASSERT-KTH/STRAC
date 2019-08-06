@@ -1,6 +1,6 @@
 package strac.align.interpreter.dto;
 
-import core.dto.BaseDto;
+import strac.core.dto.BaseDto;
 
 public class Mapping extends BaseDto {
 

@@ -1,7 +1,7 @@
 package strac.align.align;
 
-import core.data_structures.IArray;
-import core.data_structures.IReadArray;
+import strac.core.data_structures.IArray;
+import strac.core.data_structures.IReadArray;
 
 public class AlignDistance {
 

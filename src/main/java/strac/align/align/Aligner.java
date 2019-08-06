@@ -1,6 +1,6 @@
 package strac.align.align;
 
-import core.data_structures.IReadArray;
+import strac.core.data_structures.IReadArray;
 
 
 public abstract class Aligner {

@@ -5,13 +5,13 @@ import strac.align.align.Aligner;
 import strac.align.align.Cell;
 import strac.align.align.ICellComparer;
 import com.google.gson.Gson;
-import core.LogProvider;
-import core.StreamProviderFactory;
-import core.TraceHelper;
-import core.data_structures.IArray;
-import core.data_structures.IReadArray;
+import strac.core.LogProvider;
+import strac.core.StreamProviderFactory;
+import strac.core.TraceHelper;
+import strac.core.data_structures.IArray;
+import strac.core.data_structures.IReadArray;
 import strac.align.models.AlignResultDto;
-import core.models.TraceMap;
+import strac.core.models.TraceMap;
 import strac.align.interpreter.dto.Alignment;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.velocity.Template;
@@ -27,7 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static core.utils.HashingHelper.getRandomName;
+import static strac.core.utils.HashingHelper.getRandomName;
 
 public class AlignInterpreter {
 

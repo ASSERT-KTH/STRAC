@@ -1,8 +1,8 @@
 package strac.align.align.data_structures;
 
 import strac.align.align.implementations.WindowedDTW;
-import core.data_structures.IMultidimensionalArray;
-import core.data_structures.IWindow;
+import strac.core.data_structures.IMultidimensionalArray;
+import strac.core.data_structures.IWindow;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

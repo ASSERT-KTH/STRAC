@@ -1,7 +1,7 @@
 package strac.align.align.data_structures;
 
 import strac.align.align.Cell;
-import core.data_structures.buffered.BufferedCollection;
+import strac.core.data_structures.buffered.BufferedCollection;
 
 import java.nio.ByteBuffer;
 

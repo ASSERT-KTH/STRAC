@@ -1,6 +1,6 @@
-import core.LogProvider;
-import core.stream_providers.CommandStdInputProvider;
-import core.stream_providers.NetworkInputProvider;
+import strac.core.LogProvider;
+import strac.core.stream_providers.CommandStdInputProvider;
+import strac.core.stream_providers.NetworkInputProvider;
 import org.junit.Assert;
 import org.junit.Test;
 

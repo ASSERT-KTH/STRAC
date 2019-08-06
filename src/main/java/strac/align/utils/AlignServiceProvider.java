@@ -7,9 +7,9 @@ import strac.align.align.event_distance.DInst;
 import strac.align.align.implementations.DTW;
 import strac.align.align.implementations.FastDTW;
 import strac.align.align.implementations.WindowedDTW;
-import core.LogProvider;
-import core.utils.IServiceProvider;
-import core.utils.ServiceRegister;
+import strac.core.LogProvider;
+import strac.core.utils.IServiceProvider;
+import strac.core.utils.ServiceRegister;
 import org.reflections.Reflections;
 
 import java.io.IOException;

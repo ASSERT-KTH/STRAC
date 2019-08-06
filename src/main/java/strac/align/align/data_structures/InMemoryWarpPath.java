@@ -1,8 +1,8 @@
 package strac.align.align.data_structures;
 
 import strac.align.align.Cell;
-import core.data_structures.IArray;
-import core.data_structures.IMapAdaptor;
+import strac.core.data_structures.IArray;
+import strac.core.data_structures.IMapAdaptor;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

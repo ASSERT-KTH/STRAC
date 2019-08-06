@@ -2,9 +2,9 @@ package strac.align.utils;
 
 import strac.align.align.Cell;
 import strac.align.align.implementations.WindowedDTW;
-import core.data_structures.*;
+import strac.core.data_structures.*;
 
-public interface IAlignAllocator extends core.utils.IServiceProvider {
+public interface IAlignAllocator extends strac.core.utils.IServiceProvider {
 
 
     IArray<Cell> allocateWarpPath(String id, long size, ALLOCATION_METHOD method);

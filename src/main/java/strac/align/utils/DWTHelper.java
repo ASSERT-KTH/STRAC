@@ -2,9 +2,9 @@ package strac.align.utils;
 
 import strac.align.align.Cell;
 import strac.align.align.implementations.WindowedDTW;
-import core.LogProvider;
-import core.data_structures.IArray;
-import core.utils.TimeUtils;
+import strac.core.LogProvider;
+import strac.core.data_structures.IArray;
+import strac.core.utils.TimeUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

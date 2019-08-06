@@ -3,13 +3,13 @@ package strac.align.align.implementations;
 import strac.align.align.AlignDistance;
 import strac.align.align.Aligner;
 import strac.align.align.ICellComparer;
-import core.LogProvider;
-import core.data_structures.IArray;
-import core.data_structures.IReadArray;
-import core.utils.ArrayHelper;
+import strac.core.LogProvider;
+import strac.core.data_structures.IArray;
+import strac.core.data_structures.IReadArray;
+import strac.core.utils.ArrayHelper;
 import strac.align.utils.AlignServiceProvider;
 import strac.align.utils.DWTHelper;
-import core.utils.TimeUtils;
+import strac.core.utils.TimeUtils;
 
 
 @strac.align.align.annotations.Aligner(name="FastDTW")

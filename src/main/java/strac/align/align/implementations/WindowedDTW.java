@@ -6,12 +6,12 @@ import strac.align.align.Cell;
 import strac.align.align.ICellComparer;
 import strac.align.utils.AlignServiceProvider;
 import strac.align.utils.IAlignAllocator;
-import core.LogProvider;
-import core.data_structures.IWindow;
-import core.data_structures.IArray;
-import core.data_structures.IMultidimensionalArray;
-import core.data_structures.IReadArray;
-import core.utils.TimeUtils;
+import strac.core.LogProvider;
+import strac.core.data_structures.IWindow;
+import strac.core.data_structures.IArray;
+import strac.core.data_structures.IMultidimensionalArray;
+import strac.core.data_structures.IReadArray;
+import strac.core.utils.TimeUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

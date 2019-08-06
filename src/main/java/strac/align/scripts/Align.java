@@ -1,7 +1,7 @@
 package strac.align.scripts;
 
 import com.google.gson.Gson;
-import core.LogProvider;
+import strac.core.LogProvider;
 import strac.align.interpreter.AlignInterpreter;
 import strac.align.interpreter.dto.Alignment;
 import strac.align.utils.AlignServiceProvider;

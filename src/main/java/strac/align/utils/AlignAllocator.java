@@ -4,13 +4,13 @@ import strac.align.align.Cell;
 import strac.align.align.data_structures.DoubleCostMatrix;
 import strac.align.align.data_structures.InMemoryMultidimensional;
 import strac.align.align.implementations.WindowedDTW;
-import core.data_structures.IArray;
+import strac.core.data_structures.IArray;
 import strac.align.align.data_structures.BufferedWarpPath;
 import strac.align.align.data_structures.InMemoryWarpPath;
-import core.data_structures.IMultidimensionalArray;
-import core.utils.AllocatorServiceProvider;
+import strac.core.data_structures.IMultidimensionalArray;
+import strac.core.utils.AllocatorServiceProvider;
 
-import static core.utils.HashingHelper.getRandomName;
+import static strac.core.utils.HashingHelper.getRandomName;
 
 public class AlignAllocator extends AllocatorServiceProvider implements IAlignAllocator {
 
