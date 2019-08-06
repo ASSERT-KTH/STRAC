@@ -32,7 +32,7 @@
 
                             <addClasspath>true</addClasspath>
                             <!-- Jar file entry point -->
-                            <mainClass>scripts.Align</mainClass>
+                            <mainClass>strac.align.scripts.Align</mainClass>
                             <classpathPrefix>dependency-jars/</classpathPrefix>
                         </manifest>
                     </archive>
@@ -67,10 +67,7 @@
             </resource>
         </resources>
     </build>
-    <modules>
-        <module>STRAC-core</module>
-        <module>STRAC-dabstraction</module>
-    </modules>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.velocity</groupId>
@@ -109,12 +106,7 @@
             <artifactId>reflections</artifactId>
             <version>0.9.11</version>
         </dependency>
-        <dependency>
-            <groupId>STRAC-core</groupId>
-            <artifactId>STRAC-core</artifactId>
-            <version>0.1</version>
-            <scope>compile</scope>
-        </dependency>
+
     </dependencies>
 
 
