@@ -44,8 +44,10 @@ public class AlignServiceProvider extends ServiceRegister {
                 .flatMap(t -> new Reflections(t.getName()).getTypesAnnotatedWith(strac.align.align.annotations.Aligner.class).stream())
                 .forEach(t -> {
 
-                    LogProvider.info("Registering aligner...", t);
-                    aligners.put(t.getDeclaredAnnotation(strac.align.align.annotations.Aligner.class).name(), (Class<? extends Aligner>)t);
+                    if(!aligners.containsKey(t.getDeclaredAnnotation(strac.align.align.annotations.Aligner.class).name())) {
+                        LogProvider.info("Registering aligner...", t);
+                        aligners.put(t.getDeclaredAnnotation(strac.align.align.annotations.Aligner.class).name(), (Class<? extends Aligner>) t);
+                    }
                 });
 
 
@@ -56,9 +58,12 @@ public class AlignServiceProvider extends ServiceRegister {
 
                     LogProvider.info("Registering distance...", t);
                     try {
-                        functionDistance.put((t.getDeclaredAnnotation(EventDistance.class)).name(),
-                                (ICellComparer) t.getDeclaredConstructors()[0].newInstance()
-                        );
+
+                        if(!functionDistance.containsKey((t.getDeclaredAnnotation(EventDistance.class)).name())) {
+                            functionDistance.put((t.getDeclaredAnnotation(EventDistance.class)).name(),
+                                    (ICellComparer) t.getDeclaredConstructors()[0].newInstance()
+                            );
+                        }
                     } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
