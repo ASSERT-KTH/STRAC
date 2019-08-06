@@ -2,9 +2,10 @@ package scripts;
 
 import com.google.gson.Gson;
 import core.LogProvider;
-import core.ServiceRegister;
+import core.utils.ServiceRegister;
 import interpreter.AlignInterpreter;
 import interpreter.dto.Alignment;
+import utils.AlignServiceProvider;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,8 +16,8 @@ public class Align {
 
     public static void setup() throws IOException, ClassNotFoundException {
 
-        ServiceRegister.setup();
-        ServiceRegister.getProvider();
+        AlignServiceProvider.setup();
+        AlignServiceProvider.getInstance().getProvider();
     }
 
 
@@ -45,7 +46,7 @@ public class Align {
         finally {
             LogProvider.info("Disposing map files");
 
-            ServiceRegister.dispose();
+            AlignServiceProvider.getInstance().getProvider().dispose();
         }
 
 

@@ -1,10 +1,12 @@
 package interpreter.dto;
 
+import core.dto.BaseDto;
+import core.dto.FileContentDto;
+
 import java.util.List;
 
-public class Alignment extends BaseDto {
+public class Alignment extends FileContentDto {
 
-    public List<String> files;
 
     public List<int[]> pairs;
 
@@ -24,17 +26,6 @@ public class Alignment extends BaseDto {
 
     public String separator;
 
-    public String[] clean;
-
-    public Include include;
-
-    public static class Include {
-
-        public String pattern;
-        public int group;
-
-
-    }
 
     public static class Comparison{
         public int diff;

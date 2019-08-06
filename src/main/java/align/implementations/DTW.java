@@ -4,13 +4,13 @@ import align.AlignDistance;
 import align.Aligner;
 import align.ICellComparer;
 import align.Cell;
-import core.IServiceProvider;
+import utils.AlignServiceProvider;
+import utils.IAlignAllocator;
 import core.LogProvider;
-import core.ServiceRegister;
+import core.utils.ServiceRegister;
 import core.data_structures.IArray;
 import core.data_structures.IMultidimensionalArray;
 import core.data_structures.IReadArray;
-import core.utils.HashingHelper;
 
 @align.annotations.Aligner(name="DTW")
 public class DTW extends Aligner {
@@ -37,16 +37,16 @@ public class DTW extends Aligner {
         IArray<Cell> ops = null;
         IMultidimensionalArray<Double> result = null;
 
-        IServiceProvider.ALLOCATION_METHOD method = IServiceProvider.ALLOCATION_METHOD.MEMORY;
+        IAlignAllocator.ALLOCATION_METHOD method = IAlignAllocator.ALLOCATION_METHOD.MEMORY;
 
         if(need > 1 << 30){
             LogProvider.info("Warning", "Array too large. We need " + (need/1e9) + "GB space to store traditional DTW cost matrix");
-            method = IServiceProvider.ALLOCATION_METHOD.EXTERNAL;
+            method = IAlignAllocator.ALLOCATION_METHOD.EXTERNAL;
         }
-        ops = ServiceRegister.getProvider().allocateWarpPath
+        ops = AlignServiceProvider.getInstance().getAllocator().allocateWarpPath
                 (null, trace1.size()+trace2.size(), method);
 
-        result = ServiceRegister.getProvider().allocateDoubleBidimensionalMatrix(maxI + 1, maxJ + 1,  method);
+        result = AlignServiceProvider.getInstance().getAllocator().allocateDoubleBidimensionalMatrix(maxI + 1, maxJ + 1,  method);
 
         LogProvider.info("Exploring complete space...");
         Double oo = Double.POSITIVE_INFINITY/2;

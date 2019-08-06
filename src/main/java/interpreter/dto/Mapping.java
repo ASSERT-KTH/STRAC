@@ -1,5 +1,7 @@
 package interpreter.dto;
 
+import core.dto.BaseDto;
+
 public class Mapping extends BaseDto {
 
     public String[] files;

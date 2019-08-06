@@ -21,8 +21,8 @@ STRAC, a scalable and extensible tool tailored to compare bytecode traces genera
   },
   "outputAlignment": true, // output aligned trace
   "distanceFunctionName": "dSen", // built in distance function
-  "separator": "[\r\n]", // event separator in the log file
-  "clean": ["@", "[\r\t\n ]"], // Clean log event using Java regular expressions pressent in the array
+  "separator": "[\r\n]", // Event separator in the log file. Use Java regular expression to define a better separator
+  "clean": ["@", "[\r\t\n ]"], // Clean log event using Java regular expressions in this property
   "include": {
     "pattern": "(\\d)",
     "group": 0

@@ -4,9 +4,11 @@ import align.AlignDistance;
 import align.Aligner;
 import align.Cell;
 import align.ICellComparer;
-import core.IServiceProvider;
+import utils.AlignServiceProvider;
+import utils.IAlignAllocator;
 import core.LogProvider;
-import core.ServiceRegister;
+import core.data_structures.IWindow;
+import core.utils.ServiceRegister;
 import core.data_structures.IArray;
 import core.data_structures.IMultidimensionalArray;
 import core.data_structures.IReadArray;
@@ -14,8 +16,6 @@ import core.utils.TimeUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-
-import static core.utils.HashingHelper.*;
 
 @align.annotations.Aligner(name="WindowDTW")
 public class WindowedDTW extends Aligner {
@@ -43,10 +43,10 @@ public class WindowedDTW extends Aligner {
 
         double oo = Double.MAX_VALUE/2;
 
-        IServiceProvider.ALLOCATION_METHOD method =
-                ServiceRegister.getProvider().selectMethod(8L*(trace1.size() + 1)*(trace2.size() + 1));
+        IAlignAllocator.ALLOCATION_METHOD method =
+                AlignServiceProvider.getInstance().getProvider().selectMethod(8L*(trace1.size() + 1)*(trace2.size() + 1));
 
-        IMultidimensionalArray<Double> D = ServiceRegister.getProvider().allocateDoubleBidimensionalMatrixWindow(
+        IMultidimensionalArray<Double> D = AlignServiceProvider.getInstance().getAllocator().allocateDoubleBidimensionalMatrixWindow(
                 (int)trace1.size() + 1, (int)trace2.size() + 1, method, window);
 
         TimeUtils u = new TimeUtils();
@@ -93,8 +93,8 @@ public class WindowedDTW extends Aligner {
         int i = (int)trace1.size();
         int j = (int)trace2.size();
 
-        IArray<Cell> ops = ServiceRegister.getProvider().allocateWarpPath(null, trace1.size()+trace2.size(),
-            ServiceRegister.getProvider().selectMethod(512*(trace1.size()+trace2.size()))
+        IArray<Cell> ops = AlignServiceProvider.getInstance().getAllocator().allocateWarpPath(null, trace1.size()+trace2.size(),
+                AlignServiceProvider.getInstance().getAllocator().selectMethod(512*(trace1.size()+trace2.size()))
         );
 
         LogProvider.info("Getting warp path");
@@ -167,7 +167,7 @@ public class WindowedDTW extends Aligner {
 
 
 
-    public static class Window{
+    public static class Window implements IWindow {
 
         IArray<Integer> minValues;
         IArray<Integer> maxValues;
@@ -186,13 +186,13 @@ public class WindowedDTW extends Aligner {
 
         public Window(long height, long width, boolean set){
 
-            IServiceProvider.ALLOCATION_METHOD method = ServiceRegister.getProvider().selectMethod(4*height);
+            IAlignAllocator.ALLOCATION_METHOD method = AlignServiceProvider.getInstance().getProvider().selectMethod(4*height);
 
-            minValues = ServiceRegister.getProvider()
+            minValues = AlignServiceProvider.getInstance().getProvider()
                 .allocateIntegerArray(null, height
                     , method);
 
-            maxValues = ServiceRegister.getProvider()
+            maxValues = AlignServiceProvider.getInstance().getProvider()
                     .allocateIntegerArray(null, height
                             , method);
 

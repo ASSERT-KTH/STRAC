@@ -1,22 +1,15 @@
 package scripts;
 
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
-import core.LogProvider;
-import core.ServiceRegister;
-import core.TraceHelper;
-import core.models.TraceMap;
-import interpreter.dto.Payload;
+import core.utils.ServiceRegister;
 
 import java.io.*;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.List;
 
 public class Mapping {
 
     public static void setup(){
-        ServiceRegister.getProvider();
+        //ServiceRegister.getProvider();
     }
 
     public static void main(String[] args) throws IOException, SQLException, ParseException {

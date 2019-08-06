@@ -4,12 +4,12 @@ import align.AlignDistance;
 import align.Aligner;
 import align.ICellComparer;
 import core.LogProvider;
-import core.ServiceRegister;
+import core.utils.ServiceRegister;
 import core.data_structures.IArray;
 import core.data_structures.IReadArray;
 import core.utils.ArrayHelper;
-import core.utils.DWTHelper;
-import core.utils.HashingHelper;
+import utils.AlignServiceProvider;
+import utils.DWTHelper;
 import core.utils.TimeUtils;
 
 
@@ -52,17 +52,17 @@ public class FastDTW extends Aligner {
             long halfSize1 = trace1.size()/2;
             long halfSize2 = trace2.size()/2;
 
-            IArray<Integer> reduced1 = ServiceRegister.getProvider().allocateIntegerArray
+            IArray<Integer> reduced1 = AlignServiceProvider.getInstance().getProvider().allocateIntegerArray
                     (null, halfSize1,
-                            ServiceRegister.getProvider().selectMethod(4*halfSize1)
+                            AlignServiceProvider.getInstance().getProvider().selectMethod(4*halfSize1)
                             );
 
             ArrayHelper.reduceByHalf(trace1, reduced1,
                     ArrayHelper::getMostFequentRepresentation); // O(n)
 
-            IArray<Integer> reduced2 = ServiceRegister.getProvider().allocateIntegerArray(
+            IArray<Integer> reduced2 = AlignServiceProvider.getInstance().getProvider().allocateIntegerArray(
                     null, halfSize2,
-                    ServiceRegister.getProvider().selectMethod(4*halfSize2));
+                    AlignServiceProvider.getInstance().getProvider().selectMethod(4*halfSize2));
 
             ArrayHelper.reduceByHalf(trace2, reduced2,
                     ArrayHelper::getMostFequentRepresentation); // O(n)

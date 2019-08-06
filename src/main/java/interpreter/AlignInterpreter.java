@@ -6,18 +6,19 @@ import align.Cell;
 import align.ICellComparer;
 import com.google.gson.Gson;
 import core.LogProvider;
-import core.ServiceRegister;
+import core.utils.ServiceRegister;
 import core.StreamProviderFactory;
 import core.TraceHelper;
 import core.data_structures.IArray;
 import core.data_structures.IReadArray;
-import core.models.AlignResultDto;
+import models.AlignResultDto;
 import core.models.TraceMap;
 import interpreter.dto.Alignment;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import utils.AlignServiceProvider;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -65,7 +66,7 @@ public class AlignInterpreter {
             LogProvider.info("Distance function not provided. We set a default one based on dto comparison data");
             dto.distanceFunctionName = "default";
 
-            ServiceRegister.registerFunction("default", new ICellComparer() {
+            AlignServiceProvider.registerFunction("default", new ICellComparer() {
                 @Override
                 public int compare(int a, int b) {
                     return a != b ? dto.comparison.diff: dto.comparison.eq;
@@ -85,7 +86,7 @@ public class AlignInterpreter {
 
         List<TraceMap> traces = helper.mapTraceSetByFileLine(dto.files, dto.separator == null ? "\r\n" : dto.separator, dto.clean == null? new String[0]: dto.clean, dto.include, provider , false, false);
 
-        Aligner align = ServiceRegister.getAligner(dto.method.name, dto.method.params.toArray(), ServiceRegister.getComparer(dto.distanceFunctionName));
+        Aligner align = AlignServiceProvider.getAligner(dto.method.name, dto.method.params.toArray(), AlignServiceProvider.getComparer(dto.distanceFunctionName));
 
 
         AlignResultDto resultDto = new AlignResultDto();
@@ -131,12 +132,12 @@ public class AlignInterpreter {
                 long max = distance.operationsCount;
 
                 IArray<Integer> trace1Alignment
-                        = ServiceRegister.getProvider().allocateIntegerArray(getRandomName(), max,
-                        ServiceRegister.getProvider().selectMethod(Integer.SIZE*max));
+                        = AlignServiceProvider.getInstance().getProvider().allocateIntegerArray(getRandomName(), max,
+                        AlignServiceProvider.getInstance().getProvider().selectMethod(Integer.SIZE*max));
 
                 IArray<Integer> trace2Alignment
-                        = ServiceRegister.getProvider().allocateIntegerArray(getRandomName(), max,
-                        ServiceRegister.getProvider().selectMethod(Integer.SIZE*max));
+                        = AlignServiceProvider.getInstance().getProvider().allocateIntegerArray(getRandomName(), max,
+                        AlignServiceProvider.getInstance().getProvider().selectMethod(Integer.SIZE*max));
 
 
                 Cell i1 = null;
