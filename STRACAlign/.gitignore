@@ -1,0 +1,17 @@
+ngrams
+reports
+
+*.interp
+*.tokens
+
+tmp
+
+logs
+temp_dst
+
+FastDTWTest.java
+
+dist
+
+local_tests
+

@@ -31,5 +31,6 @@
     <modules>
         <module>STRACcore</module>
         <module>STRACAlign</module>
+        <module>STRAC-v8-test</module>
     </modules>
 </project>
