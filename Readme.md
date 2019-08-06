@@ -89,11 +89,11 @@ This json file will execute FastDTW algorith with radius 100 in two chrome execu
 
 #### Define new Aligner
 
-Explain about STRAC uses reflection to register new aligners
+TODO
 
 #### Define new event distance
 
-Explain about STRAC uses event distances
+TODO
 
 
 
