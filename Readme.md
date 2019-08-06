@@ -48,32 +48,36 @@ If the provided file cannot pass any of the previous providers, a runtime except
 
 #### Practical payload example
 
+This json file will execute FastDTW algorith with radius 100 in two chrome execution output. 
+
 ```json
 {
-  "files": ["chrome --js-flags=\"--print-bytecode\" http://www.google.com",
-   "chrome --js-flags=\"--print-bytecode\" http://www.github.com"],
-  "pairs": [] , 
+  "files": [
+    "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome \\ --headless --no-sandbox -user-data-dir=temp --js-flags=\"--print-bytecode\" http://www.google.com",
+    "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome \\ --headless --no-sandbox -user-data-dir=temp --js-flags=\"--print-bytecode\"  http://www.github.com"],
+  "pairs": [] ,
   "method": {
     "name": "FastDTW",
-    "params": [100.0] 
+    "params": [100.0]
   },
   "outputAlignment": true,
   "distanceFunctionName": "dBin",
   "separator": "[\r\n]",
-  "clean": ["( )*\\d+ [ES]>",
-            "0x\\w+ @",
-            "\\w+ : ",
-            " [A-Z](.*)"], 
+  "clean": [
+    "( )*\\d+ [ES]>",
+    "0x\\w+ @",
+    "\\w+ : ",
+    " [A-Z](.*)"],
   "include": {
-    "pattern": "(\\d)",
+    "pattern": "^([0-9a-f]{2})",
     "group": 0
   },
-  "comparison": { 
+  "comparison": {
     "eq": 0,
     "diff":5,
     "gap": 1
   }
-  
+
 }
 ```
 
