@@ -10,7 +10,8 @@
   "outputAlignment": true,
   "distanceFunctionName": "dBin",
   "separator": "[\r\n]",
-  "clean": ["( )*\\d+ [ES]>",
+  "clean": [
+    "( )*\\d+ [ES]>",
     "0x\\w+ @",
     "\\w+ : ",
     " [A-Z](.*)"],
