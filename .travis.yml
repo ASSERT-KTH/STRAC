@@ -2,7 +2,16 @@ language: java
 jdk:
 - oraclejdk11
 install: true
+
+git:
+  submodules: false
+before_install:
+  - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+  - git submodule update --init --recursive
+
 script: bash ./build.sh
+
+
 deploy:
   provider: releases
   api_key:
