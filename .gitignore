@@ -1,18 +1,6 @@
-./strac.align.scripts
-ngrams
-reports
-
-*.interp
-*.tokens
-
-tmp
-
-logs
-temp_dst
-
-FastDTWTest.java
-
+./scripts
 dist
 
-local_tests
+temp
 
+out
