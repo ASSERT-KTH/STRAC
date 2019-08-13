@@ -1,9 +1,10 @@
 # STRAC (Scalable Trace Comparison v8 bytecode coverage) v8tor [![Build Status](https://travis-ci.org/Jacarte/STRAC.svg?branch=master)](https://travis-ci.org/Jacarte/STRAC)
 
 
-V8tor executes a compiled with flag V8_TRACE_IGNITION chrome version. This Chromium version writes the traces of executed bytecode  to standard output. 
+V8tor executes an specific chrome version, compiled with flag V8_TRACE_IGNITION set on true. This Chromium version writes the traces of executed bytecode to standard output as ```--print-bytecode``` builtin option does. [TODO ref]
 
-V8 provides information to correctly map between JS and bytecode representation. Both bytecode instructions, static declared and execution traces, have the memory address assigned by the interpreter in the trace log, for example, ```34123 E> 0x123a124 @... ``` and ```-> 0x123a124 @ ...``` are static and execution bytecode traces respectively. 
+In all bytecode log types, V8 provides information to correctly map between JS and bytecode representation. Both bytecode instructions, static declared and execution traces, have the memory address assigned by the interpreter in the trace log, for example, ```34123 E> 0x123a124 @... ``` and ```-> 0x123a124 @ ...``` are static and execution bytecode traces respectively. 
+
 
 The main idea is to map execution trace addresses with static declared ones. 
 
@@ -20,6 +21,14 @@ coverage = covered/total
 
 ```
 
+### Output example
+
+```
+Static sentences: 28768
+Covered sentences: 19989
+Weird sentences: 0
+Coverage: 0.6948345383759733
+```
 
 ## Getting Started
 - Download release files
