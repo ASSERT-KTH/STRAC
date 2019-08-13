@@ -31,5 +31,6 @@
     <modules>
         <module>STRACcore</module>
         <module>STRACAlign</module>
+        <module>STRACv8tor</module>
     </modules>
 </project>

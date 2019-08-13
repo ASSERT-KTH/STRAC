@@ -3,5 +3,8 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/STRACcore" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/scripts/chrome_scripts/external/dtaidistance" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/scripts/chrome_scripts/external/dtw" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/scripts/chrome_scripts/external/repo" vcs="Git" />
   </component>
 </project>
