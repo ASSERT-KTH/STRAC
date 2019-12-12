@@ -8,6 +8,8 @@ STRAC, a tools collection tailored to compare traces.
 
 - [STRAC-v8tor](/STRACv8tor) Using a V8 TRACE_IGNITION compiled version, we provide a tool which shows covered JavaScript using bytecode declaration and execution trace.
 
+- [STRAC-distrubuted] Soon ;)
+
 ### Prerequisites
 
 - java >=11
