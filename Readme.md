@@ -1,4 +1,4 @@
-# STRAC (Scalable Trace Comparison project) [![Build Status](https://travis-ci.org/Jacarte/STRAC.svg?branch=master)](https://travis-ci.org/Jacarte/STRAC)
+# STRAC (Scalable Trace Comparison project) [![Build Status](https://travis-ci.org/KTH/STRAC.svg?branch=master)](https://travis-ci.org/KTH/STRAC)
 
 STRAC, a tools collection tailored to compare traces.
 
