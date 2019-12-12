@@ -1,4 +1,4 @@
-# STRAC (Scalable Trace Comparison v8 bytecode coverage) v8tor [![Build Status](https://travis-ci.org/KTH/STRAC.svg?branch=master)](https://travis-ci.org/KTH/STRAC)
+# STRAC (Scalable Trace Comparison v8 bytecode coverage) v8tor [![Build Status](https://travis-ci.org/KTH/STRAC.svg?branch=master)](https://travis-ci.org/KTH/STRAC) (Proof of concept)
 
 
 V8tor executes an specific chrome version, compiled with flag V8_TRACE_IGNITION set on true. This Chromium version writes the traces of executed bytecode to standard output as ```--print-bytecode``` builtin option does. [TODO ref]
