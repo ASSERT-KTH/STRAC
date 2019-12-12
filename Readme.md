@@ -12,12 +12,6 @@ STRAC, a tools collection tailored to compare traces.
 
 - java >=11
 
-## Deployment
-
-### Releases
-
-[Lastest release](https://github.com/Jacarte/STRAC/releases/download/0.21/STRAC.zip)
-
 ## Authors
 
 * Javier Cabrera
