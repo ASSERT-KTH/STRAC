@@ -1,0 +1,20 @@
+{
+  "files": [
+    "test1.wat",
+    "test2.wat"],
+  "pairs": [] ,
+  "method": {
+    "name": "FastDTW",
+    "params": [2000.0]
+  },
+  "outputAlignment": true,
+  "exportImage": true,
+  "distanceFunctionName": "dBin",
+  "separator": "[\r\n]",
+  "comparison": {
+    "eq": 0,
+    "diff":5,
+    "gap": 1
+  }
+
+}

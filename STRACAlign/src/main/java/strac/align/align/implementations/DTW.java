@@ -144,7 +144,8 @@ public class DTW extends Aligner {
             if(j < minJ)
                 minJ = j;
 
-            ops.set(position++,new Cell(i, j));
+//            if(position + 1 < ops.size())
+                ops.set(position++,new Cell(i, j));
         }
 
         return new AlignDistance(result.get((int)maxI,(int)maxJ), ops, minI, minJ, position-1);

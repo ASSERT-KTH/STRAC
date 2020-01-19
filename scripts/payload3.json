@@ -1,7 +1,7 @@
 {
   "files": [
     "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome \\ --headless --no-sandbox -user-data-dir=temp --js-flags=\"--print-bytecode\" http://kth.se",
-    "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome \\ --headless --no-sandbox -user-data-dir=temp --js-flags=\"--print-bytecode\"  http://www.github.com"],
+    "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome \\ --headless --no-sandbox -user-data-dir=temp --js-flags=\"--print-bytecode\"  http://kth.se"],
   "pairs": [] ,
   "method": {
     "name": "FastDTW",

@@ -1,0 +1,26 @@
+{
+  "files": [
+    "scripts/slumps/bp-log.txt",
+    "scripts/slumps/bp[2]-log.txt",
+    "scripts/slumps/bp[0]-log.txt",
+    "scripts/slumps/bp[1]-log.txt"
+  ],
+  "pairs": [] ,
+  "method": {
+    "name": "FastDTW",
+    "params": [100.0]
+  },
+  "outputDir": "slumps-babbage",
+  "outputAlignment": true,
+  "exportImage": true,
+  "distanceFunctionName": "dBin",
+  "separator": "[\r\n]",
+  "clean": [],
+  "include": null,
+  "comparison": {
+    "eq": 0,
+    "diff":5,
+    "gap": 1
+  }
+
+}

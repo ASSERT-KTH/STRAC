@@ -31,50 +31,42 @@ class TestConsistency{
         val dto = Alignment()
         dto.distanceFunctionName="dBin"
         dto.outputAlignment = true
-        dto.pairs = ArrayList()
+        dto.pairs = ArrayList();
         dto.method = Payload.MethodInfo()
         dto.method.name = "FastDTW"
         dto.method.params = Arrays.asList(2000.0) as List<Any>?
-
+        dto.outputDir = "outDemo";
+        dto.exportImage = true;
         dto.separator = "[\r\n]"
         dto.clean = arrayOf(
                 "^( )*\\d+ [ES]>",
                 "0x\\w+ @",
-                "\\w+ : "
-                //" [A-Z](.*)"
+                "\\w+ : ",
+                " [A-Z](.*)"
         )
-
-        dto.include = FileContentDto.Include()
-        dto.include.pattern = "^([0-9a-f]{2})"
-        dto.include.group = 0
-
-        val sites = arrayOf("google.com", "github.com", "wikipedia.org", "kth.se", "youtube.com", "2019.splashcon.org")
 
         val interpreter = AlignInterpreter()
 
-        for(site in sites){
 
-            val f1 = "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome \\ --no-sandbox -user-data-dir=temp --js-flags=\"--print-bytecode\"  %s".format(site)
-            TestLogProvider.info("#%s".format(site))
-            for(site2 in sites) {
-                val f2 = "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome \\ --no-sandbox -user-data-dir=temp --js-flags=\"--print-bytecode\"  %s".format(site2)
+        val f1 = "/Users/javier/IdeaProjects/STRAC/scripts/chrome_scripts/tiny_test/ten/wiki-8/wikipedia.org.20.bytecode.txt"
+        val f3 = "/Users/javier/IdeaProjects/STRAC/scripts/chrome_scripts/tiny_test/ten/wiki-8/wikipedia.org.28.bytecode.txt"
+        //val f2 = "/Users/javier/IdeaProjects/STRAC/scripts/chrome_scripts/tiny_test/ten/wiki-9/w6.txt"
+        //TestLogProvider.info("#%s".format(site))
+        //for(site2 in sites) {
 
-                dto.files = Arrays.asList(f1, f2)
+        dto.files = Arrays.asList(f1, f3)
 
-                for (i in 1..10) {
 
-                    //AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize
+            //AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize
 
-                    interpreter.execute(dto, { d: AlignDistance, s: Double, m: Double, g1: Double, g2: Double, size: Double ->
-                        TestLogProvider.info("[", d.distance, ",", "\"%s\"".format(site), ",",
-                                "\"%s\"".format(site2), "],")
-                    },
-                            StreamProviderFactory.getInstance())
+        interpreter.execute(dto, { d: AlignDistance, s: Double, m: Double, g1: Double, g2: Double, size: Double ->
+            TestLogProvider.info("[", d.distance, ",", "\"%s\"".format(1), ",",
+                    "\"%s\"".format(2), "],")
+        },
+                StreamProviderFactory.getInstance())
 
-                    AlignServiceProvider.getInstance().allocator.dispose()
-                }
-            }
+        AlignServiceProvider.getInstance().allocator.dispose()
 
-        }
+
     }
 }
