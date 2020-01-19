@@ -20,7 +20,7 @@ public class AlignAllocator extends AllocatorServiceProvider implements IAlignAl
             return new InMemoryWarpPath(null, (int)size);
         }
 
-        IArray<Cell> result = new BufferedWarpPath(id==null? getRandomName(): id, size, Integer.MAX_VALUE/2);
+        IArray<Cell> result = new BufferedWarpPath(id==null? getRandomName(): id, size, Integer.MAX_VALUE-100);
 
         openedArrays.add(result);
 
