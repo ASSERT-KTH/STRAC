@@ -1,4 +1,4 @@
-# STRAC-align (Scalable Trace Comparison aligning) [![Build Status](https://travis-ci.org/Jacarte/STRAC.svg?branch=master)](https://travis-ci.org/Jacarte/STRAC)
+# STRAC-align (Scalable Trace Comparison aligning) [![Build Status](https://travis-ci.org/KTH/STRAC.svg?branch=master)](https://travis-ci.org/KTH/STRAC)
 
 Given two V8 bytecode traces and a distance function between trace events, STRAC-align computes and provides the best alignment. The key insight is to split access between memory and disk. STRAC-align can identify semantically equivalent web pages and is capable of processing huge V8 bytecode traces whose order of magnitude matches today's web.
 
@@ -101,17 +101,13 @@ Explain about STRAC uses event distances
 
 - java >=11
 
-## Deployment
-
-### Releases
-
-[Lastest release](https://github.com/Jacarte/STRAC/releases/download/0.21/STRAC.zip)
-
 ## Authors
 
 Give a list of authors
 
 * Javier Cabrera
+* Martin Monperrus
+* Benoit Baudry
 
 ## Acknowledgments
 

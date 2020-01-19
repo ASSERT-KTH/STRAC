@@ -1,4 +1,4 @@
-# STRAC (Scalable Trace Comparison v8 bytecode coverage) v8tor [![Build Status](https://travis-ci.org/Jacarte/STRAC.svg?branch=master)](https://travis-ci.org/Jacarte/STRAC)
+# STRAC (Scalable Trace Comparison v8 bytecode coverage) v8tor [![Build Status](https://travis-ci.org/KTH/STRAC.svg?branch=master)](https://travis-ci.org/KTH/STRAC) (Proof of concept)
 
 
 V8tor executes an specific chrome version, compiled with flag V8_TRACE_IGNITION set on true. This Chromium version writes the traces of executed bytecode to standard output as ```--print-bytecode``` builtin option does. [TODO ref]
@@ -39,17 +39,13 @@ Coverage: 0.6948345383759733
 
 - java >=11
 
-## Deployment
-
-### Releases
-
-[Lastest release](https://github.com/Jacarte/STRAC/releases/download/0.21/STRAC.zip)
-
 ## Authors
 
 Give a list of authors
 
 * Javier Cabrera
+* Martin Monperrus
+* Benoit Baudry
 
 ## Acknowledgments
 
