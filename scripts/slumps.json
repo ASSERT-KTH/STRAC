@@ -14,6 +14,7 @@
   "outputAlignment": true,
   "exportImage": true,
   "distanceFunctionName": "dBin",
+  "outputAlignmentMap": "bb.result.json",
   "separator": "[\r\n]",
   "clean": [],
   "include": null,

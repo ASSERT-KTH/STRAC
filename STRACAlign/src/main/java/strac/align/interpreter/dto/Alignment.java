@@ -7,7 +7,6 @@ import java.util.List;
 public class Alignment extends FileContentDto {
 
 
-    public List<int[]> pairs;
 
     public Payload.MethodInfo method;
 
