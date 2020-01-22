@@ -1,0 +1,21 @@
+return
+local_set 0
+i32.const 16
+i32.sub
+local_set 1
+local_set 0
+local_get 1
+i32.const 25264
+i32.store 0 2
+i32.const 1024
+local_get 1
+call 0
+drop 1
+local_get 1
+i32.const 16
+i32.add
+local_set 0
+i32.const 0
+return
+call 2
+return
