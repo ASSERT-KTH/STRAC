@@ -67,8 +67,8 @@ public class AlignInterpreter {
             if(dto.outputAlignment){
 
 
-                String file1 = String.format("%s/strac.align.align.%s.%s", dto.outputDir, tr1.traceFileName, tr2.traceFileName);
-                String file2 = String.format("%s/strac.align.align.%s.%s", dto.outputDir, tr2.traceFileName, tr1.traceFileName);
+                String file1 = String.format("%s/strac.align.%s.%s", dto.outputDir, tr1.traceFileName, tr2.traceFileName);
+                String file2 = String.format("%s/strac.align.%s.%s", dto.outputDir, tr2.traceFileName, tr1.traceFileName);
 
 
                 long max = distance.operationsCount;
@@ -284,8 +284,6 @@ public class AlignInterpreter {
 
         LogProvider.info("Going to thread pool for pairwise comparison");
 
-        ExecutorService threadPoolService = Executors.newFixedThreadPool(dto.threadPoolCount);
-
         if(dto.outputDir == null) {
             dto.outputDir = "out";
 
@@ -296,20 +294,8 @@ public class AlignInterpreter {
 
         for(final int[] pair: dto.pairs){
 
-            threadPoolService.execute(new Runnable() {
-                public void run() {
-                    executeSimplePair(dto, pair[0], pair[1], action, provider, helper, align, traces, resultDto);
-                }
-            });
+            executeSimplePair(dto, pair[0], pair[1], action, provider, helper, align, traces, resultDto);
         }
-
-        try {
-            threadPoolService.awaitTermination(5, TimeUnit.DAYS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        threadPoolService.shutdown();
 
         if(dto.outputAlignmentMap != null){
             LogProvider.info("Exporting  json distances");
