@@ -30,26 +30,23 @@ public class Align {
 
         setup();
 
+        for (String arg : args) {
 
-        Alignment dto = new Gson().fromJson(new FileReader(args[0]), Alignment.class);
+            Alignment dto = new Gson().fromJson(new FileReader(arg), Alignment.class);
 
-        AlignInterpreter executor = new AlignInterpreter();
+            AlignInterpreter executor = new AlignInterpreter();
 
 
-        try{
-            executor.execute(dto);
+            try {
+                executor.execute(dto);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                LogProvider.info("Disposing map files");
+                AlignServiceProvider.getInstance().getProvider().dispose();
+            }
+
         }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        finally {
-            LogProvider.info("Disposing map files");
-
-            AlignServiceProvider.getInstance().getProvider().dispose();
-
-            System.exit(0);
-        }
-
 
 
     }

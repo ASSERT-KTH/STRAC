@@ -194,7 +194,7 @@ public class AlignInterpreter {
 
 
                     try {
-                        LogProvider.info("Writing strac.align.align result to file");
+                        LogProvider.info("Writing strac.align result to file");
 
                         trace1Alignment.writeTo(new FileWriter(file1), t -> {
                             if(t != null)
