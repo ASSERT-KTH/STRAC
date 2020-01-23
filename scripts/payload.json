@@ -7,6 +7,7 @@
     "name": "FastDTW",
     "params": [2000.0]
   },
+  "threadPoolCount": 8,
   "outputAlignment": true,
   "exportImage": true,
   "distanceFunctionName": "dBin",

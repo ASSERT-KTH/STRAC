@@ -12,8 +12,6 @@ public class Alignment extends FileContentDto {
 
     public boolean outputAlignment;
 
-    public boolean exportHTML;
-
     public boolean exportImage;
 
     public Comparison comparison;
