@@ -19,6 +19,7 @@ Given two V8 bytecode traces and a distance function between trace events, STRAC
     "name": "FastDTW", // Align method
     "params": [100.0] // Parameters
   },
+  "threadPoolCount": 5, // How many threads involved in the pairs comparisson
   "outputAlignment": true, // output aligned trace
   "distanceFunctionName": "dSen", // built in distance function
   "separator": "[\r\n]", // Event separator in the log file. Use Java regular expression to define a better separator
