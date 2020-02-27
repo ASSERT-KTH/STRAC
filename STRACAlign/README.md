@@ -84,19 +84,6 @@ This json file will execute FastDTW algorith with radius 100 in two chrome execu
 
 
 
-### Using STRAC-align from code
-
-### How to extend STRAC-align
-
-#### Define new Aligner
-
-Explain about STRAC uses reflection to register new aligners
-
-#### Define new event distance
-
-Explain about STRAC uses event distances
-
-
 
 ### Prerequisites
 
