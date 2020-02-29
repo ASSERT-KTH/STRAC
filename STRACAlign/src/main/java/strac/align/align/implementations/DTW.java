@@ -4,6 +4,7 @@ import strac.align.align.AlignDistance;
 import strac.align.align.Aligner;
 import strac.align.align.ICellComparer;
 import strac.align.align.Cell;
+import strac.align.socket.WebsocketHandler;
 import strac.align.utils.AlignServiceProvider;
 import strac.align.utils.IAlignAllocator;
 import strac.core.LogProvider;
@@ -77,7 +78,7 @@ public class DTW extends Aligner {
                         double progress = (i * trace2.size() + j * 1.0) / (trace1.size() * trace2.size());
 
                         if (progress - last >= 0.1) {
-                            LogProvider.info(progress * 100, "%");
+                            // WebsocketHandler.getInstance().setSingleProgress(1, 0, progress);
                             last = progress;
                         }
 

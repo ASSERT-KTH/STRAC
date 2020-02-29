@@ -10,6 +10,7 @@
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/STRAC-dabstraction/pom.xml" />
+        <option value="$PROJECT_DIR$/STRACWebApp/pom.xml" />
       </set>
     </option>
   </component>

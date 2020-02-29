@@ -5,7 +5,9 @@ import strac.align.align.Aligner;
 import strac.align.align.Cell;
 import strac.align.align.ICellComparer;
 import com.google.gson.Gson;
+import strac.align.interpreter.dto.UpdateDTO;
 import strac.align.models.SimplePairResultDto;
+import strac.align.socket.WebsocketHandler;
 import strac.core.LogProvider;
 import strac.core.StreamProviderFactory;
 import strac.core.TraceHelper;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
 import static strac.core.utils.HashingHelper.getRandomName;
 
@@ -51,9 +54,10 @@ public class AlignInterpreter {
         execute(dto, action,StreamProviderFactory.getInstance());
     }
 
-    ReentrantLock[] locks;
 
     public SimplePairResultDto executeSimplePair(final Alignment dto, int trace1Index, int trace2Index, final IOnAlign action, TraceHelper.IStreamProvider provider, final TraceHelper helper, final Aligner align, final List<TraceMap> traces, final AlignResultDto resultDto){
+
+        LogProvider.info(String.format("Executing...%s %s", trace1Index, trace2Index));
 
         // lock trace files
 
@@ -204,6 +208,9 @@ public class AlignInterpreter {
 
     public void execute(final Alignment dto, final IOnAlign action, TraceHelper.IStreamProvider provider) throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
 
+        LogProvider.setCallbacker(msg -> {
+            // WebsocketHandler.getInstance().sendLog(msg);
+        });
 
         if(dto.distanceFunctionName == null){
 
@@ -265,16 +272,11 @@ public class AlignInterpreter {
         CompletionService<SimplePairResultDto> completionService =
                 new ExecutorCompletionService<>(executor);
 
-        locks = new ReentrantLock[dto.files.size()];
-        for(int i = 0; i < locks.length; i++)
-            locks[i] = new ReentrantLock();
-        /*
+        WebsocketHandler.getInstance().sendUpdate(new UpdateDTO(dto, resultDto, 0));
 
-
-
-        */
         for(final int[] pair: dto.pairs){
             int i = pair[0], j = pair[1];
+
             completionService.submit(() -> executeSimplePair(dto, i, j, action, provider, helper, align, traces, resultDto));
         }
 
@@ -284,15 +286,27 @@ public class AlignInterpreter {
 
         String pairs = "";
 
+
+        // Send update to WEBSOCKET channel
+
         while(received != dto.pairs.size()){
+
             try {
                 Future<SimplePairResultDto> f = completionService.take();
 
                 received++;
 
+
                 SimplePairResultDto single = f.get();
 
+                if(received % 1000 == 0) {
+                    WebsocketHandler.getInstance().sendUpdate(new UpdateDTO(dto, resultDto, received));
+                    System.out.println("Sent to WS");
+                }
+
                 if(single != null){
+                    //LogProvider.info(String.format("%s (%s %s) D: %s",received, single.trace1Index, single.trace2Index, single.distance.getDistance()));
+
                     resultDto.setFunctioNMap(single.trace1Index, single.trace2Index, single.distance.getDistance());
 
                     resultDto.fileMap.put(single.trace1Index, single.tr1.traceFile);
@@ -304,6 +318,7 @@ public class AlignInterpreter {
                 throw new RuntimeException(e);
             }
 
+            WebsocketHandler.getInstance().sendUpdate(new UpdateDTO(dto, resultDto, received));
 
         }
 
@@ -319,6 +334,8 @@ public class AlignInterpreter {
         for(TraceMap map: traces){
             map.plainTrace.dispose();
         }
+
+        executor.shutdownNow();
 
     }
 

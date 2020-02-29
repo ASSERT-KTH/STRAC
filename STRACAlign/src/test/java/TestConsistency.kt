@@ -1,13 +1,14 @@
 import org.junit.Before
 import org.junit.Test
+import org.webbitserver.WebServers
 import strac.align.align.AlignDistance
 import strac.align.interpreter.AlignInterpreter
 import strac.align.interpreter.dto.Alignment
 import strac.align.interpreter.dto.Payload
+import strac.align.socket.WebsocketHandler
 import strac.align.utils.AlignServiceProvider
 import strac.core.StreamProviderFactory
 import strac.core.TestLogProvider
-import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.util.*
 
@@ -32,6 +33,15 @@ class TestConsistency{
     @Test
     fun testConsistency() {
 
+        // Initializing web socket
+        // Initializing web socket
+        val webServer = WebServers.createWebServer(9090)
+                .add("/notifications", WebsocketHandler.getInstance())
+
+        webServer.start().get()
+
+        println("Listening on " + webServer.uri)
+
         val dto = Alignment()
         dto.distanceFunctionName="dBin"
         dto.outputAlignment = true
@@ -54,11 +64,12 @@ class TestConsistency{
 
         val f1 = getFile("bytecodes/wikipedia.1.org.bytecode")
         val f3 = getFile("bytecodes/wikipedia.org.bytecode")
+        val f2 = getFile("bytecodes/xxxxxxx.bytecode")
         //val f2 = "/Users/javier/IdeaProjects/STRAC/scripts/chrome_scripts/tiny_test/ten/wiki-9/w6.txt"
         //TestLogProvider.info("#%s".format(site))
         //for(site2 in sites) {
 
-        dto.files = Arrays.asList(f1, f3)
+        dto.files = Arrays.asList(f1, f2, f3)
 
 
             //AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize
