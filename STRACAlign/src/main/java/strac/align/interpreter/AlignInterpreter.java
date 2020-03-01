@@ -208,9 +208,9 @@ public class AlignInterpreter {
 
     public void execute(final Alignment dto, final IOnAlign action, TraceHelper.IStreamProvider provider) throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
 
-        LogProvider.setCallbacker(msg -> {
+        //LogProvider.setCallbacker(msg -> {
             // WebsocketHandler.getInstance().sendLog(msg);
-        });
+        //});
 
         if(dto.distanceFunctionName == null){
 
