@@ -36,6 +36,7 @@ public class Align {
                 // TODO enable ssl
                 rest.GET("/progress", (httpRequest, httpResponse, httpControl) ->
                 {
+                    System.out.println("Sending progress...");
                     httpResponse.header("Access-Control-Allow-Origin", "*");
                     httpResponse.content(new Gson().toJson(UpdateDTO.instance)).end();
                 });
