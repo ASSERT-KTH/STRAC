@@ -7,7 +7,6 @@ import strac.align.align.ICellComparer;
 import com.google.gson.Gson;
 import strac.align.interpreter.dto.UpdateDTO;
 import strac.align.models.SimplePairResultDto;
-import strac.align.socket.WebsocketHandler;
 import strac.core.LogProvider;
 import strac.core.StreamProviderFactory;
 import strac.core.TraceHelper;

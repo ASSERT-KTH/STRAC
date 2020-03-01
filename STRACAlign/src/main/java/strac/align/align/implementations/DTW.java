@@ -4,7 +4,6 @@ import strac.align.align.AlignDistance;
 import strac.align.align.Aligner;
 import strac.align.align.ICellComparer;
 import strac.align.align.Cell;
-import strac.align.socket.WebsocketHandler;
 import strac.align.utils.AlignServiceProvider;
 import strac.align.utils.IAlignAllocator;
 import strac.core.LogProvider;

@@ -143,6 +143,11 @@
             <version>0.4.15</version>
         </dependency>
         <dependency>
+            <groupId>org.webbitserver</groupId>
+            <artifactId>webbit-rest</artifactId>
+            <version>0.2.0</version>
+        </dependency>
+        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.12</version>

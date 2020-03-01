@@ -1,9 +1,10 @@
 package strac.align.scripts;
 
 import com.google.gson.Gson;
-import org.webbitserver.WebServer;
-import org.webbitserver.WebServers;
-import strac.align.socket.WebsocketHandler;
+import org.webbitserver.*;
+import org.webbitserver.netty.NettyWebServer;
+import org.webbitserver.rest.Rest;
+import strac.align.interpreter.dto.UpdateDTO;
 import strac.core.LogProvider;
 import strac.align.interpreter.AlignInterpreter;
 import strac.align.interpreter.dto.Alignment;
@@ -29,17 +30,26 @@ public class Align {
         t = new Thread(){
             @Override
             public void run() {
-                WebServer webServer  = WebServers.createWebServer(9090)
-                        .add("/notifications", WebsocketHandler.getInstance());
+                WebServer webServer  = new NettyWebServer(9090);
+                Rest rest = new Rest(webServer);
+
+                // TODO enable ssl
+                rest.GET("/progress", (httpRequest, httpResponse, httpControl) ->
+                {
+                    httpResponse.header("Access-Control-Allow-Origin", "*");
+                    httpResponse.content(new Gson().toJson(UpdateDTO.instance)).end();
+                });
 
                 try {
                     webServer.start().get();
-                    System.out.println("Listening on " + webServer.getUri());
+                    System.out.println("Try this: curl -i localhost:9090/progress");
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
+
 
             }
         };

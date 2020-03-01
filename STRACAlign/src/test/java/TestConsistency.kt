@@ -1,16 +1,23 @@
+import com.google.gson.Gson
 import org.junit.Before
 import org.junit.Test
-import org.webbitserver.WebServers
+import org.webbitserver.HttpControl
+import org.webbitserver.HttpRequest
+import org.webbitserver.HttpResponse
+import org.webbitserver.WebServer
+import org.webbitserver.netty.NettyWebServer
+import org.webbitserver.rest.Rest
 import strac.align.align.AlignDistance
 import strac.align.interpreter.AlignInterpreter
 import strac.align.interpreter.dto.Alignment
 import strac.align.interpreter.dto.Payload
-import strac.align.socket.WebsocketHandler
+import strac.align.interpreter.dto.UpdateDTO
 import strac.align.utils.AlignServiceProvider
 import strac.core.StreamProviderFactory
 import strac.core.TestLogProvider
 import java.io.FileNotFoundException
 import java.util.*
+import java.util.concurrent.ExecutionException
 
 class TestConsistency{
 
@@ -35,12 +42,31 @@ class TestConsistency{
 
         // Initializing web socket
         // Initializing web socket
-        val webServer = WebServers.createWebServer(9090)
-                .add("/notifications", WebsocketHandler.getInstance())
 
-        webServer.start().get()
+        Thread(){
+            kotlin.run {
+                val webServer: WebServer = NettyWebServer(9090)
+                val rest = Rest(webServer)
 
-        println("Listening on " + webServer.uri)
+                rest.GET("/progress") { httpRequest: HttpRequest?, httpResponse: HttpResponse, httpControl: HttpControl? ->
+
+                    httpResponse.header("Access-Control-Allow-Origin", "*")
+                    httpResponse.content(Gson().toJson(UpdateDTO.instance)).end()
+
+                 }
+
+                try {
+                    webServer.start().get()
+                    println("Try this: curl -i localhost:9090/progress")
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                } catch (e: ExecutionException) {
+                    e.printStackTrace()
+                }
+
+            }
+        }.start()
+
 
         val dto = Alignment()
         dto.distanceFunctionName="dBin"
