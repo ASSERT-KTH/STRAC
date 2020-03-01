@@ -58,8 +58,22 @@ public class ProgressAPI {
 
                         Map<String, Object> update= new HashMap<>();
 
+                        // Clone map
+
+                        Map<Integer, Map<Integer, Double>> cMap = new HashMap<>();
+
                         if(UpdateDTO.instance != null){
-                            update.put("functionMap", UpdateDTO.instance.resultDto.functionMap);
+
+                            for(int k1: UpdateDTO.instance.resultDto.functionMap.keySet())
+                            {
+                                for(int k2: UpdateDTO.instance.resultDto.functionMap.get(k1).keySet()){
+                                    if(!cMap.containsKey(k1))
+                                        cMap.put(k1, new HashMap<>());
+                                    cMap.get(k1).put(k2, UpdateDTO.instance.resultDto.functionMap.get(k1).get(k2));
+                                }
+                            }
+
+                            update.put("functionMap",cMap);
                         }
 
                         httpResponse.content(new Gson().toJson(update)).end();
