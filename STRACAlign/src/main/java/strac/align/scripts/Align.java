@@ -16,6 +16,8 @@ import java.util.concurrent.ExecutionException;
 
 public class Align {
 
+    static Thread t;
+
     public static void setup() throws IOException, ClassNotFoundException, ExecutionException, InterruptedException {
 
         AlignServiceProvider.setup();
@@ -23,12 +25,28 @@ public class Align {
 
 
         // Initializing web socket
-        WebServer webServer  = WebServers.createWebServer(9090)
-                .add("/notifications", WebsocketHandler.getInstance());
 
-        webServer.start();
+        t = new Thread(){
+            @Override
+            public void run() {
+                WebServer webServer  = WebServers.createWebServer(9090)
+                        .add("/notifications", WebsocketHandler.getInstance());
+                
+                try {
+                    webServer.start().get();
+                    System.out.println("Listening on " + webServer.getUri());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
 
-        System.out.println("Listening on " + webServer.getUri());
+            }
+        };
+
+        t.start();
+
+
 
 
     }
@@ -58,6 +76,8 @@ public class Align {
             } finally {
                 LogProvider.info("Disposing map files");
                 AlignServiceProvider.getInstance().getProvider().dispose();
+
+                t.interrupt();
             }
 
         }
