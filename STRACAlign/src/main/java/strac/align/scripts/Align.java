@@ -31,7 +31,7 @@ public class Align {
             public void run() {
                 WebServer webServer  = WebServers.createWebServer(9090)
                         .add("/notifications", WebsocketHandler.getInstance());
-                
+
                 try {
                     webServer.start().get();
                     System.out.println("Listening on " + webServer.getUri());

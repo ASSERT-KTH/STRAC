@@ -62,19 +62,12 @@ public class WebsocketHandler extends BaseWebSocketHandler {
 
     public void sendUpdate(){
         for(WebSocketConnection conn: connections){
-            conn.send((new Gson()).toJson(new Msg("update", UpdateDTO.instance)));
-        }
-    }
-
-    public void setSingleProgress(int tr1, int tr2, double progress){
-        for(WebSocketConnection conn: connections){
-            conn.send((new Gson()).toJson(new Msg("single_update", new Triple<Integer, Integer, Double>(tr1, tr2, progress))));
-        }
-    }
-
-    public void sendLog(String msg){
-        for(WebSocketConnection conn: connections){
-            conn.send((new Gson()).toJson(new Msg("log", msg)));
+            try {
+                conn.send((new Gson()).toJson(new Msg("update", UpdateDTO.instance)));
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 }
