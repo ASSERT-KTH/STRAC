@@ -6,7 +6,6 @@ import org.webbitserver.WebServers
 import org.webbitserver.WebSocketHandler
 import org.webbitserver.handler.StaticFileHandler
 import strac.align.socket.ServerResourceHandler
-import strac.align.socket.WebsocketHandler
 import strac.align.utils.AlignServiceProvider
 import java.io.FileNotFoundException
 import java.net.InetSocketAddress
