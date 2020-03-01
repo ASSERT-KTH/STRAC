@@ -20,4 +20,14 @@ public class UpdateDTO {
 
         instance = this;
     }
+
+
+    public UpdateDTO(Alignment mainDto, AlignResultDto resultDto, int overall, boolean save){
+        this.mainDto = mainDto;
+        this.resultDto = resultDto;
+        this.overallProgres = overall;
+
+        if(save)
+            instance = this;
+    }
 }

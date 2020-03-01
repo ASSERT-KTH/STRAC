@@ -7,6 +7,7 @@ import strac.align.align.ICellComparer;
 import com.google.gson.Gson;
 import strac.align.interpreter.dto.UpdateDTO;
 import strac.align.models.SimplePairResultDto;
+import strac.align.scripts.Align;
 import strac.core.LogProvider;
 import strac.core.StreamProviderFactory;
 import strac.core.TraceHelper;
@@ -54,7 +55,7 @@ public class AlignInterpreter {
     }
 
 
-    public SimplePairResultDto executeSimplePair(final Alignment dto, int trace1Index, int trace2Index, final IOnAlign action, TraceHelper.IStreamProvider provider, final TraceHelper helper, final Aligner align, final List<TraceMap> traces, final AlignResultDto resultDto){
+    public SimplePairResultDto executeSimplePair(final Alignment dto, int trace1Index, int trace2Index,final TraceHelper helper, final Aligner align, final List<TraceMap> traces){
 
         LogProvider.info(String.format("Executing...%s %s", trace1Index, trace2Index));
 
@@ -241,6 +242,8 @@ public class AlignInterpreter {
 
         final AlignResultDto resultDto = new AlignResultDto();
 
+        new UpdateDTO(dto, resultDto, 0);
+
 
         if(dto.pairs.size() == 0){
             LogProvider.info("No specific pairs, two vs two tournament");
@@ -271,12 +274,11 @@ public class AlignInterpreter {
         CompletionService<SimplePairResultDto> completionService =
                 new ExecutorCompletionService<>(executor);
 
-        new UpdateDTO(dto, resultDto, 0);
 
         for(final int[] pair: dto.pairs){
             int i = pair[0], j = pair[1];
 
-            completionService.submit(() -> executeSimplePair(dto, i, j, action, provider, helper, align, traces, resultDto));
+            completionService.submit(() -> executeSimplePair(dto, i, j,  helper, align, traces));
         }
 
         resultDto.method = dto.method;
@@ -303,10 +305,13 @@ public class AlignInterpreter {
                 if(single != null){
                     //LogProvider.info(String.format("%s (%s %s) D: %s",received, single.trace1Index, single.trace2Index, single.distance.getDistance()));
 
+                    Align.lock1.lock();
                     resultDto.setFunctioNMap(single.trace1Index, single.trace2Index, single.distance.getDistance());
 
                     resultDto.fileMap.put(single.trace1Index, single.tr1.traceFile);
                     resultDto.fileMap.put(single.trace2Index, single.tr2.traceFile);
+
+                    Align.lock1.unlock();
                 }
 
             } catch (InterruptedException | ExecutionException e) {

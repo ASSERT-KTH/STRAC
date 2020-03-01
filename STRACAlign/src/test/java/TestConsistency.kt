@@ -12,6 +12,7 @@ import strac.align.interpreter.AlignInterpreter
 import strac.align.interpreter.dto.Alignment
 import strac.align.interpreter.dto.Payload
 import strac.align.interpreter.dto.UpdateDTO
+import strac.align.scripts.Align
 import strac.align.utils.AlignServiceProvider
 import strac.core.StreamProviderFactory
 import strac.core.TestLogProvider
@@ -43,29 +44,7 @@ class TestConsistency{
         // Initializing web socket
         // Initializing web socket
 
-        Thread(){
-            kotlin.run {
-                val webServer: WebServer = NettyWebServer(9090)
-                val rest = Rest(webServer)
-
-                rest.GET("/progress") { httpRequest: HttpRequest?, httpResponse: HttpResponse, httpControl: HttpControl? ->
-
-                    httpResponse.header("Access-Control-Allow-Origin", "*")
-                    httpResponse.content(Gson().toJson(UpdateDTO.instance)).end()
-
-                 }
-
-                try {
-                    webServer.start().get()
-                    println("Try this: curl -i localhost:9090/progress")
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                } catch (e: ExecutionException) {
-                    e.printStackTrace()
-                }
-
-            }
-        }.start()
+        Align.setup()
 
 
         val dto = Alignment()
