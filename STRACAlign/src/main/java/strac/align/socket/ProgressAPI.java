@@ -21,7 +21,6 @@ public class ProgressAPI {
                 // TODO enable ssl
                 rest.GET("/progress", (httpRequest, httpResponse, httpControl) ->
                 {
-                    System.out.println("Sending progress...");
                     httpResponse.header("Access-Control-Allow-Origin", "*");
                     httpResponse.content(new Gson().toJson(
                             UpdateDTO.instance != null?
@@ -32,11 +31,21 @@ public class ProgressAPI {
                     @Override
                     public void handleHttpRequest(HttpRequest httpRequest, HttpResponse httpResponse, HttpControl httpControl) throws Exception {
 
-                        System.out.println("Sending progress...");
                         httpResponse.header("Access-Control-Allow-Origin", "*");
-                        httpResponse.content(new Gson().toJson(
-                                UpdateDTO.instance != null?
-                                        UpdateDTO.instance.mainDto: null)).end();
+                        Align.lock1.lock();
+
+                        try {
+                            httpResponse.content(new Gson().toJson(
+                                    UpdateDTO.instance != null ?
+                                            UpdateDTO.instance.mainDto : null)).end();
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                            httpResponse.content("null").end();
+                        }
+                        finally {
+                            Align.lock1.unlock();
+                        }
                     }
                 });
 
@@ -45,7 +54,6 @@ public class ProgressAPI {
                     @Override
                     public void handleHttpRequest(HttpRequest httpRequest, HttpResponse httpResponse, HttpControl httpControl) throws Exception {
 
-                        System.out.println("Sending progress...");
                         httpResponse.header("Access-Control-Allow-Origin", "*");
 
                         Align.lock1.lock();
