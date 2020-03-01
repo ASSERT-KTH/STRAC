@@ -26,7 +26,7 @@ public class Align {
         WebServer webServer  = WebServers.createWebServer(9090)
                 .add("/notifications", WebsocketHandler.getInstance());
 
-        webServer.start().get();
+        webServer.start();
 
         System.out.println("Listening on " + webServer.getUri());
 
