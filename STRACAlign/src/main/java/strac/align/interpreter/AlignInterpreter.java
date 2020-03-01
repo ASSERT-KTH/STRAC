@@ -296,7 +296,7 @@ public class AlignInterpreter {
 
                 received++;
 
-                System.out.print(String.format("\r%s/%s", received, pairs.length()));
+                System.out.print(String.format("\r%s/%s", received, dto.pairs.size()));
 
                 SimplePairResultDto single = f.get();
                 UpdateDTO.instance.overallProgres++;

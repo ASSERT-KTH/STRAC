@@ -13,6 +13,10 @@ import java.util.Set;
 
 public class WebsocketHandler extends BaseWebSocketHandler {
 
+    public class Action{
+        public String namespace;
+    }
+
     public class Msg{
 
         public Object data;
@@ -50,7 +54,7 @@ public class WebsocketHandler extends BaseWebSocketHandler {
 
     public void onMessage(WebSocketConnection connection, String message) {
 
-        Msg m = new Gson().fromJson(message, Msg.class);
+        Action m = new Gson().fromJson(message, Action.class);
 
         if(m.namespace.equals("update"))
             sendUpdate();
