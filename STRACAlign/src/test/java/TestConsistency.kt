@@ -69,7 +69,7 @@ class TestConsistency{
         //TestLogProvider.info("#%s".format(site))
         //for(site2 in sites) {
 
-        dto.files = Arrays.asList(f1, f2, f3)
+        dto.files = Arrays.asList(f1, f2, f3, f1, f2, f2, f3)
 
 
             //AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize

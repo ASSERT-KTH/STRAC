@@ -41,11 +41,7 @@ public class WebsocketHandler extends BaseWebSocketHandler {
 
     public void onOpen(WebSocketConnection connection) {
         connections.add(connection);
-
-        if(metaDto != null)
-            connection.send(new Gson().toJson(new Msg("update", metaDto)));
-        else
-            System.err.println("Meta null");
+        connection.send(new Gson().toJson(new Msg("update", UpdateDTO.instance)));
     }
 
     public void onClose(WebSocketConnection connection) {
@@ -53,17 +49,17 @@ public class WebsocketHandler extends BaseWebSocketHandler {
     }
 
     public void onMessage(WebSocketConnection connection, String message) {
-        connection.send(message.toUpperCase()); // echo back message in upper case
+
+        Msg m = new Gson().fromJson(message, Msg.class);
+
+        if(m.namespace.equals("update"))
+            sendUpdate();
     }
 
-    UpdateDTO metaDto;
-
-    public void sendUpdate(UpdateDTO dto){
+    public void sendUpdate(){
         for(WebSocketConnection conn: connections){
-            conn.send((new Gson()).toJson(new Msg("update", dto)));
+            conn.send((new Gson()).toJson(new Msg("update", UpdateDTO.instance)));
         }
-
-        metaDto = dto;
     }
 
     public void setSingleProgress(int tr1, int tr2, double progress){

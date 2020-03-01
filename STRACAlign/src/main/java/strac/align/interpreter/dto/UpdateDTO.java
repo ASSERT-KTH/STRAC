@@ -11,9 +11,13 @@ public class UpdateDTO {
 
     public int overallProgres = 0;
 
+    public static UpdateDTO instance;
+
     public UpdateDTO(Alignment mainDto, AlignResultDto resultDto, int overall){
         this.mainDto = mainDto;
         this.resultDto = resultDto;
         this.overallProgres = overall;
+
+        instance = this;
     }
 }

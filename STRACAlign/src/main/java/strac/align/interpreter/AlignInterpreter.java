@@ -272,7 +272,7 @@ public class AlignInterpreter {
         CompletionService<SimplePairResultDto> completionService =
                 new ExecutorCompletionService<>(executor);
 
-        WebsocketHandler.getInstance().sendUpdate(new UpdateDTO(dto, resultDto, 0));
+        new UpdateDTO(dto, resultDto, 0);
 
         for(final int[] pair: dto.pairs){
             int i = pair[0], j = pair[1];
@@ -296,13 +296,10 @@ public class AlignInterpreter {
 
                 received++;
 
+                System.out.print(String.format("\r%s/%s", received, pairs.length()));
 
                 SimplePairResultDto single = f.get();
-
-                if(received % 1000 == 0) {
-                    WebsocketHandler.getInstance().sendUpdate(new UpdateDTO(dto, resultDto, received));
-                    System.out.println("Sent to WS");
-                }
+                UpdateDTO.instance.overallProgres++;
 
                 if(single != null){
                     //LogProvider.info(String.format("%s (%s %s) D: %s",received, single.trace1Index, single.trace2Index, single.distance.getDistance()));
@@ -317,10 +314,10 @@ public class AlignInterpreter {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
-
-            WebsocketHandler.getInstance().sendUpdate(new UpdateDTO(dto, resultDto, received));
-
         }
+
+
+        UpdateDTO.instance.overallProgres = received;
 
         System.out.println(pairs);
 
