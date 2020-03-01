@@ -19,15 +19,12 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Align {
 
-    public static Thread t;
-    public static ReentrantLock lock1;
+    public static Thread APIThread;
 
     public static void setup() throws IOException, ClassNotFoundException, ExecutionException, InterruptedException {
 
         AlignServiceProvider.setup();
         AlignServiceProvider.getInstance().getProvider();
-
-        lock1 = new ReentrantLock();
 
         // Initializing web socket
         new ProgressAPI();
@@ -61,7 +58,7 @@ public class Align {
                 LogProvider.info("Disposing map files");
                 AlignServiceProvider.getInstance().getProvider().dispose();
 
-                t.interrupt();
+                APIThread.interrupt();
             }
 
         }

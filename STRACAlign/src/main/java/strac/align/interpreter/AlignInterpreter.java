@@ -305,13 +305,11 @@ public class AlignInterpreter {
                 if(single != null){
                     //LogProvider.info(String.format("%s (%s %s) D: %s",received, single.trace1Index, single.trace2Index, single.distance.getDistance()));
 
-                    Align.lock1.lock();
                     resultDto.setFunctioNMap(single.trace1Index, single.trace2Index, single.distance.getDistance());
 
                     resultDto.fileMap.put(single.trace1Index, single.tr1.traceFile);
                     resultDto.fileMap.put(single.trace2Index, single.tr2.traceFile);
 
-                    Align.lock1.unlock();
                 }
 
             } catch (InterruptedException | ExecutionException e) {

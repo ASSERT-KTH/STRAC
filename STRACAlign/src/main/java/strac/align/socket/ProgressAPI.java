@@ -7,12 +7,14 @@ import org.webbitserver.rest.Rest;
 import strac.align.interpreter.dto.UpdateDTO;
 import strac.align.scripts.Align;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class ProgressAPI {
 
     public ProgressAPI(){
-        Align.t = new Thread(){
+        Align.APIThread = new Thread(){
             @Override
             public void run() {
                 WebServer webServer  = new NettyWebServer(9090);
@@ -32,20 +34,17 @@ public class ProgressAPI {
                     public void handleHttpRequest(HttpRequest httpRequest, HttpResponse httpResponse, HttpControl httpControl) throws Exception {
 
                         httpResponse.header("Access-Control-Allow-Origin", "*");
-                        Align.lock1.lock();
 
-                        try {
-                            httpResponse.content(new Gson().toJson(
-                                    UpdateDTO.instance != null ?
-                                            UpdateDTO.instance.mainDto : null)).end();
+                        Map<String, Object> meta= new HashMap<>();
+
+                        if(UpdateDTO.instance != null){
+                            meta.put("count", UpdateDTO.instance.mainDto.pairs.size());
+                            meta.put("files", UpdateDTO.instance.mainDto.files);
+                            meta.put("method", UpdateDTO.instance.mainDto.method.name);
                         }
-                        catch (Exception e){
-                            e.printStackTrace();
-                            httpResponse.content("null").end();
-                        }
-                        finally {
-                            Align.lock1.unlock();
-                        }
+
+                        httpResponse.content(new Gson().toJson(meta)).end();
+
                     }
                 });
 
@@ -56,19 +55,15 @@ public class ProgressAPI {
 
                         httpResponse.header("Access-Control-Allow-Origin", "*");
 
-                        Align.lock1.lock();
-                        try {
-                            httpResponse.content(new Gson().toJson(
-                                    UpdateDTO.instance != null ?
-                                            UpdateDTO.instance.resultDto : null)).end();
-                        }
-                        catch (Exception e){
-                            httpResponse.content(new Gson().toJson(null)).end();
-                        }
-                        finally {
-                            Align.lock1.unlock();
 
+                        Map<String, Object> update= new HashMap<>();
+
+                        if(UpdateDTO.instance != null){
+                            update.put("functionMap", UpdateDTO.instance.resultDto.functionMap);
                         }
+
+                        httpResponse.content(new Gson().toJson(update)).end();
+
                     }
                 });
 
@@ -86,6 +81,6 @@ public class ProgressAPI {
             }
         };
 
-        Align.t.start();
+        Align.APIThread.start();
     }
 }
