@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import strac.align.interpreter.dto.UpdateDTO;
 import strac.align.models.SimplePairResultDto;
 import strac.align.scripts.Align;
+import strac.align.socket.ProgressAPI;
 import strac.core.LogProvider;
 import strac.core.StreamProviderFactory;
 import strac.core.TraceHelper;
@@ -335,8 +336,14 @@ public class AlignInterpreter {
         }
 
         executor.shutdownNow();
-        
-        Align.APIThread.interrupt();
+
+        try {
+            ProgressAPI.webServer.stop().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
     }
 

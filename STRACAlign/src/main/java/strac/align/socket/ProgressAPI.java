@@ -12,12 +12,14 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class ProgressAPI {
+    public static NettyWebServer webServer;
 
     public ProgressAPI(){
         Align.APIThread = new Thread(){
             @Override
             public void run() {
-                WebServer webServer  = new NettyWebServer(9090);
+                webServer  = new NettyWebServer(9090);
+
                 Rest rest = new Rest(webServer);
 
                 // TODO enable ssl
