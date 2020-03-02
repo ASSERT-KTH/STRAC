@@ -335,6 +335,8 @@ public class AlignInterpreter {
         }
 
         executor.shutdownNow();
+        
+        Align.APIThread.interrupt();
 
     }
 
