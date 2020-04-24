@@ -1,9 +1,12 @@
 package strac.align.socket;
 
 import com.google.gson.Gson;
-import org.webbitserver.*;
-import org.webbitserver.netty.NettyWebServer;
-import org.webbitserver.rest.Rest;
+import io.undertow.Undertow;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.PathHandler;
+import io.undertow.util.Headers;
+import io.undertow.util.HttpString;
 import strac.align.interpreter.dto.UpdateDTO;
 import strac.align.scripts.Align;
 
@@ -12,30 +15,28 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class ProgressAPI {
-    public static NettyWebServer webServer;
+
+    public static Undertow server;
 
     public ProgressAPI(){
         Align.APIThread = new Thread(){
             @Override
             public void run() {
-                webServer  = new NettyWebServer(9090);
 
-                Rest rest = new Rest(webServer);
-
-                // TODO enable ssl
-                rest.GET("/progress", (httpRequest, httpResponse, httpControl) ->
-                {
-                    httpResponse.header("Access-Control-Allow-Origin", "*");
-                    httpResponse.content(new Gson().toJson(
-                            UpdateDTO.instance != null?
-                                    UpdateDTO.instance.overallProgres: null)).end();
-                });
-
-                rest.GET("/meta", new HttpHandler() {
+                PathHandler handler = new PathHandler();
+                handler.addPrefixPath("/progress", new HttpHandler() {
                     @Override
-                    public void handleHttpRequest(HttpRequest httpRequest, HttpResponse httpResponse, HttpControl httpControl) throws Exception {
-
-                        httpResponse.header("Access-Control-Allow-Origin", "*");
+                    public void handleRequest(HttpServerExchange httpServerExchange) throws Exception {
+                        httpServerExchange.getResponseHeaders().put(new HttpString("Access-Control-Allow-Origin"), "*");
+                        httpServerExchange.getResponseSender().send(new Gson().toJson(
+                                UpdateDTO.instance != null?
+                                        UpdateDTO.instance.overallProgres: null));
+                    }
+                });
+                handler.addPrefixPath("/meta", new HttpHandler() {
+                    @Override
+                    public void handleRequest(HttpServerExchange httpServerExchange) throws Exception {
+                        httpServerExchange.getResponseHeaders().put(new HttpString("Access-Control-Allow-Origin"), "*");
 
                         Map<String, Object> meta= new HashMap<>();
 
@@ -45,17 +46,13 @@ public class ProgressAPI {
                             meta.put("method", UpdateDTO.instance.mainDto.method.name);
                         }
 
-                        httpResponse.content(new Gson().toJson(meta)).end();
-
+                        httpServerExchange.getResponseSender().send(new Gson().toJson(meta));
                     }
                 });
-
-
-                rest.GET("/update", new HttpHandler() {
+                handler.addPrefixPath("/update", new HttpHandler() {
                     @Override
-                    public void handleHttpRequest(HttpRequest httpRequest, HttpResponse httpResponse, HttpControl httpControl) throws Exception {
-
-                        httpResponse.header("Access-Control-Allow-Origin", "*");
+                    public void handleRequest(HttpServerExchange httpServerExchange) throws Exception {
+                        httpServerExchange.getResponseHeaders().put(new HttpString("Access-Control-Allow-Origin"), "*");
 
 
                         Map<String, Object> update= new HashMap<>();
@@ -68,24 +65,23 @@ public class ProgressAPI {
                         }
 
                         try {
-                            httpResponse.content(new Gson().toJson(update)).end();
+                            httpServerExchange.getResponseSender().send(new Gson().toJson(update));
                         }
                         catch (Exception e){
-                            httpResponse.content("null").end();
+                            httpServerExchange.getResponseSender().send("null");
                         }
-
                     }
                 });
 
-                try {
-                    webServer.start().get();
-                    System.out.println("Try this: curl -i localhost:9090/progress");
+                server = Undertow.builder()
+                        .addHttpListener(9090, "localhost")
+                        .setHandler(handler).build();
 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+                server.start();
+
+
+                System.out.println("Try this: curl -i localhost:9090/progress");
+
 
 
             }

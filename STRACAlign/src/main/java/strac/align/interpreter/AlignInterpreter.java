@@ -71,7 +71,8 @@ public class AlignInterpreter {
         TraceMap tr2 = traces.get(trace2Index);
 
         AlignDistance distance = align.align(tr1.plainTrace, tr2.plainTrace);
-        distance.getInsertions().close();
+        if(distance.getInsertions() != null)
+            distance.getInsertions().close();
 
         result.distance = distance;
         result.tr1 = tr1;
@@ -185,7 +186,8 @@ public class AlignInterpreter {
                 trace2Alignment.close();
                 trace1Alignment.dispose();
                 trace2Alignment.dispose();
-                distance.getInsertions().dispose();
+                if(distance.getInsertions() != null)
+                    distance.getInsertions().dispose();
             }
 
             //locks[trace1Index].unlock();
@@ -337,13 +339,9 @@ public class AlignInterpreter {
 
         executor.shutdownNow();
 
-        try {
-            ProgressAPI.webServer.stop().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        if(ProgressAPI.server != null)
+            ProgressAPI.server.stop();
+
 
     }
 

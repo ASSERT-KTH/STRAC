@@ -1,9 +1,6 @@
 package strac.align.scripts;
 
 import com.google.gson.Gson;
-import org.webbitserver.*;
-import org.webbitserver.netty.NettyWebServer;
-import org.webbitserver.rest.Rest;
 import strac.align.interpreter.dto.UpdateDTO;
 import strac.align.socket.ProgressAPI;
 import strac.core.LogProvider;
@@ -27,7 +24,7 @@ public class Align {
         AlignServiceProvider.getInstance().getProvider();
 
         // Initializing web socket
-        new ProgressAPI();
+        //new ProgressAPI();
 
 
     }
@@ -58,7 +55,8 @@ public class Align {
                 LogProvider.info("Disposing map files");
                 AlignServiceProvider.getInstance().getProvider().dispose();
 
-                APIThread.interrupt();
+                if(APIThread != null)
+                    APIThread.interrupt();
             }
 
         }

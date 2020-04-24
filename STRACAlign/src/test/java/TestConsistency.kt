@@ -1,12 +1,6 @@
 import com.google.gson.Gson
 import org.junit.Before
 import org.junit.Test
-import org.webbitserver.HttpControl
-import org.webbitserver.HttpRequest
-import org.webbitserver.HttpResponse
-import org.webbitserver.WebServer
-import org.webbitserver.netty.NettyWebServer
-import org.webbitserver.rest.Rest
 import strac.align.align.AlignDistance
 import strac.align.interpreter.AlignInterpreter
 import strac.align.interpreter.dto.Alignment
@@ -90,6 +84,58 @@ class TestConsistency{
 
     }
 
+
+    @Test
+    fun testConsistencyPureDTW() {
+
+        // Initializing web socket
+        // Initializing web socket
+
+        Align.setup()
+
+
+        val dto = Alignment()
+        dto.distanceFunctionName="dBin"
+        dto.outputAlignment = true
+        dto.pairs = ArrayList();
+        dto.method = Payload.MethodInfo()
+        dto.method.name = "PureDTW"
+        dto.method.params = Arrays.asList()
+        dto.outputDir = "outDemo";
+        dto.exportImage = true;
+        dto.separator = "[\r\n]"
+        dto.clean = arrayOf(
+                "^( )*\\d+ [ES]>",
+                "0x\\w+ @",
+                "\\w+ : ",
+                " [A-Z](.*)"
+        )
+
+        val interpreter = AlignInterpreter()
+
+
+        val f1 = getFile("tourney/10.txt")
+        val f2 = getFile("bytecodes/xxxxxxx.bytecode")
+        val f4 = getFile("tourney/t4.txt")
+        //val f2 = "/Users/javier/IdeaProjects/STRAC/scripts/chrome_scripts/tiny_test/ten/wiki-9/w6.txt"
+        //TestLogProvider.info("#%s".format(site))
+        //for(site2 in sites) {
+
+        dto.files = Arrays.asList(f1, f2, f4)
+
+
+        //AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize
+
+        interpreter.execute(dto, { d: AlignDistance, s: Double, m: Double, g1: Double, g2: Double, size: Double ->
+            TestLogProvider.info("[", d.distance, ",", "\"%s\"".format(1), ",",
+                    "\"%s\"".format(2), "],")
+        },
+                StreamProviderFactory.getInstance())
+
+        AlignServiceProvider.getInstance().allocator.dispose()
+
+
+    }
 
     @Test
     fun testParallelProcessing() {

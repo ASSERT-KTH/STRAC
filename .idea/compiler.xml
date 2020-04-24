@@ -7,9 +7,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="STRACv8tor" />
+        <module name="STRAC-core" />
         <module name="STRACcore" />
         <module name="STRAC-align" />
-        <module name="STRAC-core" />
+        <module name="SIMDTest" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

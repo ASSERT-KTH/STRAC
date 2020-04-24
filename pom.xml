@@ -32,5 +32,6 @@
         <module>STRACcore</module>
         <module>STRACAlign</module>
         <module>STRACv8tor</module>
+        <module>SIMDTest</module>
     </modules>
 </project>

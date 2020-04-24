@@ -1,10 +1,6 @@
 import com.sun.net.httpserver.spi.HttpServerProvider
 import org.junit.Before
 import org.junit.Test
-import org.webbitserver.WebServer
-import org.webbitserver.WebServers
-import org.webbitserver.WebSocketHandler
-import org.webbitserver.handler.StaticFileHandler
 import strac.align.socket.ServerResourceHandler
 import strac.align.utils.AlignServiceProvider
 import java.io.FileNotFoundException
@@ -41,12 +37,6 @@ class TestUI{
 
     //@Test
     fun testServer(){
-        val handler = ServerResourceHandler()
-        val server = HttpServerProvider.provider().createHttpServer(InetSocketAddress(8080), 8080)
-        server.createContext("/", handler);
-
-        server.start()
-
 
         readLine()
     }
