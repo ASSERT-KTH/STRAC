@@ -22,5 +22,10 @@
             <artifactId>jmh-generator-annprocess</artifactId>
             <version>1.19</version>
         </dependency>
+        <dependency>
+            <groupId>STRAC-align</groupId>
+            <artifactId>STRAC-align</artifactId>
+            <version>0.1</version>
+        </dependency>
     </dependencies>
 </project>

@@ -200,7 +200,7 @@ public class AlignInterpreter {
             //locks[trace1Index].unlock();
             //locks[trace2Index].unlock();
 
-            System.err.println(String.format("i: %s, j: %s", trace1Index, trace2Index));
+            //System.err.println(String.format("i: %s, j: %s", trace1Index, trace2Index));
             e.printStackTrace();
         }
 
@@ -300,7 +300,7 @@ public class AlignInterpreter {
 
                 received++;
 
-                System.out.print(String.format("\r%s/%s", received, dto.pairs.size()));
+                //System.out.print(String.format("\r%s/%s", received, dto.pairs.size()));
 
                 SimplePairResultDto single = f.get();
                 UpdateDTO.instance.overallProgres++;
@@ -324,7 +324,7 @@ public class AlignInterpreter {
 
         UpdateDTO.instance.overallProgres = received;
 
-        System.out.println(pairs);
+        // System.out.println(pairs);
 
         if(dto.outputAlignmentMap != null){
             LogProvider.info("Exporting  json distances");
