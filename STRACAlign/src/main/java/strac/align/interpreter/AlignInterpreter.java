@@ -313,6 +313,9 @@ public class AlignInterpreter {
                     resultDto.fileMap.put(single.trace1Index, single.tr1.traceFile);
                     resultDto.fileMap.put(single.trace2Index, single.tr2.traceFile);
 
+                    if(action != null)
+                        action.action(single.distance, 0, 0, 0,0,0);
+
                 }
 
             } catch (InterruptedException | ExecutionException e) {

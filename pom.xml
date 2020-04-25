@@ -3,7 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>STRAC</groupId>
     <artifactId>STRAC</artifactId>
     <packaging>pom</packaging>
@@ -28,10 +27,17 @@
             </resource>
         </resources>
     </build>
+    <!-- https://stackoverflow.com/questions/8304110/skip-a-submodule-during-a-maven-build
+    <profiles>
+        <profile>
+            <id>bch</id>
+            <modules>
+            </modules>
+        </profile>
+    </profiles> -->
     <modules>
         <module>STRACcore</module>
         <module>STRACAlign</module>
-        <module>STRACv8tor</module>
-        <module>SIMDTest</module>
+        <module>benchmarks</module>
     </modules>
 </project>

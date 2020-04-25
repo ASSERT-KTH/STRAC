@@ -28,8 +28,8 @@ import static org.openjdk.jmh.annotations.Mode.AverageTime;
         "-XX:+UseSuperWord",
         "-XX:+UnlockDiagnosticVMOptions",
         "-XX:CompileCommand=print,*Main.array1"})
-@Warmup(iterations = 20)
-@Measurement(iterations = 100)
+@Warmup(iterations = 4)
+@Measurement(iterations = 20)
 public class Main {
 
     @State(org.openjdk.jmh.annotations.Scope.Thread)
@@ -61,8 +61,8 @@ public class Main {
                     " [A-Z](.*)"
             };
 
-            String f1 = "SIMDTest/src/main/resources/t1.txt";
-            String f2 = "SIMDTest/src/main/resources/t2.txt";
+            String f1 = "benchmarks/resources/t1.txt";
+            String f2 = "benchmarks/resources/t2.txt";
             //val f2 = "/Users/javier/IdeaProjects/STRAC/scripts/chrome_scripts/tiny_test/ten/wiki-9/w6.txt"
             //TestLogProvider.info("#%s".format(site))
             //for(site2 in sites) {
@@ -82,6 +82,11 @@ public class Main {
     }
     public static void main(String[] args) throws Exception{
         org.openjdk.jmh.Main.main(args);
+
+        /*Context ctx = new Context();
+        ctx.init();
+
+        compare(ctx);*/
     }
 
     @Benchmark
@@ -94,7 +99,7 @@ public class Main {
         interpreter.execute(context.dto, new AlignInterpreter.IOnAlign() {
             @Override
             public void action(AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize) {
-
+                //sSystem.out.println(String.format("%s", distance.getDistance()));
             }
         }, StreamProviderFactory.getInstance());
 
