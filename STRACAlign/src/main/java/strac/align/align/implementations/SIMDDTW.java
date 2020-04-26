@@ -116,7 +116,6 @@ public class SIMDDTW extends Aligner {
             }
         }
 
-        System.out.println(d3[N]);
         return new AlignDistance(d3[N],null, -1, -1, 0);
     }
 }

@@ -28,8 +28,8 @@ import static org.openjdk.jmh.annotations.Mode.AverageTime;
         "-XX:+UseSuperWord",
         "-XX:+UnlockDiagnosticVMOptions",
         "-XX:CompileCommand=print,*Main.compare*"})
-@Warmup(iterations = 5)
-@Measurement(iterations = 10)
+@Warmup(iterations = 0)
+@Measurement(iterations = 1)
 public class Main {
 
     @State(org.openjdk.jmh.annotations.Scope.Thread)
