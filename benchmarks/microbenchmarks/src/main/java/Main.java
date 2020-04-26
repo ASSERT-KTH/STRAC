@@ -1,4 +1,4 @@
-package SIMDTest;
+package microbenchmarks;
 
 import org.openjdk.jmh.annotations.*;
 import strac.align.align.AlignDistance;
@@ -27,9 +27,9 @@ import static org.openjdk.jmh.annotations.Mode.AverageTime;
 @Fork(value = 1, jvmArgsAppend = {
         "-XX:+UseSuperWord",
         "-XX:+UnlockDiagnosticVMOptions",
-        "-XX:CompileCommand=print,*Main.array1"})
-@Warmup(iterations = 4)
-@Measurement(iterations = 20)
+        "-XX:CompileCommand=print,*Main.compare*"})
+@Warmup(iterations = 10)
+@Measurement(iterations = 50)
 public class Main {
 
     @State(org.openjdk.jmh.annotations.Scope.Thread)
@@ -46,8 +46,6 @@ public class Main {
             dto.pairs = new ArrayList();
             dto.method = new Payload.MethodInfo();
             dto.threadPoolCount = 10;
-            dto.method.name = "SIMD";
-            //dto.method.name = "PureDTW";
 
             dto.method.params = Arrays.asList();
             dto.outputDir = "outDemo";
@@ -82,19 +80,32 @@ public class Main {
     }
     public static void main(String[] args) throws Exception{
         org.openjdk.jmh.Main.main(args);
-
-        /*Context ctx = new Context();
-        ctx.init();
-
-        compare(ctx);*/
     }
 
     @Benchmark
-    public void compare(Context context) throws InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+    public void compareSIMD(Context context) throws InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
 
 
         AlignInterpreter interpreter = new AlignInterpreter();
-        //AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize
+        context.dto.method.name = "SIMD";
+
+        interpreter.execute(context.dto, new AlignInterpreter.IOnAlign() {
+            @Override
+            public void action(AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize) {
+                //sSystem.out.println(String.format("%s", distance.getDistance()));
+            }
+        }, StreamProviderFactory.getInstance());
+
+        AlignServiceProvider.getInstance().getAllocator().dispose();
+
+    }
+
+    @Benchmark
+    public void comparePureDTW(Context context) throws InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+
+
+        AlignInterpreter interpreter = new AlignInterpreter();
+        context.dto.method.name = "PureDTW";
 
         interpreter.execute(context.dto, new AlignInterpreter.IOnAlign() {
             @Override

@@ -2,7 +2,23 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/STRACAlign/libs/panama" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/STRACAlign/libs/panama/corba" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/STRACAlign/libs/panama/hotspot" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/STRACAlign/libs/panama/jaxp" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/STRACAlign/libs/panama/jaxws" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/STRACAlign/libs/panama/jdk" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/STRACAlign/libs/panama/langtools" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/STRACAlign/libs/panama/nashorn" vcs="hg4idea" />
     <mapping directory="$PROJECT_DIR$/STRACcore" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/panama/panama" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/panama/panama/corba" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/panama/panama/hotspot" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/panama/panama/jaxp" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/panama/panama/jaxws" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/panama/panama/jdk" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/panama/panama/langtools" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/panama/panama/nashorn" vcs="hg4idea" />
     <mapping directory="$PROJECT_DIR$/scripts/chrome_scripts/external/dtaidistance" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/scripts/chrome_scripts/external/dtw" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/scripts/chrome_scripts/external/repo" vcs="Git" />

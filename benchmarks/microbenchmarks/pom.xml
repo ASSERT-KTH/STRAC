@@ -9,7 +9,7 @@
         <version>0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>SIMDTest</artifactId>
+    <artifactId>microbenchmarks</artifactId>
 
     <dependencies>
         <dependency>

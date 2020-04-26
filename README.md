@@ -6,13 +6,14 @@ STRAC, a tools collection tailored to compare traces.
 
 - [STRAC-align](/STRACAlign) State of the art DTW implementations.
 
-- [STRAC-v8tor](/STRACv8tor) Using a V8 TRACE_IGNITION compiled version, we provide a tool which shows covered JavaScript using bytecode declaration and execution trace.
-
 - [STRAC-distrubuted] Soon ;)
 
 ### Prerequisites
 
-- java >=11
+- java >= 11
+
+#### To run with SIMD
+- Use project Panama https://jdk.java.net/panama/
 
 ## Authors
 

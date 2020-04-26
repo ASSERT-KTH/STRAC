@@ -7,6 +7,8 @@ import strac.core.LogProvider;
 import strac.core.data_structures.IReadArray;
 import strac.core.utils.TimeUtils;
 
+
+
 @strac.align.align.annotations.Aligner(name="SIMD")
 public class SIMDDTW extends Aligner {
 
@@ -22,7 +24,6 @@ public class SIMDDTW extends Aligner {
 
     @Override
     public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2) {
-
 
         int maxI = (int)trace1.size() + 1;
         int maxJ = (int)trace2.size() + 1;

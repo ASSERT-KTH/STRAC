@@ -32,14 +32,9 @@ public class NoWarpPathDTW extends Aligner {
         int maxI = (int)trace1.size();
         int maxJ = (int)trace2.size();
 
-        TimeUtils utl = new TimeUtils();
-
-        LogProvider.info("Exploring complete space...");
-
         double[] lastRow = new double[maxJ + 1];
         double[] currentRow = new double[maxJ + 1];
 
-        long progress = 0;
         lastRow[0] = 0.0;
 
         for(int j = 1; j < maxJ + 1; j++)
@@ -61,11 +56,6 @@ public class NoWarpPathDTW extends Aligner {
                 currentRow[j] = max;
             }
 
-            if(i%10000 == 0)
-                System.err.println(String.format("Exploring complete space...%.2f", (1.0*i/(maxI + 1) * 100)));
-
-
-            progress += maxJ;
             lastRow = currentRow;
         }
 

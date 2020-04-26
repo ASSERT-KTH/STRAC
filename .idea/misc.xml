@@ -12,10 +12,11 @@
         <option value="$PROJECT_DIR$/STRAC-dabstraction/pom.xml" />
         <option value="$PROJECT_DIR$/STRACWebApp/pom.xml" />
         <option value="$PROJECT_DIR$/STRACv8tor/pom.xml" />
+        <option value="$PROJECT_DIR$/benchmarks/SIMDTest/pom.xml" />
       </set>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_12" project-jdk-name="11.0.5" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_9" default="false" project-jdk-name="14" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>

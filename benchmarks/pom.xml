@@ -12,6 +12,6 @@
     <artifactId>benchmarks</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>SIMDTest</module>
+        <module>microbenchmarks</module>
     </modules>
 </project>
