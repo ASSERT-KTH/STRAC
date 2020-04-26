@@ -48243,7 +48243,7 @@ Star r4
 LdaSmi [1]
 LdaKeyedProperty r1, [14]
 Ar4, [13]
-Star r4
+Star r8
 LdaSmi [2]
 LdaKeyedProperty r1, [16]
 Star r5

@@ -28,8 +28,8 @@ import static org.openjdk.jmh.annotations.Mode.AverageTime;
         "-XX:+UseSuperWord",
         "-XX:+UnlockDiagnosticVMOptions",
         "-XX:CompileCommand=print,*Main.compare*"})
-@Warmup(iterations = 10)
-@Measurement(iterations = 50)
+@Warmup(iterations = 5)
+@Measurement(iterations = 10)
 public class Main {
 
     @State(org.openjdk.jmh.annotations.Scope.Thread)
@@ -80,10 +80,15 @@ public class Main {
     }
     public static void main(String[] args) throws Exception{
         org.openjdk.jmh.Main.main(args);
+        /*Context ctx = new Context();
+        ctx.init();
+        ctx.dto.method.name = "SIMD";
+        compareSIMD(ctx);*/
+
     }
 
     @Benchmark
-    public void compareSIMD(Context context) throws InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+    public  void compareSIMD(Context context) throws InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
 
 
         AlignInterpreter interpreter = new AlignInterpreter();

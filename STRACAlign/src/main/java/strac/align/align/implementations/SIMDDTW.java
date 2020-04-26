@@ -7,7 +7,10 @@ import strac.core.LogProvider;
 import strac.core.data_structures.IReadArray;
 import strac.core.utils.TimeUtils;
 
+import jdk.incubator.vector.*;
+import jdk.incubator.vector.Vector.*;
 
+import java.util.Arrays;
 
 @strac.align.align.annotations.Aligner(name="SIMD")
 public class SIMDDTW extends Aligner {
@@ -22,6 +25,8 @@ public class SIMDDTW extends Aligner {
         super(comparer);
     }
 
+    static final VectorSpecies<Integer> SPECIES = IntVector.SPECIES_MAX;
+
     @Override
     public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2) {
 
@@ -30,20 +35,25 @@ public class SIMDDTW extends Aligner {
 
         int N = maxJ - 1;
 
-        // TODO assuming traces have equal size
         int diagCount = maxI + maxJ - 1;
 
-        double[] d1 = new double[N + 1];
-        double[] d2 = new double[N + 1];
-        double[] d3 = new double[N + 1];
+        int[] d1 = new int[N + 1];
+        int[] d2 = new int[N + 1];
+        int[] d3 = new int[N + 1];
 
-        //double last = 0;
+        int[] trace1Vals = Arrays.stream(trace1.getPlain()).mapToInt(Integer::intValue).toArray();
+        int[] trace2Vals = Arrays.stream(trace2.getPlain()).mapToInt(Integer::intValue).toArray();
 
         d2[0] = 0;
 
+        IntVector gap = IntVector.zero(SPECIES);
+        gap.add(1);
+
+        System.err.println(String.format("Starting SIMD process...%s", SPECIES.length()));
+
         for(int i = 1; i < diagCount; i++){
 
-            double[] tmp = d1;
+            int[] tmp = d1;
             d1 = d2;
             d2 = d3;
             d3 = tmp;
@@ -61,8 +71,34 @@ public class SIMDDTW extends Aligner {
                 d3[i] = comparer.gapCost(i, ICellComparer.TRACE_DISCRIMINATOR.X) * i;
             } else z2 = i - maxJ + 1;
 
+            int k = z1;
+            for(; k < i - z2  - SPECIES.length(); k += SPECIES.length())
+            {
 
-            for(int k = i - z2; k >= z1; k--)
+                int ix = k;
+                int iy = i - ix;
+
+                if((trace1.size() - iy) < SPECIES.length() || trace2.size() - ix < SPECIES.length())
+                    break;
+
+                // TODO padding
+                IntVector costX1 = IntVector.fromArray(SPECIES, trace1Vals, iy - 1);
+                IntVector costY = IntVector.fromArray(SPECIES, trace2Vals, ix - 1);
+
+                costX1 = costX1.sub(costY);
+                costX1 = costX1.abs();
+
+                IntVector vD2 = IntVector.fromArray(SPECIES, d2, ix - 1).add(gap);
+                IntVector vD22 = IntVector.fromArray(SPECIES, d2, ix).add(gap);
+                IntVector vD11 = IntVector.fromArray(SPECIES, d1, ix - 1).add(costX1);
+
+
+                IntVector min = vD11.min(vD2.min(vD22));
+
+                min.intoArray(d3, ix);
+            }
+
+            for(; k <= i - z2 ; k++)
             {
                 int ix = k;
                 int iy = i - ix;
@@ -75,28 +111,12 @@ public class SIMDDTW extends Aligner {
                         d1[ix - 1] + cost);
 
 
-                d3[ix] = d;
+                d3[ix] =  (int)d;
                 //last = d;
             }
-
-            //System.out.println(String.format(" %s %s", i, N));
         }
 
-        /*
-
-        for(int i = 0; i < test.length; i++){
-            test[i][0] = i*comparer.gapCost(i, ICellComparer.TRACE_DISCRIMINATOR.X);
-
-            for(int j  = 0; j < test[0].length; j++){
-
-                test[0][j] = j*comparer.gapCost(i, ICellComparer.TRACE_DISCRIMINATOR.Y);
-                System.out.print(String.format("%.2f ",test[i][j]));
-
-            }
-
-            System.out.println();
-        }*/
-
+        System.out.println(d3[N]);
         return new AlignDistance(d3[N],null, -1, -1, 0);
     }
 }
