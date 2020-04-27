@@ -28,10 +28,10 @@ public class SIMDDTW extends Aligner {
     static final VectorSpecies<Integer> SPECIES = IntVector.SPECIES_MAX;
 
     @Override
-    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2) {
+    public AlignDistance align(int[] trace1, int[] trace2) {
 
-        int maxI = (int)trace1.size() + 1;
-        int maxJ = (int)trace2.size() + 1;
+        int maxI = trace1.length + 1;
+        int maxJ = trace2.length + 1;
 
         int N = maxJ - 1;
 
@@ -41,8 +41,6 @@ public class SIMDDTW extends Aligner {
         int[] d2 = new int[N + 1];
         int[] d3 = new int[N + 1];
 
-        int[] trace1Vals = Arrays.stream(trace1.getPlain()).mapToInt(Integer::intValue).toArray();
-        int[] trace2Vals = Arrays.stream(trace2.getPlain()).mapToInt(Integer::intValue).toArray();
 
         d2[0] = 0;
 
@@ -78,12 +76,12 @@ public class SIMDDTW extends Aligner {
                 int ix = k;
                 int iy = i - ix;
 
-                if((trace1.size() - iy) < SPECIES.length() || trace2.size() - ix < SPECIES.length())
+                if((trace1.length - iy) < SPECIES.length() || trace2.length- ix < SPECIES.length())
                     break;
 
                 // TODO padding
-                IntVector costX1 = IntVector.fromArray(SPECIES, trace1Vals, iy - 1);
-                IntVector costY = IntVector.fromArray(SPECIES, trace2Vals, ix - 1);
+                IntVector costX1 = IntVector.fromArray(SPECIES, trace1, iy - 1);
+                IntVector costY = IntVector.fromArray(SPECIES, trace2, ix - 1);
 
                 costX1 = costX1.sub(costY);
                 costX1 = costX1.abs();
@@ -103,7 +101,7 @@ public class SIMDDTW extends Aligner {
                 int ix = k;
                 int iy = i - ix;
 
-                double cost = comparer.compare(trace1.read(iy - 1), trace2.read(ix - 1));
+                double cost = comparer.compare(trace1[iy - 1], trace2[ix - 1]);
 
                 double d = Math.min(Math.min(d2[ix - 1]
                         + comparer.gapCost(ix - 1, ICellComparer.TRACE_DISCRIMINATOR.X),

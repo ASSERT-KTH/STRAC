@@ -26,11 +26,12 @@ public class NoWarpPathDTW extends Aligner {
     }
 
     @Override
-    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2) {
+    public AlignDistance align(int[] trace1, int[] trace2) {
 
 
-        int maxI = (int)trace1.size();
-        int maxJ = (int)trace2.size();
+        int maxI = trace1.length;
+        int maxJ = trace2.length;
+                ;
 
         double[] lastRow = new double[maxJ + 1];
         double[] currentRow = new double[maxJ + 1];
@@ -46,7 +47,7 @@ public class NoWarpPathDTW extends Aligner {
 
             for(int j = 1; j < maxJ + 1; j++){
                 double max = Math.min(
-                        1.0 * lastRow[j - 1] + this.comparer.compare(trace1.read(i - 1), trace2.read(j - 1)),
+                        1.0 * lastRow[j - 1] + this.comparer.compare(trace1[i - 1], trace2[j - 1]),
                         Math.min(
                                 1.0 * lastRow[j] + 1,
                                 1.0 * currentRow[j - 1] + 1

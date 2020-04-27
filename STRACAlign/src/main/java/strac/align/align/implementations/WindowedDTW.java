@@ -30,29 +30,29 @@ public class WindowedDTW extends Aligner {
     }
 
     @Override
-    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2) {
+    public AlignDistance align(int[] trace1, int[] trace2) {
         return this.align(trace1, trace2, null);
     }
 
-    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2, Window window) {
+    public AlignDistance align(int[] trace1, int[] trace2, Window window) {
 
         if(window == null)
-            window = new Window(trace1.size() + 1, trace2.size() + 1);
+            window = new Window(trace1.length + 1, trace2.length + 1);
 
 
         double oo = Double.MAX_VALUE/2;
 
         IAlignAllocator.ALLOCATION_METHOD method =
-                AlignServiceProvider.getInstance().getProvider().selectMethod(8L*(trace1.size() + 1)*(trace2.size() + 1));
+                AlignServiceProvider.getInstance().getProvider().selectMethod(8L*(trace1.length + 1)*(trace2.length + 1));
 
         IMultidimensionalArray<Double> D = AlignServiceProvider.getInstance().getAllocator().allocateDoubleBidimensionalMatrixWindow(
-                (int)trace1.size() + 1, (int)trace2.size() + 1, method, window);
+                trace1.length + 1, trace2.length + 1, method, window);
 
         TimeUtils u = new TimeUtils();
         u.reset();
 
         long visited = 0;
-        long size = trace1.size() + 1;
+        long size = trace1.length + 1;
 
         for(int  i = 0;  i < size; i++){
             int min = window.getMin(i);
@@ -71,7 +71,7 @@ public class WindowedDTW extends Aligner {
                     D.set(1.0*getGapSymbol(i, ICellComparer.TRACE_DISCRIMINATOR.X) * i, i, j);
                 } else                         // not first column or first row
                 {
-                    long dt = comparer.compare(trace1.read(i - 1), trace2.read(j - 1));
+                    long dt = comparer.compare(trace1[i - 1], trace2[j - 1]);
 
 
                     D.set(Math.min(
@@ -89,11 +89,11 @@ public class WindowedDTW extends Aligner {
         LogProvider.info("Visited", visited);
         u.time("Cost matrix");
 
-        int i = (int)trace1.size();
-        int j = (int)trace2.size();
+        int i = trace1.length;
+        int j = trace2.length;
 
-        IArray<Cell> ops = AlignServiceProvider.getInstance().getAllocator().allocateWarpPath(null, trace1.size()+trace2.size(),
-                AlignServiceProvider.getInstance().getAllocator().selectMethod(512*(trace1.size()+trace2.size()))
+        IArray<Cell> ops = AlignServiceProvider.getInstance().getAllocator().allocateWarpPath(null, trace1.length+trace2.length,
+                AlignServiceProvider.getInstance().getAllocator().selectMethod(512*(trace1.length+trace2.length))
         );
 
         LogProvider.info("Getting warp path");
@@ -102,7 +102,7 @@ public class WindowedDTW extends Aligner {
         int minI = Integer.MAX_VALUE;
         int minJ = Integer.MAX_VALUE;
 
-        ops.set(position++, new Cell((int)trace1.size(), (int)trace2.size()));
+        ops.set(position++, new Cell(trace1.length, trace2.length));
 
         D.flush();
 
@@ -156,7 +156,7 @@ public class WindowedDTW extends Aligner {
 
         u.time("Warp path");
 
-        Double val = D.getDefault(oo, window,(int)trace1.size() - 1, (int)trace2.size() - 1);
+        Double val = D.getDefault(oo, window,trace1.length - 1, trace2.length - 1);
 
         LogProvider.info("DTW distnace", val);
         D.dispose();
@@ -168,8 +168,8 @@ public class WindowedDTW extends Aligner {
 
     public static class Window implements IWindow {
 
-        IArray<Integer> minValues;
-        IArray<Integer> maxValues;
+        int[] minValues;
+        int[] maxValues;
 
         int width;
 
@@ -204,52 +204,52 @@ public class WindowedDTW extends Aligner {
         }
 
         public void expand(int radius){
-            for(int i = 0; i < minValues.size(); i++){
-                int val = minValues.read(i);
+            for(int i = 0; i < minValues.length; i++){
+                int val = minValues[i];
 
-                minValues.set(i, Math.max(0, val - radius));
+                minValues[i] = Math.max(0, val - radius);
 
-                int maxVal = maxValues.read(i);
+                int maxVal = maxValues[i];
 
-                maxValues.set(i, Math.min(maxVal  + radius, width));
+                maxValues[i] = Math.min(maxVal  + radius, width);
             }
         }
 
         public int getMin(int row){
-            return minValues.read(row);
+            return minValues[row];
         }
 
         public int getMax(int row){
-            return maxValues.read(row);
+            return maxValues[row];
         }
 
         public void set(int row, int col){
 
-            if(row >= minValues.size() || col > width)
+            if(row >= minValues.length || col > width)
                 return;
 
-            if (minValues.read(row) == -1 && col >= 0 && col <= width)
+            if (minValues[row] == -1 && col >= 0 && col <= width)
             {
-                minValues.set(row, col);
-                maxValues.set(row, col);
+                minValues[row] =  col;
+                maxValues[row] = col;
             }
-            else if (minValues.read(row) > col && col >= 0 && col <= width)  // minimum range in the row is expanded
+            else if (minValues[row] > col && col >= 0 && col <= width)  // minimum range in the row is expanded
             {
-                minValues.set(row, col);
+                minValues[row] = col;
             }
-            else if (maxValues.read(row) < col && col >= 0 && col <= width) // maximum range in the row is expanded
+            else if (maxValues[row] < col && col >= 0 && col <= width) // maximum range in the row is expanded
             {
-                maxValues.set(row, col);
+                maxValues[row] = col;
             }  // end if
         }
 
         public void setRange(int min, int max, int row){
-            minValues.set(row, min);
-            maxValues.set(row, max);
+            minValues[row] = min;
+            maxValues[row] = max;
         }
 
         public long getLength0(){
-            return minValues.size();
+            return minValues.length;
         }
 
         public Iterable<Integer> iterator(int row){
@@ -257,16 +257,16 @@ public class WindowedDTW extends Aligner {
         }
 
         public long rowCount(){
-            return minValues.size();
+            return minValues.length;
         }
 
         public void dispose(){
-            this.minValues.dispose();
-            this.maxValues.dispose();
+            //this.minValues.dispose();
+            //this.maxValues.dispose();
         }
 
         public boolean isInRange(int row, int col){
-            return row < minValues.size() && minValues.read(row) <= col && col < maxValues.read(row);
+            return row < minValues.length && minValues[row] <= col && col < maxValues[row];
         }
 
         public class RowIterator implements Iterable<Integer>, Iterator<Integer>{
@@ -275,12 +275,12 @@ public class WindowedDTW extends Aligner {
 
             public RowIterator(int row){
                 this.row = row;
-                this.j = minValues.read(row);
+                this.j = minValues[row];
             }
 
             @Override
             public boolean hasNext() {
-                return j <= maxValues.read(row);
+                return j <= maxValues[row];
             }
 
             @Override

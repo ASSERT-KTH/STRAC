@@ -94,19 +94,19 @@ public class AlignInterpreter {
 
                 long max = distance.operationsCount;
 
-                IArray<Integer> trace1Alignment
+                int[] trace1Alignment
                         = AlignServiceProvider.getInstance().getProvider().allocateIntegerArray(getRandomName(), max,
                         AlignServiceProvider.getInstance().getProvider().selectMethod(Integer.SIZE*max));
 
-                IArray<Integer> trace2Alignment
+                int[] trace2Alignment
                         = AlignServiceProvider.getInstance().getProvider().allocateIntegerArray(getRandomName(), max,
                         AlignServiceProvider.getInstance().getProvider().selectMethod(Integer.SIZE*max));
 
 
                 Cell i1 = null;
 
-                tr1.plainTrace.close();
-                tr2.plainTrace.close();
+                //tr1.plainTrace.close();
+                //tr2.plainTrace.close();
 
                 long p1 = 0;
                 long p2 = 0;
@@ -125,18 +125,18 @@ public class AlignInterpreter {
                         //LogProvider.info(i1);
 
                         if(i2.getTrace1Index() > i1.getTrace1Index() && i2.getTrace2Index() > i1.getTrace2Index()){
-                            trace1Alignment.set(p1,tr1.plainTrace.read(i1.getTrace1Index()));
-                            trace2Alignment.set(p1,tr2.plainTrace.read(i1.getTrace2Index()));
+                            trace1Alignment[(int)p1] = tr1.plainTrace[i1.getTrace1Index()];
+                            trace2Alignment[(int)p1] = tr2.plainTrace[i1.getTrace2Index()];
                             p1++;
                         }
                         else if(i2.getTrace2Index() > i1.getTrace2Index()){
-                            trace1Alignment.set(p1,-1);
-                            trace2Alignment.set(p1,tr2.plainTrace.read(i1.getTrace2Index()));
+                            trace1Alignment[(int)p1] = -1;
+                            trace2Alignment[(int)p1] = tr2.plainTrace[i1.getTrace2Index()];
                             p1++;
                         }
                         else if(i2.getTrace1Index() > i1.getTrace1Index() ) {
-                            trace2Alignment.set(p1,-1);
-                            trace1Alignment.set(p1, tr1.plainTrace.read(i1.getTrace1Index() ));
+                            trace2Alignment[(int)p1] = -1;
+                            trace1Alignment[(int)p1] = tr1.plainTrace[i1.getTrace1Index()];
                             p1++;
                         }
                         else{
@@ -157,18 +157,17 @@ public class AlignInterpreter {
                     try {
                         LogProvider.info("Writing strac.align result to file");
 
-                        trace1Alignment.writeTo(new FileWriter(file1), t -> {
-                            if(t != null)
-                                return helper.getInverseBag().get(t) + "\n";
+                        FileWriter f11 = new FileWriter(file1);
 
-                            return "";
-                        });
-                        trace2Alignment.writeTo(new FileWriter(file2), t -> {
-                            if(t != null)
-                                return helper.getInverseBag().get(t) + "\n";
+                        for(int s : trace1Alignment)
+                            f11.write(helper.getInverseBag().get(s));
 
-                            return "";
-                        });
+
+                        FileWriter f22 = new FileWriter(file1);
+
+                        for(int s : trace2Alignment)
+                            f22.write(helper.getInverseBag().get(s));
+
                     }
                     catch (Exception e){
                         e.printStackTrace();
@@ -182,10 +181,6 @@ public class AlignInterpreter {
                             trace1Alignment, trace2Alignment);
                 }
 
-                trace1Alignment.close();
-                trace2Alignment.close();
-                trace1Alignment.dispose();
-                trace2Alignment.dispose();
                 if(distance.getInsertions() != null)
                     distance.getInsertions().dispose();
             }
@@ -337,7 +332,7 @@ public class AlignInterpreter {
         }
 
         for(TraceMap map: traces){
-            map.plainTrace.dispose();
+            //map.plainTrace.dispose();
         }
 
         executor.shutdownNow();
@@ -359,17 +354,14 @@ public class AlignInterpreter {
     }
 
     void exportImage(String fileName,
-                                   IReadArray<Integer> trace1,
-                                   IReadArray<Integer> trace2) throws IOException {
-
-        trace1.reset();
-        trace2.reset();
+                                   int[] trace1,
+                                   int[] trace2) throws IOException {
 
         int scale = 1;
         File writer = new File(fileName);
         int pieceSize =8*scale;
 
-        int width = (int)Math.ceil(Math.sqrt(trace1.size())) + 1;
+        int width = (int)Math.ceil(Math.sqrt(trace1.length)) + 1;
 
 
         BufferedImage img = new BufferedImage(width*pieceSize, width*pieceSize, BufferedImage.TYPE_INT_ARGB);
@@ -378,10 +370,10 @@ public class AlignInterpreter {
         int row = 0;
         int col = 0;
 
-        for(int i = 0; i < trace1.size(); i++){
+        for(int i = 0; i < trace1.length; i++){
 
-            int t1 = trace1.read(i);
-            int t2 = trace2.read(i);
+            int t1 = trace1[i];
+            int t2 = trace2[i];
 
             String color = "#e74c3c";
 

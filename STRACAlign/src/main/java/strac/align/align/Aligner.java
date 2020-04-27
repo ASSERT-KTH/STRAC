@@ -17,6 +17,6 @@ public abstract class Aligner {
         return comparer.gapCost(position, discriminator);
     }
 
-    public abstract AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2);// Try to provide linked list arrays
+    public abstract AlignDistance align(int[] trace1, int[] trace2);// Try to provide linked list arrays
 
 }

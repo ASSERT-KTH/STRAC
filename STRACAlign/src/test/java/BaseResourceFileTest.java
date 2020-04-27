@@ -69,7 +69,7 @@ public class BaseResourceFileTest {
                     },
                     true, false);
 
-            Assert.assertEquals(map.get(0).plainTrace.size(), map.get(1).plainTrace.size());
+            Assert.assertEquals(map.get(0).plainTrace.length, map.get(1).plainTrace.length);
 
         }
 
