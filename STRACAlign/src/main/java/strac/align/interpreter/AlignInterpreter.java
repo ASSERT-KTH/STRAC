@@ -5,10 +5,8 @@ import strac.align.align.Aligner;
 import strac.align.align.Cell;
 import strac.align.align.ICellComparer;
 import com.google.gson.Gson;
-import strac.align.interpreter.dto.UpdateDTO;
 import strac.align.models.SimplePairResultDto;
 import strac.align.scripts.Align;
-import strac.align.socket.ProgressAPI;
 import strac.core.LogProvider;
 import strac.core.StreamProviderFactory;
 import strac.core.TraceHelper;
@@ -60,15 +58,15 @@ public class AlignInterpreter {
 
         LogProvider.info(String.format("Executing...%s %s", trace1Index, trace2Index));
 
-        // lock trace files
-
-        //locks[trace1Index].lock();
-        //locks[trace2Index].lock();
-
         SimplePairResultDto result = new SimplePairResultDto();
 
         TraceMap tr1 = traces.get(trace1Index);
         TraceMap tr2 = traces.get(trace2Index);
+
+        int jobId = jobCounter++;
+
+        MonitoringService.getInstance().addJob(jobId, new MonitoringService.JobInfo(tr1.plainTrace.length* tr2.plainTrace.length,
+                0, 0, String.format("%s %s", trace1Index, trace2Index)));
 
         AlignDistance distance = align.align(tr1.plainTrace, tr2.plainTrace);
         if(distance.getInsertions() != null)
@@ -152,8 +150,6 @@ public class AlignInterpreter {
                 LogProvider.info("DTW Distance", distance.getDistance());
 
                 if(dto.outputAlignment) {
-
-
                     try {
                         LogProvider.info("Writing strac.align result to file");
 
@@ -188,6 +184,7 @@ public class AlignInterpreter {
             //locks[trace1Index].unlock();
             //locks[trace2Index].unlock();
 
+            MonitoringService.getInstance().removeJob(jobId);
             return result;
         }
         catch (Exception e){
@@ -203,6 +200,7 @@ public class AlignInterpreter {
     }
 
     ExecutorService executor = null;//creating a pool of x threads
+    static int jobCounter  = 0;
 
     public void execute(final Alignment dto, final IOnAlign action, TraceHelper.IStreamProvider provider) throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
 
@@ -229,6 +227,8 @@ public class AlignInterpreter {
         }
 
 
+        MonitoringService mS = MonitoringService.getInstance();
+
         final TraceHelper helper = new TraceHelper();
 
         LogProvider.info("Parsing traces");
@@ -239,9 +239,6 @@ public class AlignInterpreter {
 
 
         final AlignResultDto resultDto = new AlignResultDto();
-
-        new UpdateDTO(dto, resultDto, 0);
-
 
         if(dto.pairs.size() == 0){
             LogProvider.info("No specific pairs, two vs two tournament");
@@ -256,6 +253,9 @@ public class AlignInterpreter {
 
             dto.pairs = pairs;
         }
+
+        mS.setOverall(0);
+        mS.setLog(String.format("%s/%s", 0, dto.pairs.size()));
 
         LogProvider.info("Going to thread pool for pairwise comparison");
 
@@ -273,6 +273,7 @@ public class AlignInterpreter {
                 new ExecutorCompletionService<>(executor);
 
 
+
         for(final int[] pair: dto.pairs){
             int i = pair[0], j = pair[1];
 
@@ -284,21 +285,13 @@ public class AlignInterpreter {
         int received = 0;
 
         String pairs = "";
-
-
-        // Send update to WEBSOCKET channel
-
         while(received != dto.pairs.size()){
 
             try {
                 Future<SimplePairResultDto> f = completionService.take();
-
                 received++;
 
-                //System.out.print(String.format("\r%s/%s", received, dto.pairs.size()));
-
                 SimplePairResultDto single = f.get();
-                UpdateDTO.instance.overallProgres++;
 
                 if(single != null){
                     //LogProvider.info(String.format("%s (%s %s) D: %s",received, single.trace1Index, single.trace2Index, single.distance.getDistance()));
@@ -311,6 +304,8 @@ public class AlignInterpreter {
                     if(action != null)
                         action.action(single.distance, 0, 0, 0,0,0);
 
+                    mS.setOverall(received/dto.pairs.size());
+                    mS.setLog(String.format("%s/%s", received, dto.pairs.size()));
                 }
 
             } catch (InterruptedException | ExecutionException e) {
@@ -318,11 +313,6 @@ public class AlignInterpreter {
                 throw new RuntimeException(e);
             }
         }
-
-
-        UpdateDTO.instance.overallProgres = received;
-
-        // System.out.println(pairs);
 
         if(dto.outputAlignmentMap != null){
             LogProvider.info("Exporting  json distances");
@@ -336,11 +326,6 @@ public class AlignInterpreter {
         }
 
         executor.shutdownNow();
-
-        if(ProgressAPI.server != null)
-            ProgressAPI.server.stop();
-
-
     }
 
     public class KeyValuePair{

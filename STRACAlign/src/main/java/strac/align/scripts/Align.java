@@ -1,8 +1,6 @@
 package strac.align.scripts;
 
 import com.google.gson.Gson;
-import strac.align.interpreter.dto.UpdateDTO;
-import strac.align.socket.ProgressAPI;
 import strac.core.LogProvider;
 import strac.align.interpreter.AlignInterpreter;
 import strac.align.interpreter.dto.Alignment;

@@ -47,7 +47,7 @@ public class SIMDDTW extends Aligner {
         IntVector gap = IntVector.zero(SPECIES);
         gap.add(1);
 
-        System.err.println(String.format("Starting SIMD process...%s", SPECIES.length()));
+        //System.err.println(String.format("Starting SIMD process...%s", SPECIES.length()));
 
         for(int i = 1; i < diagCount; i++){
 
@@ -94,6 +94,7 @@ public class SIMDDTW extends Aligner {
                 IntVector min = vD11.min(vD2.min(vD22));
 
                 min.intoArray(d3, ix);
+                //System.out.print(String.format("\r%s/%s        ", k, diagCount));
             }
 
             for(; k <= i - z2 ; k++)
@@ -101,7 +102,7 @@ public class SIMDDTW extends Aligner {
                 int ix = k;
                 int iy = i - ix;
 
-                double cost = comparer.compare(trace1[iy - 1], trace2[ix - 1]);
+                double cost = Math.abs(trace1[iy - 1] - trace2[ix - 1]);
 
                 double d = Math.min(Math.min(d2[ix - 1]
                         + comparer.gapCost(ix - 1, ICellComparer.TRACE_DISCRIMINATOR.X),
