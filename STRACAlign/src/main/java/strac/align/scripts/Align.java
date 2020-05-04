@@ -51,7 +51,7 @@ public class Align {
 
                 @Override
                 public void setFooter(String log) {
-                    System.out.println(String.format("\r%s", log));
+                    //System.out.println(String.format("\r%s", log));
                 }
 
                 @Override
