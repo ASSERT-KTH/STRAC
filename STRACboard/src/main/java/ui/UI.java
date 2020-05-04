@@ -7,19 +7,22 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import strac.align.interpreter.MonitoringService;
 
+import javax.swing.*;
 import java.io.IOException;
 
 /**
  * @author Javier Cabrera-Arteaga on 2020-05-03
  */
 public class UI {
-    private Terminal screen;
+    public Terminal screen;
     private TextColor foreC, backC, header;
 
     public void init(){
         try {
             screen = new DefaultTerminalFactory().createTerminal();
             //screen = t.createScreen();
+            screen.resetColorAndSGR();
+            screen.clearScreen();
             foreC = TextColor.ANSI.RED;
             backC = TextColor.ANSI.DEFAULT;
             header = TextColor.ANSI.BLACK;
@@ -151,13 +154,14 @@ public class UI {
                         .putCSIStyledString(max + left, top, "]");
             }
 
+
         }
         catch (Exception ignored){
 
         }
         //screen.newTextGraphics().setBackgroundColor(foreC).setForegroundColor(backC).putCSIStyledString(0, 0, header);
 
-        screen.setCursorPosition(width,height);
+        //screen.setCursorPosition(width,height);
 
 
         screen.flush();

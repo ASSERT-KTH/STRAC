@@ -1,6 +1,7 @@
 package strac.align.scripts;
 
 import com.google.gson.Gson;
+import strac.align.interpreter.MonitoringService;
 import strac.core.LogProvider;
 import strac.align.interpreter.AlignInterpreter;
 import strac.align.interpreter.dto.Alignment;
@@ -41,6 +42,23 @@ public class Align {
         for (String arg : args) {
 
             Alignment dto = new Gson().fromJson(new FileReader(arg), Alignment.class);
+
+            MonitoringService.getInstance().setCallback(new MonitoringService.OnUpdate() {
+                @Override
+                public void doAction(MonitoringService.JobInfo[] infos) {
+
+                }
+
+                @Override
+                public void setFooter(String log) {
+                    System.out.println(String.format("\r%s", log));
+                }
+
+                @Override
+                public void setOverall(int overall) {
+                    System.out.println(String.format("\r%s%%   ", overall));
+                }
+            });
 
             AlignInterpreter executor = new AlignInterpreter();
 

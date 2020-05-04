@@ -75,7 +75,7 @@
     "params": []
   },
   "outputAlignment": true,
-  "exportImage": true,
+  "exportImage": false,
   "distanceFunctionName": "dBin",
   "separator": "[\r\n]",
   "threadPoolCount": 10,

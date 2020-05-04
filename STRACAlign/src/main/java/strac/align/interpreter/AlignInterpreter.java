@@ -304,7 +304,7 @@ public class AlignInterpreter {
                     if(action != null)
                         action.action(single.distance, 0, 0, 0,0,0);
 
-                    mS.setOverall(received/dto.pairs.size());
+                    mS.setOverall(100*received/dto.pairs.size());
                     mS.setLog(String.format("%s/%s", received, dto.pairs.size()));
                 }
 

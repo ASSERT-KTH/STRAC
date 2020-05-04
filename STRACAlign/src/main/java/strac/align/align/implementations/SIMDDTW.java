@@ -3,6 +3,7 @@ package strac.align.align.implementations;
 import strac.align.align.AlignDistance;
 import strac.align.align.Aligner;
 import strac.align.align.ICellComparer;
+import strac.align.interpreter.MonitoringService;
 import strac.core.LogProvider;
 import strac.core.data_structures.IReadArray;
 import strac.core.utils.TimeUtils;
@@ -48,6 +49,8 @@ public class SIMDDTW extends Aligner {
         gap.add(1);
 
         //System.err.println(String.format("Starting SIMD process...%s", SPECIES.length()));
+
+        MonitoringService.getInstance().setLog(String.format("Starting SIMD process...%s", SPECIES.length()));
 
         for(int i = 1; i < diagCount; i++){
 
