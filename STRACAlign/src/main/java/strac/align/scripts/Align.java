@@ -56,7 +56,7 @@ public class Align {
 
                 @Override
                 public void setOverall(int overall) {
-                    System.out.println(String.format("\r%s%%   ", overall));
+                    System.out.print(String.format("\r%s%%   ", overall));
                 }
             });
 
