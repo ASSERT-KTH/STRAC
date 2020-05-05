@@ -1,0 +1,48 @@
+name: Build jdk 11
+on:
+  push:
+    branches:
+      - release
+      - SIMD-panama
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2 # checkout latest version of the repo
+      - name: Install packages
+        run: |
+          sudo apt-get update && sudo apt-get -y install maven openjdk-11-jdk
+
+      - name: Build STRAC
+        run: |
+          ls && cd STRAC && mvn clean package -DskipTests
+
+      - name: Compress binaries
+        uses: montudor/action-zip@v0.1.0
+        with:
+          args: zip -qq -r ./STRACAlign-jdk11.zip ./STRAC/STRACAlign/target
+
+      - name: Compress binaries dashboard
+        uses: montudor/action-zip@v0.1.0
+        with:
+          args: zip -qq -r ./STRACboard-jdk11.zip ./STRAC/STRACboard/target
+
+      - name: Submit release aligners
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./STRACboard-jdk11.zip
+          tag: v0.6
+          overwrite: true
+          file_glob: true
+
+      - name: Submit release board
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./STRACAlign-jdk11.zip
+          tag: v0.6
+          overwrite: true
+          file_glob: true

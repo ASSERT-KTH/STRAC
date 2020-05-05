@@ -1,4 +1,4 @@
-name: Build
+name: Build jdk panama project
 on:
   push:
     branches:
@@ -36,18 +36,18 @@ jobs:
       - name: Compress binaries
         uses: montudor/action-zip@v0.1.0
         with:
-          args: zip -qq -r ./STRACAlign.zip ./STRAC/STRACAlign/target
+          args: zip -qq -r ./STRACAlign-jdk14.zip ./STRAC/STRACAlign/target
 
       - name: Compress binaries dashboard
         uses: montudor/action-zip@v0.1.0
         with:
-          args: zip -qq -r ./STRACboard.zip ./STRAC/STRACboard/target
+          args: zip -qq -r ./STRACboard-jdk14.zip ./STRAC/STRACboard/target
 
       - name: Submit release aligners
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./STRACboard.zip
+          file: ./STRACboard-jdk14.zip
           tag: v0.6
           overwrite: true
           file_glob: true
@@ -56,7 +56,7 @@ jobs:
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./STRACAlign.zip
+          file: ./STRACAlign-jdk14.zip
           tag: v0.6
           overwrite: true
           file_glob: true
