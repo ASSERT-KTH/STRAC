@@ -11,8 +11,7 @@ STRAC, a tools collection tailored to compare traces.
 #### To execute with SIMD
 
 We included a vectorized version of DTW, unfotunately, JAVA doesn't support vectorizaiton yet. It is an experimental feature for jdk 15.
-You can avoid this feature applying the patch included in the root 
-of the project, `git apply change_target.patch`, also you need to remove the vecctorized implementation 
+You can avoid this feature changing the jdk target version, `export JAVA_TARGET=11`, also you need to remove the vecctorized implementation 
 `rm STRACAlign/src/main/java/strac/align/align/implementations/SIMDDTW.java`
 
 

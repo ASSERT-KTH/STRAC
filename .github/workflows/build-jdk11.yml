@@ -15,13 +15,9 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get -y install maven openjdk-11-jdk tree
 
-      - name: Applying patch
-        run: |
-          git apply change_target.patch && rm -rf STRACAlign/src/main/java/strac/align/align/implementations/SIMDDTW.java
-
       - name: Build STRAC
         run: |
-          tree . && mvn clean package -DskipTests
+          tree . && export JAVA_TARGET=11 && mvn clean package -DskipTests
 
       - name: Compress binaries
         uses: montudor/action-zip@v0.1.0
