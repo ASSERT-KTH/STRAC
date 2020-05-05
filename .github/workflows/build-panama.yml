@@ -14,17 +14,12 @@ jobs:
 
       - name: Install packages
         run: |
-          sudo apt-get update && sudo apt-get -y install maven make libasound2-dev libfontconfig1-dev libcups2-dev libx11-dev libxext-dev libxrender-dev libxrandr-dev libxtst-dev libxt-dev build-essential zip autoconf mercurial software-properties-common curl
-      - name: Download jdk 14
-        run: |
-          curl -O https://download.java.net/java/GA/jdk14/076bab302c7b4508975440c56f6cc26a/36/GPL/openjdk-14_linux-x64_bin.tar.gz
-      - name: Untar jdk 14
-        run: |
-          tar xvf openjdk-14_linux-x64_bin.tar.gz
+          sudo apt-get update && sudo apt-get -y install tree maven make openjdk-14-jdk libasound2-dev libfontconfig1-dev libcups2-dev libx11-dev libxext-dev libxrender-dev libxrandr-dev libxtst-dev libxt-dev build-essential zip autoconf mercurial software-properties-common curl
 
-      - name: Install jdk 14
-        run: |
-            mv jdk-14 /opt/ && export JAVA_HOME=/opt/jdk-14 && export PATH=\$PATH:\$JAVA_HOME/bin
+
+      - name: Java version
+        run : |
+          export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64 && export PATH=$JAVA_HOME/bin:$PATH && java -version
 
       - name: Build jdk panama
         run: |
@@ -37,18 +32,18 @@ jobs:
       - name: Compress binaries
         uses: montudor/action-zip@v0.1.0
         with:
-          args: zip -qq -r ./STRACAlign-jdk14.zip ./STRAC/STRACAlign/target
+          args: zip -qq -r ./STRACAlign-jdk15.zip ./STRAC/STRACAlign/target
 
       - name: Compress binaries dashboard
         uses: montudor/action-zip@v0.1.0
         with:
-          args: zip -qq -r ./STRACboard-jdk14.zip ./STRAC/STRACboard/target
+          args: zip -qq -r ./STRACboard-jdk15.zip ./STRAC/STRACboard/target
 
       - name: Submit release aligners
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./STRACboard-jdk14.zip
+          file: ./STRACboard-jdk15.zip
           tag: v0.6
           overwrite: true
           file_glob: true
@@ -57,7 +52,7 @@ jobs:
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./STRACAlign-jdk14.zip
+          file: ./STRACAlign-jdk15.zip
           tag: v0.6
           overwrite: true
           file_glob: true

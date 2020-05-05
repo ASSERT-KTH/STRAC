@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2 # checkout latest version of the repo
       - name: Install packages
         run: |
-          sudo apt-get update && sudo apt-get -y install maven openjdk-11-jdk tree
+          sudo apt-get update && sudo apt-get -y install maven openjdk-14-jdk tree
 
       - name: Applying patch
         run: |
@@ -23,7 +23,7 @@ jobs:
 
       - name: Java version
         run : |
-          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 && export PATH=$JAVA_HOME/bin:$PATH && java -version
+          export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64 && export PATH=$JAVA_HOME/bin:$PATH && java -version
 
       - name: Listing repo
         run : |
