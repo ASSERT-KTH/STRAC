@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2 # checkout latest version of the repo
       - name: Install packages
         run: |
-          sudo apt-get update && sudo apt-get -y install maven tree
+          sudo apt-get update && sudo apt-get -y install maven tree zip
 
       - name: Applying patch
         run: |
@@ -37,29 +37,14 @@ jobs:
           export JAVA_TARGET=11 && mvn clean package -DskipTests
 
       - name: Compress binaries
-        uses: montudor/action-zip@v0.1.0
-        with:
-          args: zip -qq -r ./STRACAlign-jdk11.zip ./STRAC/STRACAlign/target
-
-      - name: Compress binaries dashboard
-        uses: montudor/action-zip@v0.1.0
-        with:
-          args: zip -qq -r ./STRACboard-jdk11.zip ./STRAC/STRACboard/target
+        run: |
+          zip -r STRACboard-jdk11.zip ./STRACboard/target && zip -r STRACAlign-jdk11.zip ./STRACAlign/target
 
       - name: Submit release aligners
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./STRACboard-jdk11.zip
-          tag: v0.6
-          overwrite: true
-          file_glob: true
-
-      - name: Submit release board
-        uses: svenstaro/upload-release-action@v1-release
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./STRACAlign-jdk11.zip
+          file: *.zip
           tag: v0.6
           overwrite: true
           file_glob: true
