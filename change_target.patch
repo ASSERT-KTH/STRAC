@@ -1,0 +1,60 @@
+diff --git a/STRACAlign/pom.xml b/STRACAlign/pom.xml
+index 615f139..de654ec 100644
+--- a/STRACAlign/pom.xml
++++ b/STRACAlign/pom.xml
+@@ -69,8 +69,8 @@
+                     </execution>
+                 </executions>
+                 <configuration>
+-                    <source>11</source>
+-                    <target>11</target>
++                    <source>15</source>
++                    <target>15</target>
+                     <fork>true</fork>
+                     <executable>$JAVA_HOME/bin/javac</executable>
+                 </configuration>
+diff --git a/STRACboard/pom.xml b/STRACboard/pom.xml
+index 92148e9..83e7624 100644
+--- a/STRACboard/pom.xml
++++ b/STRACboard/pom.xml
+@@ -17,8 +17,8 @@
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-compiler-plugin</artifactId>
+                 <configuration>
+-                    <source>11</source>
+-                    <target>11</target>
++                    <source>15</source>
++                    <target>15</target>
+                     <fork>true</fork>
+                     <executable>$JAVA_HOME/bin/javac</executable>
+                 </configuration>
+diff --git a/STRACcore/pom.xml b/STRACcore/pom.xml
+index 9c3e472..e7339c9 100644
+--- a/STRACcore/pom.xml
++++ b/STRACcore/pom.xml
+@@ -14,8 +14,8 @@
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-compiler-plugin</artifactId>
+                 <configuration>
+-                    <source>11</source>
+-                    <target>11</target>
++                    <source>15</source>
++                    <target>15</target>
+                 </configuration>
+             </plugin>
+             </plugins>
+diff --git a/pom.xml b/pom.xml
+index 0a0f797..9694c12 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -13,8 +13,8 @@
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-compiler-plugin</artifactId>
+                 <configuration>
+-                    <source>11</source>
+-                    <target>11</target>
++                    <source>15</source>
++                    <target>15</target>
+                     <fork>true</fork>
+                     <executable>$JAVA_HOME/bin/javac</executable>
+                 </configuration>
