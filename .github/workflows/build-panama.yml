@@ -7,19 +7,22 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2 # checkout latest version of the repo
 
       - name: Install packages
         run: |
-          sudo apt-get update && sudo apt-get -y install tree maven make openjdk-14-jdk libasound2-dev libfontconfig1-dev libcups2-dev libx11-dev libxext-dev libxrender-dev libxrandr-dev libxtst-dev libxt-dev build-essential zip autoconf mercurial software-properties-common curl
-
-
-      - name: Java version
+          sudo apt-get update && sudo apt-get -y install tree maven make libasound2-dev libfontconfig1-dev libcups2-dev libx11-dev libxext-dev libxrender-dev libxrandr-dev libxtst-dev libxt-dev build-essential zip autoconf mercurial software-properties-common curl
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '14-ea' # The JDK version to make available on the path.
+          java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
+          architecture: x64 # (x64 or x86) - defaults to x64
         run : |
-          export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64 && export PATH=$JAVA_HOME/bin:$PATH && java -version
+         java -version
 
       - name: Build jdk panama
         run: |
