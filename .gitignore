@@ -8,3 +8,6 @@ target
 dist
 
 panama
+
+.settings/*
+.idea/*

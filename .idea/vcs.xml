@@ -10,7 +10,6 @@
     <mapping directory="$PROJECT_DIR$/STRACAlign/libs/panama/jdk" vcs="hg4idea" />
     <mapping directory="$PROJECT_DIR$/STRACAlign/libs/panama/langtools" vcs="hg4idea" />
     <mapping directory="$PROJECT_DIR$/STRACAlign/libs/panama/nashorn" vcs="hg4idea" />
-    <mapping directory="$PROJECT_DIR$/STRACcore" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/panama/panama" vcs="hg4idea" />
     <mapping directory="$PROJECT_DIR$/panama/panama/corba" vcs="hg4idea" />
     <mapping directory="$PROJECT_DIR$/panama/panama/hotspot" vcs="hg4idea" />

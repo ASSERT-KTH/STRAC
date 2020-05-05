@@ -13,8 +13,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>15</source>
-                    <target>15</target>
+                    <source>${env.JAVA_TARGET}</source>
+                    <target>${env.JAVA_TARGET}</target>
                     <fork>true</fork>
                     <executable>$JAVA_HOME/bin/javac</executable>
                 </configuration>

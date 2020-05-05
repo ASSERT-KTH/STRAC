@@ -1,0 +1,50 @@
+name: Build jdk panama project
+on:
+  push:
+    branches:
+      - release
+      - SIMD-panama
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2 # checkout latest version of the repo
+
+      - name: Install packages
+        run: |
+          sudo apt-get update && sudo apt-get -y install tree zip maven make libasound2-dev libfontconfig1-dev libcups2-dev libx11-dev libxext-dev libxrender-dev libxrandr-dev libxtst-dev libxt-dev build-essential zip autoconf mercurial software-properties-common curl
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '14-ea' # The JDK version to make available on the path.
+          java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
+          architecture: x64 # (x64 or x86) - defaults to x64
+      - run : java -version
+
+      - name: Build jdk panama
+        run: |
+          mkdir panama && cd panama && hg clone http://hg.openjdk.java.net/panama/dev/ && cd dev && bash configure --disable-warnings-as-errors --with-boot-jdk=/opt/jdk-14 && make images
+
+      - name: Setup Java
+        run: |
+          export JAVA_HOME=/STRAC/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=$JAAVA_HOME/bin:$PATH
+
+      - name: Build STRAC
+        run: |
+          ls && cd ../../ && export JAVA_TARGET=15 && mvn clean package -DskipTests
+
+
+      - name: Compress binaries
+        run: |
+          zip -r STRACboard-jdk15.zip ./STRACboard/target && zip -r STRACAlign-jdk15.zip ./STRACAlign/target
+
+      - name: Submit release aligners
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: '*.zip'
+          tag: v0.6
+          overwrite: true
+          file_glob: true
