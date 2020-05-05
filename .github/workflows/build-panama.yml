@@ -30,7 +30,7 @@ jobs:
 
       - name: Setup Java
         run: |
-          export JAVA_HOME=/home/runner/work/STRAC/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=$JAAVA_HOME/bin:$PATH
+          export JAVA_HOME=/home/runner/work/STRAC/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=$JAVA_HOME/bin:$PATH
 
       - name: Build STRAC
         run: |
