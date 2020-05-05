@@ -72,7 +72,7 @@ jobs:
 
       - name: Compress binaries
         run: |
-          cp log4j.properties STRACAlign/target && cp log4j.properties STACboard/target && zip -r STRACboard-jdk11.zip ./STRACboard/target && zip -r STRACAlign-jdk11.zip ./STRACAlign/target
+          cp log4j.properties STRACAlign/target && cp log4j.properties STRACboard/target && zip -r STRACboard-jdk11.zip ./STRACboard/target && zip -r STRACAlign-jdk11.zip ./STRACAlign/target
 
       - name: Submit release aligners
         uses: svenstaro/upload-release-action@v1-release
