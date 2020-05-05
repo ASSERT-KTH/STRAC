@@ -5,8 +5,42 @@ on:
       - release
       - SIMD-panama
 jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2 # checkout latest version of the repo
+
+      - name: Install packages
+        run: |
+          sudo apt-get update && sudo apt-get -y install maven tree
+
+      - name: Applying patch
+        run: |
+          rm -rf STRACAlign/src/main/java/strac/align/align/implementations/SIMDDTW.java
+
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '13' # The JDK version to make available on the path.
+          java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
+          architecture: x64 # (x64 or x86) - defaults to x64
+      - run: java -version
+
+
+
+      - name: Listing repo
+        run: |
+          tree .
+
+      - name: Test STRAC
+        run: |
+          export JAVA_TARGET=11 && mvn clean test
   build:
     name: Build
+    needs: test
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
@@ -38,7 +72,7 @@ jobs:
 
       - name: Compress binaries
         run: |
-          zip -r STRACboard-jdk11.zip ./STRACboard/target && zip -r STRACAlign-jdk11.zip ./STRACAlign/target
+          cp log4j.properties STRACAlign/target && cp log4j.properties STRACboard/target && zip -r STRACboard-jdk11.zip ./STRACboard/target && zip -r STRACAlign-jdk11.zip ./STRACAlign/target
 
       - name: Submit release aligners
         uses: svenstaro/upload-release-action@v1-release
