@@ -13,6 +13,71 @@ index de654ec..615f139 100644
                      <fork>true</fork>
                      <executable>$JAVA_HOME/bin/javac</executable>
                  </configuration>
+diff --git a/STRACboard/pom.xml b/STRACboard/pom.xml
+index 83e7624..92148e9 100644
+--- a/STRACboard/pom.xml
++++ b/STRACboard/pom.xml
+@@ -17,8 +17,8 @@
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-compiler-plugin</artifactId>
+                 <configuration>
+-                    <source>15</source>
+-                    <target>15</target>
++                    <source>11</source>
++                    <target>11</target>
+                     <fork>true</fork>
+                     <executable>$JAVA_HOME/bin/javac</executable>
+                 </configuration>
+diff --git a/STRACcore/pom.xml b/STRACcore/pom.xml
+index e7339c9..9c3e472 100644
+--- a/STRACcore/pom.xml
++++ b/STRACcore/pom.xml
+@@ -14,8 +14,8 @@
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-compiler-plugin</artifactId>
+                 <configuration>
+-                    <source>15</source>
+-                    <target>15</target>
++                    <source>11</source>
++                    <target>11</target>
+                 </configuration>
+             </plugin>
+             </plugins>
+diff --git a/change_target.patch b/change_target.patch
+index dba16cb..e69de29 100644
+--- a/change_target.patch
++++ b/change_target.patch
+@@ -1,30 +0,0 @@
+-diff --git a/STRACAlign/pom.xml b/STRACAlign/pom.xml
+-index de654ec..615f139 100644
+---- a/STRACAlign/pom.xml
+-+++ b/STRACAlign/pom.xml
+-@@ -69,8 +69,8 @@
+-                     </execution>
+-                 </executions>
+-                 <configuration>
+--                    <source>15</source>
+--                    <target>15</target>
+-+                    <source>11</source>
+-+                    <target>11</target>
+-                     <fork>true</fork>
+-                     <executable>$JAVA_HOME/bin/javac</executable>
+-                 </configuration>
+-diff --git a/pom.xml b/pom.xml
+-index 9694c12..0a0f797 100644
+---- a/pom.xml
+-+++ b/pom.xml
+-@@ -13,8 +13,8 @@
+-                 <groupId>org.apache.maven.plugins</groupId>
+-                 <artifactId>maven-compiler-plugin</artifactId>
+-                 <configuration>
+--                    <source>15</source>
+--                    <target>15</target>
+-+                    <source>11</source>
+-+                    <target>11</target>
+-                     <fork>true</fork>
+-                     <executable>$JAVA_HOME/bin/javac</executable>
+-                 </configuration>
 diff --git a/pom.xml b/pom.xml
 index 9694c12..0a0f797 100644
 --- a/pom.xml
