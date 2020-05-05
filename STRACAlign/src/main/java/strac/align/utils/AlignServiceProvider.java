@@ -5,6 +5,7 @@ import strac.align.align.ICellComparer;
 import strac.align.align.annotations.EventDistance;
 import strac.align.align.event_distance.DInst;
 import strac.align.align.implementations.DTW;
+import strac.align.align.implementations.Evolutive;
 import strac.align.align.implementations.FastDTW;
 import strac.align.align.implementations.WindowedDTW;
 import strac.core.LogProvider;
@@ -30,7 +31,7 @@ public class AlignServiceProvider extends ServiceRegister {
     public static void setup() throws IOException, ClassNotFoundException {
 
         //Registering native aligners
-        LogProvider.info(DTW.class, DInst.class, FastDTW.class, WindowedDTW.class);
+        LogProvider.info(DTW.class, DInst.class, FastDTW.class, WindowedDTW.class, Evolutive.class);
 
         functionDistance = new HashMap<>();
         aligners = new HashMap<>();

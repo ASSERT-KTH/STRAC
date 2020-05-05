@@ -6,6 +6,7 @@ import strac.align.align.Cell;
 import strac.align.align.ICellComparer;
 import com.google.gson.Gson;
 import strac.align.models.SimplePairResultDto;
+import strac.align.scripts.Align;
 import strac.core.LogProvider;
 import strac.core.StreamProviderFactory;
 import strac.core.TraceHelper;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
 import static strac.core.utils.HashingHelper.getRandomName;
 
@@ -35,8 +37,6 @@ public class AlignInterpreter {
     public AlignInterpreter(){
 
     }
-
-
 
     public interface IOnAlign{
         void action(AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize);
@@ -51,22 +51,24 @@ public class AlignInterpreter {
         execute(dto, action,StreamProviderFactory.getInstance());
     }
 
-    ReentrantLock[] locks;
 
-    public SimplePairResultDto executeSimplePair(final Alignment dto, int trace1Index, int trace2Index, final IOnAlign action, TraceHelper.IStreamProvider provider, final TraceHelper helper, final Aligner align, final List<TraceMap> traces, final AlignResultDto resultDto){
+    public SimplePairResultDto executeSimplePair(final Alignment dto, int trace1Index, int trace2Index,final TraceHelper helper, final Aligner align, final List<TraceMap> traces){
 
-        // lock trace files
-
-        //locks[trace1Index].lock();
-        //locks[trace2Index].lock();
+        LogProvider.info(String.format("Executing...%s %s", trace1Index, trace2Index));
 
         SimplePairResultDto result = new SimplePairResultDto();
 
         TraceMap tr1 = traces.get(trace1Index);
         TraceMap tr2 = traces.get(trace2Index);
 
+        int jobId = jobCounter++;
+
+        MonitoringService.getInstance().addJob(jobId, new MonitoringService.JobInfo(tr1.plainTrace.length* tr2.plainTrace.length,
+                0, 0, String.format("%s %s", trace1Index, trace2Index)));
+
         AlignDistance distance = align.align(tr1.plainTrace, tr2.plainTrace);
-        distance.getInsertions().close();
+        if(distance.getInsertions() != null)
+            distance.getInsertions().close();
 
         result.distance = distance;
         result.tr1 = tr1;
@@ -88,19 +90,19 @@ public class AlignInterpreter {
 
                 long max = distance.operationsCount;
 
-                IArray<Integer> trace1Alignment
+                int[] trace1Alignment
                         = AlignServiceProvider.getInstance().getProvider().allocateIntegerArray(getRandomName(), max,
                         AlignServiceProvider.getInstance().getProvider().selectMethod(Integer.SIZE*max));
 
-                IArray<Integer> trace2Alignment
+                int[] trace2Alignment
                         = AlignServiceProvider.getInstance().getProvider().allocateIntegerArray(getRandomName(), max,
                         AlignServiceProvider.getInstance().getProvider().selectMethod(Integer.SIZE*max));
 
 
                 Cell i1 = null;
 
-                tr1.plainTrace.close();
-                tr2.plainTrace.close();
+                //tr1.plainTrace.close();
+                //tr2.plainTrace.close();
 
                 long p1 = 0;
                 long p2 = 0;
@@ -119,18 +121,18 @@ public class AlignInterpreter {
                         //LogProvider.info(i1);
 
                         if(i2.getTrace1Index() > i1.getTrace1Index() && i2.getTrace2Index() > i1.getTrace2Index()){
-                            trace1Alignment.set(p1,tr1.plainTrace.read(i1.getTrace1Index()));
-                            trace2Alignment.set(p1,tr2.plainTrace.read(i1.getTrace2Index()));
+                            trace1Alignment[(int)p1] = tr1.plainTrace[i1.getTrace1Index()];
+                            trace2Alignment[(int)p1] = tr2.plainTrace[i1.getTrace2Index()];
                             p1++;
                         }
                         else if(i2.getTrace2Index() > i1.getTrace2Index()){
-                            trace1Alignment.set(p1,-1);
-                            trace2Alignment.set(p1,tr2.plainTrace.read(i1.getTrace2Index()));
+                            trace1Alignment[(int)p1] = -1;
+                            trace2Alignment[(int)p1] = tr2.plainTrace[i1.getTrace2Index()];
                             p1++;
                         }
                         else if(i2.getTrace1Index() > i1.getTrace1Index() ) {
-                            trace2Alignment.set(p1,-1);
-                            trace1Alignment.set(p1, tr1.plainTrace.read(i1.getTrace1Index() ));
+                            trace2Alignment[(int)p1] = -1;
+                            trace1Alignment[(int)p1] = tr1.plainTrace[i1.getTrace1Index()];
                             p1++;
                         }
                         else{
@@ -146,23 +148,20 @@ public class AlignInterpreter {
                 LogProvider.info("DTW Distance", distance.getDistance());
 
                 if(dto.outputAlignment) {
-
-
                     try {
                         LogProvider.info("Writing strac.align result to file");
 
-                        trace1Alignment.writeTo(new FileWriter(file1), t -> {
-                            if(t != null)
-                                return helper.getInverseBag().get(t) + "\n";
+                        FileWriter f11 = new FileWriter(file1);
 
-                            return "";
-                        });
-                        trace2Alignment.writeTo(new FileWriter(file2), t -> {
-                            if(t != null)
-                                return helper.getInverseBag().get(t) + "\n";
+                        for(int s : trace1Alignment)
+                            f11.write(helper.getInverseBag().get(s));
 
-                            return "";
-                        });
+
+                        FileWriter f22 = new FileWriter(file1);
+
+                        for(int s : trace2Alignment)
+                            f22.write(helper.getInverseBag().get(s));
+
                     }
                     catch (Exception e){
                         e.printStackTrace();
@@ -176,16 +175,14 @@ public class AlignInterpreter {
                             trace1Alignment, trace2Alignment);
                 }
 
-                trace1Alignment.close();
-                trace2Alignment.close();
-                trace1Alignment.dispose();
-                trace2Alignment.dispose();
-                distance.getInsertions().dispose();
+                if(distance.getInsertions() != null)
+                    distance.getInsertions().dispose();
             }
 
             //locks[trace1Index].unlock();
             //locks[trace2Index].unlock();
 
+            MonitoringService.getInstance().removeJob(jobId);
             return result;
         }
         catch (Exception e){
@@ -193,7 +190,7 @@ public class AlignInterpreter {
             //locks[trace1Index].unlock();
             //locks[trace2Index].unlock();
 
-            System.err.println(String.format("i: %s, j: %s", trace1Index, trace2Index));
+            //System.err.println(String.format("i: %s, j: %s", trace1Index, trace2Index));
             e.printStackTrace();
         }
 
@@ -201,9 +198,13 @@ public class AlignInterpreter {
     }
 
     ExecutorService executor = null;//creating a pool of x threads
+    static int jobCounter  = 0;
 
     public void execute(final Alignment dto, final IOnAlign action, TraceHelper.IStreamProvider provider) throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
 
+        //LogProvider.setCallbacker(msg -> {
+            // WebsocketHandler.getInstance().sendLog(msg);
+        //});
 
         if(dto.distanceFunctionName == null){
 
@@ -224,6 +225,8 @@ public class AlignInterpreter {
         }
 
 
+        MonitoringService mS = MonitoringService.getInstance();
+
         final TraceHelper helper = new TraceHelper();
 
         LogProvider.info("Parsing traces");
@@ -234,7 +237,6 @@ public class AlignInterpreter {
 
 
         final AlignResultDto resultDto = new AlignResultDto();
-
 
         if(dto.pairs.size() == 0){
             LogProvider.info("No specific pairs, two vs two tournament");
@@ -249,6 +251,9 @@ public class AlignInterpreter {
 
             dto.pairs = pairs;
         }
+
+        mS.setOverall(0);
+        mS.setLog(String.format("%s/%s", 0, dto.pairs.size()));
 
         LogProvider.info("Going to thread pool for pairwise comparison");
 
@@ -265,17 +270,12 @@ public class AlignInterpreter {
         CompletionService<SimplePairResultDto> completionService =
                 new ExecutorCompletionService<>(executor);
 
-        locks = new ReentrantLock[dto.files.size()];
-        for(int i = 0; i < locks.length; i++)
-            locks[i] = new ReentrantLock();
-        /*
 
 
-
-        */
         for(final int[] pair: dto.pairs){
             int i = pair[0], j = pair[1];
-            completionService.submit(() -> executeSimplePair(dto, i, j, action, provider, helper, align, traces, resultDto));
+
+            completionService.submit(() -> executeSimplePair(dto, i, j,  helper, align, traces));
         }
 
         resultDto.method = dto.method;
@@ -283,31 +283,34 @@ public class AlignInterpreter {
         int received = 0;
 
         String pairs = "";
-
         while(received != dto.pairs.size()){
+
             try {
                 Future<SimplePairResultDto> f = completionService.take();
-
                 received++;
 
                 SimplePairResultDto single = f.get();
 
                 if(single != null){
+                    //LogProvider.info(String.format("%s (%s %s) D: %s",received, single.trace1Index, single.trace2Index, single.distance.getDistance()));
+
                     resultDto.setFunctioNMap(single.trace1Index, single.trace2Index, single.distance.getDistance());
 
                     resultDto.fileMap.put(single.trace1Index, single.tr1.traceFile);
                     resultDto.fileMap.put(single.trace2Index, single.tr2.traceFile);
+
+                    if(action != null)
+                        action.action(single.distance, 0, 0, 0,0,0);
+
+                    mS.setOverall(100*received/dto.pairs.size());
+                    mS.setLog(String.format("%s/%s", received, dto.pairs.size()));
                 }
 
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
-
-
         }
-
-        System.out.println(pairs);
 
         if(dto.outputAlignmentMap != null){
             LogProvider.info("Exporting  json distances");
@@ -317,9 +320,10 @@ public class AlignInterpreter {
         }
 
         for(TraceMap map: traces){
-            map.plainTrace.dispose();
+            //map.plainTrace.dispose();
         }
 
+        executor.shutdownNow();
     }
 
     public class KeyValuePair{
@@ -333,17 +337,14 @@ public class AlignInterpreter {
     }
 
     void exportImage(String fileName,
-                                   IReadArray<Integer> trace1,
-                                   IReadArray<Integer> trace2) throws IOException {
-
-        trace1.reset();
-        trace2.reset();
+                                   int[] trace1,
+                                   int[] trace2) throws IOException {
 
         int scale = 1;
         File writer = new File(fileName);
         int pieceSize =8*scale;
 
-        int width = (int)Math.ceil(Math.sqrt(trace1.size())) + 1;
+        int width = (int)Math.ceil(Math.sqrt(trace1.length)) + 1;
 
 
         BufferedImage img = new BufferedImage(width*pieceSize, width*pieceSize, BufferedImage.TYPE_INT_ARGB);
@@ -352,10 +353,10 @@ public class AlignInterpreter {
         int row = 0;
         int col = 0;
 
-        for(int i = 0; i < trace1.size(); i++){
+        for(int i = 0; i < trace1.length; i++){
 
-            int t1 = trace1.read(i);
-            int t2 = trace2.read(i);
+            int t1 = trace1[i];
+            int t2 = trace2[i];
 
             String color = "#e74c3c";
 

@@ -6,19 +6,24 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="STRACv8tor" />
-        <module name="STRACcore" />
-        <module name="STRAC-align" />
+        <module name="microbenchmarks" />
         <module name="STRAC-core" />
+        <module name="STRACboard" />
+        <module name="STRAC-align" />
+        <module name="STRACcore" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="SIMDTest" target="11" />
       <module name="STRACtgrams" target="1.5" />
+      <module name="STRACv8tor" target="1.5" />
+      <module name="STRACWebApp" target="11" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="STRAC" options="" />
+      <module name="STRACWebApp" options="-parameters" />
     </option>
   </component>
 </project>

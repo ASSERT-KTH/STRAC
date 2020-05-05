@@ -1,11 +1,8 @@
-rm -rf STRACAlign/target
-rm -rf STRACcore/target
-rm -rf target
-rm -rf dist/
-mkdir dist
-
 mvn clean package -DskipTests
-cp STRACAlign/target/STRAC-align-0.1.jar dist/STRAC.jar
-cp -R STRACAlign/target/dependency-jars dist/dependency-jars
 
-zip -r -o dist/STRAC.zip dist/*
+cp log4j.properties STRACAlign/target/
+
+rm $1/STRAC.zip
+cd STRACAlign/target
+zip -rv $1/STRAC.zip .
+

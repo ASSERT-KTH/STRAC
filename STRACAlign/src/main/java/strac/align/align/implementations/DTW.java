@@ -25,12 +25,12 @@ public class DTW extends Aligner {
     }
 
     @Override
-    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2) {
+    public AlignDistance align(int[] trace1, int[] trace2) {
 
-        long need = 8*(trace1.size() + 1)*(trace2.size() + 1);
+        long need = 8*(trace1.length+ 1)*(trace2.length+ 1);
 
-        int maxI = (int)trace1.size();
-        int maxJ = (int)trace2.size();
+        int maxI = trace1.length;
+        int maxJ = trace2.length;
 
 
         IArray<Cell> ops = null;
@@ -43,7 +43,7 @@ public class DTW extends Aligner {
             method = IAlignAllocator.ALLOCATION_METHOD.EXTERNAL;
         }
         ops = AlignServiceProvider.getInstance().getAllocator().allocateWarpPath
-                (null, trace1.size()+trace2.size(), method);
+                (null, trace1.length+trace2.length, method);
 
         result = AlignServiceProvider.getInstance().getAllocator().allocateDoubleBidimensionalMatrix(maxI + 1, maxJ + 1,  method);
 
@@ -67,17 +67,17 @@ public class DTW extends Aligner {
                 {
                     try {
                         Double max = Math.min(
-                                1.0 * result.get(i - 1, j - 1) + this.comparer.compare(trace1.read(i - 1), trace2.read(j - 1)),
+                                1.0 * result.get(i - 1, j - 1) + this.comparer.compare(trace1[i - 1], trace2[j - 1]),
                                 Math.min(
                                         1.0 * result.get(i - 1, j) + getGapSymbol(i, ICellComparer.TRACE_DISCRIMINATOR.X),
                                         1.0 * result.get(i, j - 1) + getGapSymbol(j, ICellComparer.TRACE_DISCRIMINATOR.Y)
                                 )
                         );
 
-                        double progress = (i * trace2.size() + j * 1.0) / (trace1.size() * trace2.size());
+                        double progress = (i * trace2.length + j * 1.0) / (trace1.length * trace2.length);
 
                         if (progress - last >= 0.1) {
-                            LogProvider.info(progress * 100, "%");
+                            // WebsocketHandler.getInstance().setSingleProgress(1, 0, progress);
                             last = progress;
                         }
 
@@ -96,7 +96,7 @@ public class DTW extends Aligner {
 
         long position = 0;
 
-        ops.set(position++, new Cell((int)trace1.size(), (int)trace2.size()));
+        ops.set(position++, new Cell(trace1.length, trace2.length));
 
         int minI = Integer.MAX_VALUE;
         int minJ = Integer.MAX_VALUE;

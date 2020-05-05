@@ -37,21 +37,21 @@ public class FastDTW extends Aligner {
     }
 
     @Override
-    public AlignDistance align(IReadArray<Integer> trace1, IReadArray<Integer> trace2) {
+    public AlignDistance align(int[] trace1, int[] trace2) {
         int minTimeSize = 2 + this.radius;
-        LogProvider.info("Starting...", trace1.size(), trace2.size());
+        LogProvider.info("Starting...", trace1.length, trace2.length);
 
-        if(trace1.size() <= minTimeSize || trace2.size() <= minTimeSize){
+        if(trace1.length <= minTimeSize || trace2.length <= minTimeSize){
             return this.standard.align(trace1, trace2); // O(n)
         }
         else{
 
             TimeUtils utl = new TimeUtils();
 
-            long halfSize1 = trace1.size()/2;
-            long halfSize2 = trace2.size()/2;
+            long halfSize1 = trace1.length/2;
+            long halfSize2 = trace2.length/2;
 
-            IArray<Integer> reduced1 = AlignServiceProvider.getInstance().getProvider().allocateIntegerArray
+            int[] reduced1 = AlignServiceProvider.getInstance().getProvider().allocateIntegerArray
                     (null, halfSize1,
                             AlignServiceProvider.getInstance().getProvider().selectMethod(4*halfSize1)
                             );
@@ -59,7 +59,7 @@ public class FastDTW extends Aligner {
             ArrayHelper.reduceByHalf(trace1, reduced1,
                     ArrayHelper::getMostFequentRepresentation); // O(n)
 
-            IArray<Integer> reduced2 = AlignServiceProvider.getInstance().getProvider().allocateIntegerArray(
+            int[] reduced2 = AlignServiceProvider.getInstance().getProvider().allocateIntegerArray(
                     null, halfSize2,
                     AlignServiceProvider.getInstance().getProvider().selectMethod(4*halfSize2));
 
@@ -71,16 +71,16 @@ public class FastDTW extends Aligner {
 
             AlignDistance distance = this.align(reduced1, reduced2); //O(n/2)
 
-            LogProvider.info("Growing to",  trace1.size(), trace2.size() , "from", halfSize1 + 1, halfSize2 + 1);
+            LogProvider.info("Growing to",  trace1.length, trace2.length , "from", halfSize1 + 1, halfSize2 + 1);
 
 
             utl.reset();
-            reduced1.dispose();
-            reduced2.dispose();
+            //reduced1.dispose();
+            //reduced2.dispose();
             utl.time("Disposing");
             utl.reset();
 
-            WindowedDTW.Window window = DWTHelper.expandWindow(distance.getInsertions(), radius, trace1.size(), trace2.size() ,
+            WindowedDTW.Window window = DWTHelper.expandWindow(distance.getInsertions(), radius, trace1.length, trace2.length ,
                     distance.operationsCount, distance.minI, distance.minJ); // O(n)
 
 
