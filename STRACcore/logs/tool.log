@@ -1,0 +1,49 @@
+2019-08-06 16:04:12 INFO  tool - Processing /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \ --no-sandbox -user-data-dir=temp --js-flags="--print-bytecode"  http://www.google.com
+2019-08-06 16:04:12 INFO  tool - Taking class strac.core.stream_providers.CommandStdInputProvider instance as provider
+2019-08-06 16:04:17 INFO  tool - Taking class strac.core.stream_providers.CommandStdInputProvider instance as provider
+2019-08-06 16:04:22 INFO  tool - New trace added size:  84120
+2019-08-06 16:04:22 INFO  tool - Global bag info: total sentences 84120 different sentences 77176
+2019-08-06 16:04:56 INFO  tool - Processing /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \ --no-sandbox -user-data-dir=temp --js-flags="--print-bytecode"  http://www.google.com
+2019-08-06 16:04:56 INFO  tool - Taking class strac.core.stream_providers.CommandStdInputProvider instance as provider
+2019-08-06 16:05:01 INFO  tool - New trace added size:  0
+2019-08-06 16:05:01 INFO  tool - Global bag info: total sentences 0 different sentences 0
+2019-08-06 16:05:38 INFO  tool - Processing /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \ --no-sandbox -user-data-dir=temp --js-flags="--print-bytecode"  http://www.google.com
+2019-08-06 16:05:38 INFO  tool - Taking class strac.core.stream_providers.CommandStdInputProvider instance as provider
+2019-08-06 16:11:21 INFO  tool - Processing /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \ --no-sandbox -user-data-dir=temp --js-flags="--print-bytecode"  http://www.google.com
+2019-08-06 16:11:21 INFO  tool - Taking class strac.core.stream_providers.CommandStdInputProvider instance as provider
+2019-08-06 16:11:27 INFO  tool - New trace added size:  84120
+2019-08-06 16:11:27 INFO  tool - Global bag info: total sentences 84120 different sentences 77176
+2019-08-06 16:12:22 INFO  tool - Processing /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \ --no-sandbox -user-data-dir=temp --js-flags="--print-bytecode"  http://www.google.com
+2019-08-06 16:12:22 INFO  tool - Taking class strac.core.stream_providers.CommandStdInputProvider instance as provider
+2019-08-06 16:12:29 INFO  tool - New trace added size:  84120
+2019-08-06 16:12:29 INFO  tool - Global bag info: total sentences 84120 different sentences 20049
+2019-08-06 16:13:30 INFO  tool - Processing /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \ --no-sandbox -user-data-dir=temp --js-flags="--print-bytecode"  http://www.google.com
+2019-08-06 16:13:30 INFO  tool - Taking class strac.core.stream_providers.CommandStdInputProvider instance as provider
+2019-08-06 16:14:29 INFO  tool - Processing /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \ --no-sandbox -user-data-dir=temp --js-flags="--print-bytecode"  http://www.google.com
+2019-08-06 16:14:29 INFO  tool - Taking class strac.core.stream_providers.CommandStdInputProvider instance as provider
+2019-08-06 16:14:35 INFO  tool - New trace added size:  84120
+2019-08-06 16:14:35 INFO  tool - Global bag info: total sentences 84120 different sentences 20049
+2019-08-06 16:30:30 INFO  tool - Processing /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \ --no-sandbox -user-data-dir=temp --js-flags="--print-bytecode"  http://www.google.com
+2019-08-06 16:30:30 INFO  tool - Taking class strac.core.stream_providers.CommandStdInputProvider instance as provider
+2019-08-06 16:30:46 INFO  tool - New trace added size:  86097
+2019-08-06 16:30:46 INFO  tool - Global bag info: total sentences 86097 different sentences 20296
+2019-08-06 16:31:06 INFO  tool - Processing /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \ --no-sandbox -user-data-dir=temp --js-flags="--print-bytecode"  http://www.google.com
+2019-08-06 16:31:06 INFO  tool - Taking class strac.core.stream_providers.CommandStdInputProvider instance as provider
+2019-08-06 16:31:23 INFO  tool - New trace added size:  86097
+2019-08-06 16:31:23 INFO  tool - Global bag info: total sentences 86097 different sentences 613
+2019-08-06 16:31:49 INFO  tool - Processing /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \ --no-sandbox -user-data-dir=temp --js-flags="--print-bytecode"  http://www.google.com
+2019-08-06 16:31:49 INFO  tool - Taking class strac.core.stream_providers.CommandStdInputProvider instance as provider
+2019-08-06 16:32:06 INFO  tool - New trace added size:  85943
+2019-08-06 16:32:06 INFO  tool - Global bag info: total sentences 85943 different sentences 131
+2019-08-06 16:32:47 INFO  tool - Processing /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \ --no-sandbox -user-data-dir=temp --js-flags="--print-bytecode"  http://www.google.com
+2019-08-06 16:32:47 INFO  tool - Taking class strac.core.stream_providers.CommandStdInputProvider instance as provider
+2019-08-06 16:33:04 INFO  tool - New trace added size:  86097
+2019-08-06 16:33:04 INFO  tool - Global bag info: total sentences 86097 different sentences 20296
+2019-08-06 16:33:36 INFO  tool - Processing /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \ --no-sandbox -user-data-dir=temp --js-flags="--print-bytecode"  http://www.google.com
+2019-08-06 16:33:36 INFO  tool - Taking class strac.core.stream_providers.CommandStdInputProvider instance as provider
+2019-08-06 16:33:53 INFO  tool - New trace added size:  86097
+2019-08-06 16:33:53 INFO  tool - Global bag info: total sentences 86097 different sentences 174
+2019-08-06 16:34:40 INFO  tool - Processing /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \ --no-sandbox -user-data-dir=temp --js-flags="--print-bytecode"  http://www.google.com
+2019-08-06 16:34:40 INFO  tool - Taking class strac.core.stream_providers.CommandStdInputProvider instance as provider
+2019-08-06 16:34:57 INFO  tool - New trace added size:  86097
+2019-08-06 16:34:57 INFO  tool - Global bag info: total sentences 86097 different sentences 909
