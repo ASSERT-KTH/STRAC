@@ -18,10 +18,13 @@ jobs:
       - name: Download jdk 14
         run: |
           curl -O https://download.java.net/java/GA/jdk14/076bab302c7b4508975440c56f6cc26a/36/GPL/openjdk-14_linux-x64_bin.tar.gz
-      
+      - name: Untar jdk 14
+        run: |
+          tar xvf openjdk-14_linux-x64_bin.tar.gz
+
       - name: Install jdk 14
         run: |
-           tar xvf openjdk-14_linux-x64_bin.tar.gz && mv jdk-14 /opt/ && export JAVA_HOME=/opt/jdk-14 && export PATH=\$PATH:\$JAVA_HOME/bin &&
+            mv jdk-14 /opt/ && export JAVA_HOME=/opt/jdk-14 && export PATH=\$PATH:\$JAVA_HOME/bin
 
       - name: Build jdk panama
         run: |
