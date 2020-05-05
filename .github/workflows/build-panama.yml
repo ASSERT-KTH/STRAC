@@ -5,6 +5,7 @@ on:
       - release
       - SIMD-panama
 jobs:
+
   build:
     name: Build
     runs-on: ubuntu-18.04
@@ -25,11 +26,11 @@ jobs:
 
       - name: Build jdk panama
         run: |
-          mkdir panama && cd panama && hg clone http://hg.openjdk.java.net/panama/dev/ && cd dev && bash configure --disable-warnings-as-errors --with-boot-jdk=/opt/jdk-14 && make images
+          mkdir panama && cd panama && hg clone http://hg.openjdk.java.net/panama/dev/ && cd dev && bash configure --disable-warnings-as-errors && make images
 
       - name: Setup Java
         run: |
-          export JAVA_HOME=/STRAC/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=$JAAVA_HOME/bin:$PATH
+          export JAVA_HOME=/home/runner/work/STRAC/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=$JAAVA_HOME/bin:$PATH
 
       - name: Build STRAC
         run: |
