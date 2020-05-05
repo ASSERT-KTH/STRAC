@@ -28,10 +28,11 @@ jobs:
 
       - name: Build jdk panama
         run: |
-          mkdir panama && cd panama && hg clone http://hg.openjdk.java.net/panama/dev/ && cd panama && bash configure --disable-warnings-as-errors --with-boot-jdk=/opt/jdk-14 && make images
+          mkdir panama && cd panama && hg clone http://hg.openjdk.java.net/panama/dev/ && cd dev && bash configure --disable-warnings-as-errors --with-boot-jdk=/opt/jdk-14 && make images
+
       - name: Build STRAC
         run: |
-          ls && cd STRAC && mvn clean package -DskipTests
+          ls && cd ../../ && export JAVA_TARGET=15 && mvn clean package -DskipTests
 
       - name: Compress binaries
         uses: montudor/action-zip@v0.1.0

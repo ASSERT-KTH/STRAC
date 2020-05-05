@@ -19,9 +19,19 @@ jobs:
         run: |
           rm -rf STRACAlign/src/main/java/strac/align/align/implementations/SIMDDTW.java
 
+
+
+      - name: Java version
+        run : |
+          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 && java -version
+
+      - name: Listing repo
+        run : |
+          tree .
+
       - name: Build STRAC
         run: |
-          tree . && export JAVA_TARGET=11 && mvn clean package -DskipTests
+          export JAVA_TARGET=11 && mvn clean package -DskipTests
 
       - name: Compress binaries
         uses: montudor/action-zip@v0.1.0
