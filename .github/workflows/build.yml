@@ -46,10 +46,10 @@ jobs:
           file_glob: true
 
       - name: Submit release board
-          uses: svenstaro/upload-release-action@v1-release
-          with:
-            repo_token: ${{ secrets.GITHUB_TOKEN }}
-            file: ./STRACAlign.zip
-            tag: v0.6
-            overwrite: true
-            file_glob: true
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./STRACAlign.zip
+          tag: v0.6
+          overwrite: true
+          file_glob: true
