@@ -2,11 +2,7 @@
 
 STRAC, a tools collection tailored to compare traces.
 
-- [STRAC-core](https://github.com/Jacarte/STRACcore/tree/ecd8ea446b310bdb068feffa3f1f5a8ba43ef41a) Provides a kernel for trace collection from http requests, command execution standard output and flat files
-
-- [STRAC-align](/STRACAlign) State of the art DTW implementations.
-
-- [STRAC-distrubuted] Soon ;)
+# Included implementations
 
 ### Prerequisites
 
@@ -14,8 +10,15 @@ STRAC, a tools collection tailored to compare traces.
 
 #### To execute with SIMD
 
-- Use project Panama https://jdk.java.net/panama/
-To run this project, you will need a specific development build of OpenJDK, containing the OpenJDK jdk.incubator.vector module. You will need to build it from source.
+We included a vectorized version of DTW, unfotunately, JAVA doesn't support vectorizaiton yet. It is an experimental feature for jdk 15.
+You can avoid this feature applying the patch included in the root 
+of the project, `git apply change_target.patch`, also you need to remove the vecctorized implementation 
+`rm STRACAlign/src/main/java/strac/align/align/implementations/SIMDDTW.java`
+
+
+
+Use project Panama https://jdk.java.net/panama/
+To run this project with the vectorized implementation, you will need a specific development build of OpenJDK, containing the OpenJDK jdk.incubator.vector module. You will need to build it from source.
 
 Detailed build instructions are available at http://hg.openjdk.java.net/panama/dev/ in doc/building.md.
 
