@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - release
-      - SIMD-panama
+      # - SIMD-panama
 jobs:
   build:
     name: Build
