@@ -34,7 +34,7 @@ jobs:
 
       - name: Build STRAC
         run: |
-          ls && cd /home/runner/work/STRAC && export JAVA_TARGET=15 && mvn clean package -DskipTests
+          ls && export JAVA_TARGET=15 && mvn clean package -DskipTests
 
 
       - name: Compress binaries
