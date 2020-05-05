@@ -79,11 +79,30 @@ public class Main {
         return classLoader.getResource(name).getFile();
     }
     public static void main(String[] args) throws Exception{
-        org.openjdk.jmh.Main.main(args);
-        /*Context ctx = new Context();
+        //org.openjdk.jmh.Main.main(args);
+        Context ctx = new Context();
         ctx.init();
-        ctx.dto.method.name = "SIMD";
-        compareSIMD(ctx);*/
+        ctx.dto.method.name = "Evolutive";
+        compareEvolutive(ctx);
+
+    }
+
+
+    @Benchmark
+    public static void compareEvolutive(Context context) throws InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+
+
+        AlignInterpreter interpreter = new AlignInterpreter();
+        context.dto.method.name = "Evolutive";
+
+        interpreter.execute(context.dto, new AlignInterpreter.IOnAlign() {
+            @Override
+            public void action(AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize) {
+                //sSystem.out.println(String.format("%s", distance.getDistance()));
+            }
+        }, StreamProviderFactory.getInstance());
+
+        AlignServiceProvider.getInstance().getAllocator().dispose();
 
     }
 

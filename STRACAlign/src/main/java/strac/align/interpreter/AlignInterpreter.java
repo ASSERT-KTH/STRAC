@@ -38,8 +38,6 @@ public class AlignInterpreter {
 
     }
 
-
-
     public interface IOnAlign{
         void action(AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize);
     }

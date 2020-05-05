@@ -7,10 +7,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="microbenchmarks" />
+        <module name="STRAC-core" />
         <module name="STRACboard" />
         <module name="STRAC-align" />
         <module name="STRACcore" />
-        <module name="STRAC-core" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
