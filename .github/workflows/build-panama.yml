@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - release
-      # - SIMD-panama
 jobs:
 
   build:
@@ -26,20 +25,16 @@ jobs:
 
       - name: Build jdk panama
         run: |
-          mkdir panama && cd panama && hg clone http://hg.openjdk.java.net/panama/dev/ && cd dev && bash configure --disable-warnings-as-errors && make images
-
-      - name: Setup Java
-        run: |
-          export JAVA_HOME=/home/runner/work/STRAC/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=$JAAVA_HOME/bin:$PATH
+          mkdir panama && cd panama && hg clone http://hg.openjdk.java.net/panama/dev/ && cd dev && hg checkout vectorIntrinsics && bash configure --disable-warnings-as-errors && make images
 
       - name: Build STRAC
         run: |
-          ls && cd ../../ && export JAVA_TARGET=15 && mvn clean package -DskipTests
+          export JAVA_HOME=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk/bin:$PATH && export JAVA_TARGET=15 && mvn clean package -DskipTests
 
 
       - name: Compress binaries
         run: |
-          cp log4j.properties STRACAlign/target && cp log4j.properties STRACboard/target && zip -r STRACboard-jdk15.zip ./STRACboard/target && zip -r STRACAlign-jdk15.zip ./STRACAlign/target
+          cp log4j.properties STRACAlign/target && cp log4j.properties STRACboard/target && zip -r STRACboard-jdk15-SIMD.zip ./STRACboard/target && zip -r STRACAlign-jdk15-SIMD.zip ./STRACAlign/target
 
       - name: Submit release aligners
         uses: svenstaro/upload-release-action@v1-release
