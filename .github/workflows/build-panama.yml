@@ -28,14 +28,9 @@ jobs:
         run: |
           mkdir panama && cd panama && hg clone http://hg.openjdk.java.net/panama/dev/ && cd dev && bash configure --disable-warnings-as-errors && make images
 
-      - name: Tree pc
-        run: |
-           tree / -h
-
-
       - name: Build STRAC
         run: |
-          export JAVA_HOME=$pwd/panama/dev/build/linux-x86_64-server-release/jdk && export JAVA_TARGET=15 && mvn clean package -DskipTests
+          export JAVA_HOME=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk:$PATH && export JAVA_TARGET=15 && mvn clean package -DskipTests
 
 
       - name: Compress binaries
