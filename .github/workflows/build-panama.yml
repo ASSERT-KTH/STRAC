@@ -2,7 +2,7 @@ name: Build jdk panama project
 on:
   push:
     branches:
-      - release
+      - master
 jobs:
 
   build:
