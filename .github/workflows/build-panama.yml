@@ -26,7 +26,7 @@ jobs:
 
       - name: Build jdk panama
         run: |
-          mkdir panama && cd panama && hg clone http://hg.openjdk.java.net/panama/dev/ && cd dev && bash configure --disable-warnings-as-errors && make images
+          mkdir panama && cd panama && hg clone http://hg.openjdk.java.net/panama/dev/ && cd dev && hg checkout vectorIntrinsics && bash configure --disable-warnings-as-errors && make images
 
       - name: Build STRAC
         run: |
