@@ -32,6 +32,10 @@ jobs:
         run: |
           export JAVA_HOME=$pwd/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=$JAVA_HOME/bin:$PATH && java -version
 
+      - name: Setup Java
+        run: |
+          echo $JAVA_HOME && echo $JAVA_HOME/bin/java -version
+
       - name: Build STRAC
         run: |
           ls && export JAVA_TARGET=15 && mvn clean package -DskipTests
