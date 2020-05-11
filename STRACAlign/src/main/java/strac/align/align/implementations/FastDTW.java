@@ -39,8 +39,6 @@ public class FastDTW extends Aligner {
     @Override
     public AlignDistance align(int[] trace1, int[] trace2) {
         int minTimeSize = 2 + this.radius;
-        LogProvider.info("Starting...", trace1.length, trace2.length);
-
         if(trace1.length <= minTimeSize || trace2.length <= minTimeSize){
             return this.standard.align(trace1, trace2); // O(n)
         }
@@ -74,21 +72,8 @@ public class FastDTW extends Aligner {
             LogProvider.info("Growing to",  trace1.length, trace2.length , "from", halfSize1 + 1, halfSize2 + 1);
 
 
-            utl.reset();
-            //reduced1.dispose();
-            //reduced2.dispose();
-            utl.time("Disposing");
-            utl.reset();
-
             WindowedDTW.Window window = DWTHelper.expandWindow(distance.getInsertions(), radius, trace1.length, trace2.length ,
                     distance.operationsCount, distance.minI, distance.minJ); // O(n)
-
-
-            utl.time("Expanding total");
-            //LogProvider.info();
-            //LogProvider.info(trace1);
-            //LogProvider.info(trace2);
-            //LogProvider.info(growUp);
 
             distance.getInsertions().dispose();
 
