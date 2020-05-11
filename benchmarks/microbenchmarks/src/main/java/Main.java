@@ -39,10 +39,10 @@ public class Main {
     @State(org.openjdk.jmh.annotations.Scope.Thread)
     public static class Context {
 
-        @Param({ "100", "200"})
+        @Param({ "100", "200", "10000"})
         public int size;
 
-        @Param({ "100", "200"})
+        @Param({ "100", "200", "10000"})
         public int size2;
 
         public int MAX  = 50;

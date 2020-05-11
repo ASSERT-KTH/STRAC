@@ -34,7 +34,16 @@ jobs:
 
       - name: Run benchmarks
         run: |
-          export JAVA_HOME=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk/bin:$PATH && java -jar benchmarks/microbenchmarks/target/microbenchmarks-0.1.jar
+          export JAVA_HOME=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk/bin:$PATH && echo '```' > results.md && echo '' >> results.md && java -jar benchmarks/microbenchmarks/target/microbenchmarks-0.1.jar >> results.md && echo '```' >> results.md
 
-
+      - name: Create Issue
+        uses: peter-evans/create-issue-from-file@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: Benchmarking results
+          content-filepath: results.md
+          labels: report, automated issue
+          project: STRAC
+          project-column: BENCHMARK
+        if: always()
 
