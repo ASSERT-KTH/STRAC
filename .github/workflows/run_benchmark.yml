@@ -1,0 +1,49 @@
+name: Running benchmarks
+on:
+  push:
+    branches:
+      - feature/unsafe
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2 # checkout latest version of the repo
+
+      - name: Install packages
+        run: |
+          sudo apt-get update && sudo apt-get -y install tree zip maven make libasound2-dev libfontconfig1-dev libcups2-dev libx11-dev libxext-dev libxrender-dev libxrandr-dev libxtst-dev libxt-dev build-essential zip autoconf mercurial software-properties-common curl
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '14-ea' # The JDK version to make available on the path.
+          java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
+          architecture: x64 # (x64 or x86) - defaults to x64
+      - run : java -version
+
+      - name: Build jdk panama
+        run: |
+          mkdir panama && cd panama && hg clone http://hg.openjdk.java.net/panama/dev/ && cd dev && hg checkout vectorIntrinsics && bash configure --disable-warnings-as-errors && make images
+
+      - name: Build STRAC
+        run: |
+          export JAVA_HOME=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk/bin:$PATH && export JAVA_TARGET=15 && mvn clean package -DskipTests
+
+
+      - name: Run benchmarks
+        run: |
+          export JAVA_HOME=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk/bin:$PATH && echo '```' > results.md && echo '' >> results.md && java -jar benchmarks/microbenchmarks/target/microbenchmarks-0.1.jar >> results.md && echo '```' >> results.md
+
+      - name: Create Issue
+        uses: peter-evans/create-issue-from-file@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: Benchmarking results
+          content-filepath: results.md
+          labels: report, automated issue
+          project: STRAC
+          project-column: BENCHMARK
+        if: always()
+

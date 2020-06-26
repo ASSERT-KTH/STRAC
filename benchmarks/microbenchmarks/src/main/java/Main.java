@@ -2,6 +2,11 @@ package microbenchmarks;
 
 import org.openjdk.jmh.annotations.*;
 import strac.align.align.AlignDistance;
+import strac.align.align.event_distance.DInst;
+import strac.align.align.implementations.DTW;
+import strac.align.align.implementations.FastDTW;
+import strac.align.align.implementations.NoWarpPathDTW;
+import strac.align.align.implementations.SIMDDTW;
 import strac.align.interpreter.AlignInterpreter;
 import strac.align.interpreter.dto.Alignment;
 import strac.align.interpreter.dto.Payload;
@@ -11,61 +16,54 @@ import strac.core.StreamProviderFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
 /**
  * @author Javier Cabrera-Arteaga on 2020-04-23
  */
 @State(org.openjdk.jmh.annotations.Scope.Thread)
-@OutputTimeUnit(NANOSECONDS)
+@OutputTimeUnit(MILLISECONDS)
 @BenchmarkMode(AverageTime)
 @Fork(value = 1, jvmArgsAppend = {
         "-XX:+UseSuperWord",
         "-XX:+UnlockDiagnosticVMOptions",
         "-XX:CompileCommand=print,*Main.compare*"})
-@Warmup(iterations = 5)
-@Measurement(iterations = 20)
+@Warmup(iterations = 1)
+@Measurement(iterations = 1)
 public class Main {
 
     @State(org.openjdk.jmh.annotations.Scope.Thread)
     public static class Context {
 
-        Alignment dto = new Alignment();
+        @Param({ "100", "200", "10000"})
+        public int size;
+
+        @Param({ "100", "200", "10000"})
+        public int size2;
+
+        public int MAX  = 50;
+        public Random r = new Random();
+
+        int[] trace1;
+        int[] trace2;
+
+        int[] createRandomArray(int size){
+            int[] result = new int[size];
+
+            for(int i= 0; i < size; i++)
+                result[i] = 1 + r.nextInt(MAX);
+
+            return result;
+        }
+
         @Setup
-        public void init() throws IOException, ClassNotFoundException {
-            AlignServiceProvider.setup();
-            AlignServiceProvider.getInstance().getProvider();
-
-            dto.distanceFunctionName = "dBin";
-            dto.outputAlignment = true;
-            dto.pairs = new ArrayList();
-            dto.method = new Payload.MethodInfo();
-            dto.threadPoolCount = 10;
-
-            dto.method.params = Arrays.asList();
-            dto.outputDir = "outDemo";
-            dto.exportImage = true;
-            dto.separator = "[\r\n]";
-            dto.outputAlignmentMap = "map.json";
-            dto.clean = new String[]{
-                    "^( )*\\d+ [ES]>",
-                    "0x\\w+ @",
-                    "\\w+ : ",
-                    " [A-Z](.*)"
-            };
-
-            String f1 = "benchmarks/resources/t1.txt";
-            String f2 = "benchmarks/resources/t2.txt";
-            //val f2 = "/Users/javier/IdeaProjects/STRAC/scripts/chrome_scripts/tiny_test/ten/wiki-9/w6.txt"
-            //TestLogProvider.info("#%s".format(site))
-            //for(site2 in sites) {
-
-            dto.files = Arrays.asList(f1, f2);
+        public void init(){
+            trace1 = createRandomArray(size);
+            trace2 = createRandomArray(size2);
         }
 
 
@@ -79,66 +77,38 @@ public class Main {
         return classLoader.getResource(name).getFile();
     }
     public static void main(String[] args) throws Exception{
-        //org.openjdk.jmh.Main.main(args);
-        Context ctx = new Context();
-        ctx.init();
-        ctx.dto.method.name = "Evolutive";
-        compareEvolutive(ctx);
-
+        org.openjdk.jmh.Main.main(args);
     }
 
 
+
     @Benchmark
-    public static void compareEvolutive(Context context) throws InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+    @BenchmarkMode(AverageTime)
+    public void compareFastDTW(Context context){
 
-
-        AlignInterpreter interpreter = new AlignInterpreter();
-        context.dto.method.name = "Evolutive";
-
-        interpreter.execute(context.dto, new AlignInterpreter.IOnAlign() {
-            @Override
-            public void action(AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize) {
-                //sSystem.out.println(String.format("%s", distance.getDistance()));
-            }
-        }, StreamProviderFactory.getInstance());
-
-        AlignServiceProvider.getInstance().getAllocator().dispose();
-
+        FastDTW fdtw = new FastDTW(new DInst(), 2000.0);
+        fdtw.align(context.trace1, context.trace2);
     }
 
     @Benchmark
-    public  void compareSIMD(Context context) throws InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+    @BenchmarkMode(AverageTime)
+    public void compareDTWWithWarpPath(Context context){
 
-
-        AlignInterpreter interpreter = new AlignInterpreter();
-        context.dto.method.name = "SIMD";
-
-        interpreter.execute(context.dto, new AlignInterpreter.IOnAlign() {
-            @Override
-            public void action(AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize) {
-                //sSystem.out.println(String.format("%s", distance.getDistance()));
-            }
-        }, StreamProviderFactory.getInstance());
-
-        AlignServiceProvider.getInstance().getAllocator().dispose();
-
+        DTW dtw = new DTW(new DInst());
+        dtw.align(context.trace1, context.trace2);
     }
 
     @Benchmark
-    public void comparePureDTW(Context context) throws InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+    @BenchmarkMode(AverageTime)
+    public  void compareSIMD(Context context){
+        SIMDDTW simdtw = new SIMDDTW(new DInst());
+        simdtw.align(context.trace1, context.trace2);
+    }
 
-
-        AlignInterpreter interpreter = new AlignInterpreter();
-        context.dto.method.name = "PureDTW";
-
-        interpreter.execute(context.dto, new AlignInterpreter.IOnAlign() {
-            @Override
-            public void action(AlignDistance distance, double successCount, double mismatchCount, double gaps1Count, double gaps2Count, double traceSize) {
-                //sSystem.out.println(String.format("%s", distance.getDistance()));
-            }
-        }, StreamProviderFactory.getInstance());
-
-        AlignServiceProvider.getInstance().getAllocator().dispose();
-
+    @Benchmark
+    @BenchmarkMode(AverageTime)
+    public void comparePureDTW(Context context){
+        NoWarpPathDTW ndtw = new NoWarpPathDTW(new DInst());
+        ndtw.align(context.trace1, context.trace2);
     }
 }
