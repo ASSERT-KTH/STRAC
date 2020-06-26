@@ -29,7 +29,7 @@ jobs:
 
       - name: Build STRAC
         run: |
-          export JAVA_HOME=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk/bin:$PATH && export JAVA_TARGET=15 && mvn clean package -DskipTests
+          export JAVA_HOME=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk && export PATH=/home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk/bin:$PATH && export JAVA_TARGET=15 && mvn clean package
 
 
       - name: Compress binaries

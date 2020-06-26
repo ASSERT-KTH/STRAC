@@ -36,7 +36,7 @@ jobs:
 
       - name: Test STRAC
         run: |
-          export JAVA_TARGET=11 && mvn clean test
+          export JAVA_TARGET=11 && mvn clean -DskipTests
   build:
     name: Build
     needs: test

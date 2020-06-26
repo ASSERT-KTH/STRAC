@@ -2,7 +2,7 @@ name: Running benchmarks
 on:
   push:
     branches:
-      - feature/unsafe
+      - master
 jobs:
 
   build:
