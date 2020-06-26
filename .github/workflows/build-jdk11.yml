@@ -21,7 +21,7 @@ jobs:
 
       - name: Applying patch
         run: |
-          rm -rf STRACAlign/src/test/java/TestAligners.java
+          rm -rf STRACAlign/src/test
 
       - name: Setup Java
         uses: actions/setup-java@v1
@@ -57,7 +57,7 @@ jobs:
 
       - name: Applying patch
         run: |
-          rm -rf STRACAlign/src/test/java/TestAligners.java
+          rm -rf STRACAlign/src/test
 
       - name: Setup Java
         uses: actions/setup-java@v1
