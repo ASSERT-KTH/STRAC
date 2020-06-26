@@ -28,7 +28,7 @@ public class TestAilgners {
         return result;
     }
 
-    double allowedApprox = 40;
+    double allowedApprox = 100;
 
     int[] tr1 = new int[] {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
     int[] tr2 = new int[] {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
@@ -224,9 +224,9 @@ public class TestAilgners {
     @Test
     public void SIMDTestRandom(){
 
-        for(int i = 0; i < 1000; i++){
-            int s1 = 10 + r.nextInt(1200);
-            int s2 = 10 + r.nextInt(1200);
+        for(int i = 0; i < 1500; i++){
+            int s1 = 10 + r.nextInt(12000);
+            int s2 = 10 + r.nextInt(12000);
 
             int[] tr1 = createRandomArray(s1);
             int[] tr2 = createRandomArray(s2);
