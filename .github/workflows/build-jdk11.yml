@@ -52,6 +52,10 @@ jobs:
         run: |
           rm -rf STRACAlign/src/main/java/strac/align/align/implementations/SIMDDTW.java
 
+      - name: Applying patch
+        run: |
+          rm -rf STRACAlign/src/test/java/TestAligners
+
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
@@ -67,7 +71,7 @@ jobs:
 
       - name: Build STRAC
         run: |
-          export JAVA_TARGET=11 && mvn clean package -DskipTests
+          export JAVA_TARGET=11 && mvn clean package
 
       - name: Compress binaries
         run: |
