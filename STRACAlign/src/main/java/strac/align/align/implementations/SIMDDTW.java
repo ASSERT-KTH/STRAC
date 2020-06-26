@@ -1,6 +1,5 @@
 package strac.align.align.implementations;
 
-import com.sun.tools.javac.util.Assert;
 import strac.align.align.AlignDistance;
 import strac.align.align.Aligner;
 import strac.align.align.ICellComparer;
