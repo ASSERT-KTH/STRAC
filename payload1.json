@@ -1,0 +1,30 @@
+{
+  "files": [
+    "/Users/javierca/Documents/traces/1/core1.log",
+    "/Users/javierca/Documents/traces/2/core1.log",
+    "/Users/javierca/Documents/traces/3/core1.log",
+    "/Users/javierca/Documents/traces/4/core1.log",
+    "/Users/javierca/Documents/traces/5/core1.log",
+    "/Users/javierca/Documents/traces/6/core1.log",
+    "/Users/javierca/Documents/traces/7/core1.log",
+    "/Users/javierca/Documents/traces/8/core1.log",
+    "/Users/javierca/Documents/traces/9/core1.log",
+    "/Users/javierca/Documents/traces/10/core1.log"
+  ],
+  "pairs": [] ,
+  "method": {
+    "name": "SIMD",
+    "params": []
+  },
+  "outputAlignment": true,
+  "exportImage": false,
+  "distanceFunctionName": "dBin",
+  "separator": "[\r\n]",
+  "threadPoolCount": 50,
+  "comparison": {
+    "eq": 0,
+    "diff":5,
+    "gap": 1
+  }
+
+}

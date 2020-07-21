@@ -57,6 +57,7 @@ public class TraceHelper {
         return bag.get(sentence);
     }
 
+    static Integer MAX = 40000;
 
     public long countSentences(String separator, String[] remove,  InputStream stream, IHasNext hasNextIterator, INextProvider sentenceProvider){
 
@@ -64,7 +65,7 @@ public class TraceHelper {
 
         long count = 0;
 
-        while (hasNextIterator.hasNext(separator, sc)) {
+        while (hasNextIterator.hasNext(separator, sc) && count <= MAX) {
             String line = sentenceProvider.getNext(separator, sc);
 
             for(String pattern: remove)
@@ -116,8 +117,8 @@ public class TraceHelper {
 
         List<String> sentences = new ArrayList<>();
         long index = 0;
-
-        while (hasNextIterator.hasNext(separator, sc)) {
+        long scount = 0;
+        while (hasNextIterator.hasNext(separator, sc) && scount < count) {
             String line = sentenceProvider.getNext(separator, sc);
 
 
@@ -139,7 +140,6 @@ public class TraceHelper {
                 }
             }
 
-
             // System.out.println(line);
             if(keepSentences && !line.equals(""))
                 sentences.add(line);
@@ -147,7 +147,7 @@ public class TraceHelper {
 
             if(!line.equals(""))
                 trace[(int)index++] = updateBag(line);
-
+            scount++;
         }
 
 

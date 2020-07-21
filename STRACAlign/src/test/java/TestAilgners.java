@@ -212,6 +212,8 @@ public class TestAilgners {
         Assert.assertEquals(reference, d2.getDistance(), allowedApprox);
     }
 
+
+
     public String getArray(int[] tr){
         String r = "";
 

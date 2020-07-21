@@ -65,6 +65,7 @@ public class SIMDDTW extends Aligner {
         int counter = 0;
 
         for(int i = 1; i < diagCount; i++){
+            //LogProvider.info("INFO", String.format("%s/%s", i, diagCount ));
 
             int[] tmp = d1;
             d1 = d2;
