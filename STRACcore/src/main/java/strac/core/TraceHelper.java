@@ -57,7 +57,7 @@ public class TraceHelper {
         return bag.get(sentence);
     }
 
-    static Integer MAX = 50000;
+    static Integer MAX = 1000000000;
 
     public long countSentences(String separator, String[] remove,  InputStream stream, IHasNext hasNextIterator, INextProvider sentenceProvider){
 

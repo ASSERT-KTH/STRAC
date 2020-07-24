@@ -4,10 +4,7 @@ import strac.align.align.AlignDistance;
 import strac.align.align.Aligner;
 import strac.align.align.ICellComparer;
 import strac.align.align.event_distance.DInst;
-import strac.align.align.implementations.DTW;
-import strac.align.align.implementations.FastDTW;
-import strac.align.align.implementations.NoWarpPathDTW;
-import strac.align.align.implementations.SIMDDTW;
+import strac.align.align.implementations.*;
 
 import java.util.Random;
 
@@ -148,9 +145,23 @@ public class TestAilgners {
     @Test
     public void SIMDTest5(){
 
-        double reference = getReferenceValue(tr1, tr5);
+        double reference = getReferenceValue(tr10, tr11);
         SIMDDTW dtw = new SIMDDTW(comparer);
-        AlignDistance d2 = dtw.align(tr1, tr5);
+        AlignDistance d2 = dtw.align(tr10, tr11);
+
+        System.out.println(d2.getDistance());
+        System.out.println(reference);
+
+        Assert.assertEquals(reference, d2.getDistance(), allowedApprox);
+    }
+
+
+    @Test
+    public void TestSakoe(){
+
+        double reference = getReferenceValue(tr10, tr11);
+        Sakoe dtw = new Sakoe(comparer, 20.0);
+        AlignDistance d2 = dtw.align(tr10, tr11);
 
         System.out.println(d2.getDistance());
         System.out.println(reference);
