@@ -160,7 +160,7 @@ public class TestAilgners {
     public void TestSakoe(){
 
         double reference = getReferenceValue(tr10, tr11);
-        Sakoe dtw = new Sakoe(comparer, 10.0);
+        Sakoe dtw = new Sakoe(comparer, 20.0);
         AlignDistance d2 = dtw.align(tr10, tr11);
 
         System.out.println(d2.getDistance());
