@@ -19,10 +19,10 @@ public class AllocatorServiceProvider implements IServiceProvider {
     @Override
     public IServiceProvider.ALLOCATION_METHOD selectMethod(long size) {
 
-        if(size < 1L << 30)
+        //if(size < 1L << 30)
             return IServiceProvider.ALLOCATION_METHOD.MEMORY;
 
-        return IServiceProvider.ALLOCATION_METHOD.EXTERNAL;
+        //return IServiceProvider.ALLOCATION_METHOD.EXTERNAL;
     }
 
     @Override
