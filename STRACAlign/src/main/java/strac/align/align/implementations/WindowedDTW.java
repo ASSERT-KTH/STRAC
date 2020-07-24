@@ -151,7 +151,12 @@ public class WindowedDTW extends Aligner {
             if(j < minJ)
                 minJ = j;
 
-            ops.set(position++,new Cell(i, j));
+            try {
+                ops.set(position++, new Cell(i, j));
+            }
+            catch (Exception e){
+                System.out.println(e);
+            }
         }
 
         u.time("Warp path");
