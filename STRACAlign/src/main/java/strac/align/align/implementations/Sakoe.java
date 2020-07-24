@@ -66,7 +66,7 @@ public class Sakoe extends Aligner {
 
             currentRow[0] = i*getGapSymbol(i, ICellComparer.TRACE_DISCRIMINATOR.X)*1.0;
 
-            for(int j = 1; j < maxJ + 1; j++){
+            for(int j = xi; j < Xi + 1; j++){
                 double max = Math.min(
                         1.0 * lastRow[j - 1] + this.comparer.compare(trace1[i - 1], trace2[j - 1]),
                         Math.min(
@@ -79,6 +79,7 @@ public class Sakoe extends Aligner {
             }
 
             lastRow = currentRow;
+
         }
 
         return new AlignDistance(currentRow[currentRow.length - 1],null, -1, -1, 0);
