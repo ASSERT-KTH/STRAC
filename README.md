@@ -6,7 +6,7 @@ STRAC, a tools collection tailored to compare traces.
 
 ### Prerequisites
 
-- java >= 11
+- java >= 14
 
 #### To execute with SIMD
 
