@@ -2,7 +2,7 @@ name: Build jdk 11
 on:
   push:
     branches:
-      - master
+      - no-run
 jobs:
   test:
     name: Test

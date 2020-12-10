@@ -2,11 +2,11 @@ name: Running benchmarks
 on:
   push:
     branches:
-      - master
+      - no-run
 jobs:
 
   build:
-    name: Build
+    name: Builds
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
