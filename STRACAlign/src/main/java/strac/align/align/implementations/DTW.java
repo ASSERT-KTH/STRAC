@@ -38,12 +38,13 @@ public class DTW extends Aligner {
 
         IAlignAllocator.ALLOCATION_METHOD method = IAlignAllocator.ALLOCATION_METHOD.MEMORY;
 
-        if(need > 1 << 30){
-            LogProvider.info("Warning", "Array too large. We need " + (need/1e9) + "GB space to store traditional DTW cost matrix");
+        if(need > (1 << 30)){
+
+            LogProvider.info("Warning", "Array too large. We need " + (need) + "B space to store traditional DTW cost matrix");
             method = IAlignAllocator.ALLOCATION_METHOD.EXTERNAL;
         }
         ops = AlignServiceProvider.getInstance().getAllocator().allocateWarpPath
-                (null, trace1.length+trace2.length, method);
+                (null, trace1.length+trace2.length, IAlignAllocator.ALLOCATION_METHOD.MEMORY);
 
         result = AlignServiceProvider.getInstance().getAllocator().allocateDoubleBidimensionalMatrix(maxI + 1, maxJ + 1,  method);
 

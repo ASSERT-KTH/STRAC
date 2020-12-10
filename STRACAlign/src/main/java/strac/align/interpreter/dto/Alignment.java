@@ -20,6 +20,10 @@ public class Alignment extends FileContentDto {
 
     public String outputAlignmentMap;
 
+    public String explicitToWriteSeparator = "\n";
+
+    public String generateInteractiveMap = "";
+
     public static class Comparison{
         public int diff;
         public int eq;

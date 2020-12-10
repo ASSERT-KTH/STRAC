@@ -19,7 +19,8 @@ public class AllocatorServiceProvider implements IServiceProvider {
     @Override
     public IServiceProvider.ALLOCATION_METHOD selectMethod(long size) {
 
-        if(size < 1L << 30)
+        System.out.println(String.format("REQUESTED %s", size));
+        if(size < 1L << 31)
             return IServiceProvider.ALLOCATION_METHOD.MEMORY;
 
         return IServiceProvider.ALLOCATION_METHOD.EXTERNAL;

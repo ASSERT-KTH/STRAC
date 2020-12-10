@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
@@ -52,12 +53,13 @@ public class AlignInterpreter {
     }
 
 
-    public SimplePairResultDto executeSimplePair(final Alignment dto, int trace1Index, int trace2Index,final TraceHelper helper, final Aligner align, final List<TraceMap> traces){
+    public SimplePairResultDto executeSimplePair(final Alignment dto, int trace1Index, int trace2Index, final TraceHelper helper, final Aligner align, final List<TraceMap> traces){
 
         LogProvider.info(String.format("Executing...%s %s", trace1Index, trace2Index));
 
         SimplePairResultDto result = new SimplePairResultDto();
 
+        result.match = new ArrayList<>();
         TraceMap tr1 = traces.get(trace1Index);
         TraceMap tr2 = traces.get(trace2Index);
 
@@ -151,16 +153,28 @@ public class AlignInterpreter {
                     try {
                         LogProvider.info("Writing strac.align result to file");
 
+
                         FileWriter f11 = new FileWriter(file1);
 
                         for(int s : trace1Alignment)
-                            f11.write(helper.getInverseBag().get(s));
+                            f11.write(helper.getInverseBag().get(s) + dto.explicitToWriteSeparator);
 
 
-                        FileWriter f22 = new FileWriter(file1);
+                        FileWriter f22 = new FileWriter(file2);
 
                         for(int s : trace2Alignment)
-                            f22.write(helper.getInverseBag().get(s));
+                            f22.write(helper.getInverseBag().get(s) + dto.explicitToWriteSeparator);
+
+                        if(!dto.generateInteractiveMap.isEmpty()){
+                            LogProvider.info("Generating interactive map data");
+
+                            for(int i  = 0; i < trace1Alignment.length; i++){
+                                String s1 = helper.getInverseBag().get(trace1Alignment[i]);
+                                String s2 = helper.getInverseBag().get(trace2Alignment[i]);
+
+                               result.match.add(new AlignResultDto.SymbolMatch(s1, s2));
+                            }
+                        }
 
                     }
                     catch (Exception e){
@@ -262,6 +276,17 @@ public class AlignInterpreter {
 
         }
 
+        if(!dto.generateInteractiveMap.isEmpty()){
+            resultDto.mapBackAligment = new HashMap<>();
+
+            for(int i =0; i < traces.size(); i++){
+                resultDto.mapBackAligment.put(i, new HashMap<>());
+                for(int j = i + 1; j < traces.size(); j++){
+                    resultDto.mapBackAligment.get(i).put(j, new ArrayList<>());
+                }
+            }
+        }
+
         if(!new File(dto.outputDir).exists())
             new File(dto.outputDir).mkdir();
 
@@ -269,7 +294,6 @@ public class AlignInterpreter {
 
         CompletionService<SimplePairResultDto> completionService =
                 new ExecutorCompletionService<>(executor);
-
 
 
         for(final int[] pair: dto.pairs){
@@ -298,6 +322,11 @@ public class AlignInterpreter {
 
                     resultDto.fileMap.put(single.trace1Index, single.tr1.traceFile);
                     resultDto.fileMap.put(single.trace2Index, single.tr2.traceFile);
+
+
+                    if(!dto.generateInteractiveMap.isEmpty()){
+                        resultDto.mapBackAligment.get(single.trace1Index).put(single.trace2Index, single.match);
+                    }
 
                     if(action != null)
                         action.action(single.distance, 0, 0, 0,0,0);
