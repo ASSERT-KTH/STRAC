@@ -36,7 +36,12 @@ jobs:
         run: |
           cp log4j.properties STRACAlign/target && cp log4j.properties STRACboard/target && zip -r STRACboard-jdk15-SIMD.zip ./STRACboard/target && zip -r STRACAlign-jdk15-SIMD.zip ./STRACAlign/target
 
-      - name: Submit release aligners
+      - name: Compress panama JDK for Ubuntu 18.04
+        run: |
+          zip -r JDK14-Ubuntu18-panama.zip /home/runner/work/STRAC/STRAC/panama/dev/build/linux-x86_64-server-release/jdk
+
+
+      - name: Submit releases
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
