@@ -1,4 +1,5 @@
 # STRAC (Scalable Trace Comparison project) [![Build Status](https://travis-ci.org/KTH/STRAC.svg?branch=master)](https://travis-ci.org/KTH/STRAC)
+**We move to [RuSTRAC](https://github.com/Jacarte/RuSTRAC) for obvious reasons. Feel free to try it**
 
 STRAC, a tools collection tailored to compare traces.
 
